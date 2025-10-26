@@ -480,7 +480,7 @@ model Slide {
   gameId       Int
   templateType String
   contentData  Json
-  mode         String?       @default("view") // スライドごとのモード: 'view' | 'answer' | 'result' | null
+  mode         String? // スライドごとのモード: 'view' | 'answer' | 'result' | null
   Game         Game          @relation(fields: [gameId], references: [id], onDelete: Cascade)
   SlideAnswer  SlideAnswer[]
 }
@@ -7879,10 +7879,9 @@ export const prismaDMMF = {
           "isUnique": false,
           "isId": false,
           "isReadOnly": false,
-          "hasDefaultValue": true,
+          "hasDefaultValue": false,
           "type": "String",
           "nativeType": null,
-          "default": "view",
           "isGenerated": false,
           "isUpdatedAt": false
         },

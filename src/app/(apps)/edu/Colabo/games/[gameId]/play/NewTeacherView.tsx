@@ -82,10 +82,6 @@ export default function NewTeacherView({
       const result = await getSlideAnswers(currentSlide.id)
       if (result.success && result.answers) {
         setAnswers(result.answers as unknown as SlideAnswer[])
-
-        // 共有されている回答のIDを記録
-        const shared = new Set(result.answers.filter(a => a.isShared).map(a => a.id))
-        setSharedAnswerIds(shared)
       }
     } catch (error) {
       console.error('回答取得エラー:', error)
@@ -382,7 +378,6 @@ export default function NewTeacherView({
           ) : (
             <div className="text-center py-4 text-gray-500">回答がまだありません</div>
           )}
-
         </div>
       </div>
     </div>

@@ -28,8 +28,8 @@ export default function CenterPreview({slides, selectedSlideId, onSelectSlide, h
   }, [selectedSlideId])
 
   return (
-    <div ref={containerRef} className="flex-1 bg-gray-100 overflow-y-auto">
-      <div className="max-w-4xl mx-auto py-8 px-4">
+    <div ref={containerRef} className=" bg-white overflow-y-auto">
+      <div className="w-4xl mx-auto py-8 px-4">
         {slides.length > 0 ? (
           <div className="space-y-8">
             {slides.map((slide, index) => (
@@ -56,7 +56,6 @@ export default function CenterPreview({slides, selectedSlideId, onSelectSlide, h
             <div className="text-center text-gray-400">
               <div className="text-6xl mb-4">📄</div>
               <p className="text-lg">スライドがありません</p>
-              <p className="text-sm mt-2">右側のパネルからスライドを追加してください</p>
             </div>
           </div>
         )}
