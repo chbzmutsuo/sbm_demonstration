@@ -16,7 +16,7 @@ export const UserColBuilder = (props: columnGetterType) => {
     {
       id: 'type',
       label: '区分',
-      forSelect: {codeMaster: TBM_CODE.USER_TYPE.raw},
+      forSelect: {codeMaster: TBM_CODE.USER_TYPE},
       form: {defaultValue: `01`, ...defaultRegister},
     },
     {id: 'phone', label: '携帯番号', form: {}},

@@ -5,7 +5,7 @@ import type {PrismaModelNames} from '@cm/types/prisma-types'
 import type {ControlContextType} from '@cm/types/form-control-type'
 import type {colTypeStr} from '@cm/types/col-types'
 import type {optionType, optionsOrOptionFetcherType} from 'src/cm/class/Fields/col-operator-types'
-import type {codeObjectArgs} from '@cm/class/Code'
+import type {Code} from '@cm/class/Code'
 import type {anyObject} from './utility-types'
 
 export type forSelectConfig = {
@@ -45,7 +45,7 @@ export type multipleSelectProps = {
 }
 
 export type forSelcetType = {
-  codeMaster?: codeObjectArgs
+  codeMaster?: Code
   radio?: anyObject
   searcher?: (props: ControlContextType) => {
     getSearchFormProps?: () => {

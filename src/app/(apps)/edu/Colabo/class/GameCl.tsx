@@ -27,9 +27,7 @@ export class GameCl {
         },
         Slide: {
           where: {active: true},
-          include: {
-            SlideAnswer: {include: {Student: true}},
-          },
+          include: {SlideAnswer: {include: {Student: true}}},
           orderBy: {sortOrder: 'asc'},
         },
         Group: {

@@ -37,7 +37,7 @@ const Page = async props => {
     },
   })
 
-  const totalResponses = await prisma.slideResponse.count({
+  const totalResponses = await prisma.slideAnswer.count({
     where: {
       Game: {teacherId: session.id},
     },

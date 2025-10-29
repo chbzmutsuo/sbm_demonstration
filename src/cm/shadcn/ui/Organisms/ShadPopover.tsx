@@ -83,6 +83,7 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
       if (mode === 'hover') return
       e.preventDefault()
       e.stopPropagation()
+
       handleOpenChange(!openState)
     },
     [mode, openState, handleOpenChange]

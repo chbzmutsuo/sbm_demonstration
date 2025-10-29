@@ -57,12 +57,6 @@ export default function TbmRouteGroupDetail(props: DetailPagePropType) {
         },
       ],
     })
-
-    toastByResult(res)
-    if (res.success) {
-      // フォームデータを更新
-      window.location.reload()
-    }
   }
   const {tbmBaseId: currentBaseId} = session.scopes.getTbmScopes()
 

@@ -2,9 +2,7 @@
 
 import {SlideBlock} from '@app/(apps)/edu/Colabo/(components)/SlideBlock'
 import {PSYCHO_QUESTIONS} from '../../lib/psycho-questions'
-import {Button} from '@cm/components/styles/common-components/Button'
 import {Trash} from 'lucide-react'
-import {sleep} from '@cm/lib/methods/common'
 import {R_Stack} from '@cm/components/styles/common-components/common-components'
 
 interface SlidePreviewCardProps {

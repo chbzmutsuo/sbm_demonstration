@@ -32,7 +32,7 @@ export const tbmVehicleMaintananceRecordColBuilder = (props: columnGetterType) =
       form: {...defaultRegister},
       type: 'select',
       forSelect: {
-        codeMaster: TBM_CODE.VEHICLE_MAINTANANCE_RECORD_TYPE.raw,
+        codeMaster: TBM_CODE.VEHICLE_MAINTANANCE_RECORD_TYPE,
       },
     },
   ])

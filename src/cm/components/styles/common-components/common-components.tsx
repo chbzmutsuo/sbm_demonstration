@@ -57,8 +57,8 @@ export const Absolute = (
 }
 
 export const CenterScreen = (props: htmlProps) => {
-  const {bodyHeihgt} = useWindowSize()
-  const {className, style = {height: bodyHeihgt, width: '95vw', margin: 'auto', overflow: 'auto'}, children, ...rest} = props
+  const {bodyHeight} = useWindowSize()
+  const {className, style = {height: bodyHeight, width: '95vw', margin: 'auto', overflow: 'auto'}, children, ...rest} = props
 
   return (
     <div

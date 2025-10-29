@@ -10,9 +10,7 @@ import {
   type SubmitAnswerPayload,
   type ShareAnswerPayload,
   type RevealCorrectPayload,
-  type GameStateSyncPayload,
   type AnswerUpdatedPayload,
-  type ConnectionAckPayload,
   type SocketErrorPayload,
   type SocketRole,
 } from '@app/(apps)/edu/Colabo/lib/socket-config'
@@ -128,7 +126,7 @@ function setupSocketIO(io: SocketIOServer) {
   console.log('[Colabo Socket.io] サーバーが起動しました')
 
   io.on(SOCKET_EVENTS.CONNECTION, (socket: Socket) => {
-    console.log(`[Colabo Socket.io] クライアント接続: ${socket.id}`)
+    console.log(`[Colabo Socket.io] クライアント接続gss: ${socket.id}`)
 
     /**
      * Gameへの参加
@@ -391,7 +389,7 @@ function setupSocketIO(io: SocketIOServer) {
           // 教師のみに送信
           gameState.participants.forEach((participant, socketId) => {
             if (participant.role === 'teacher') {
-              io.to(socketId).emit(SOCKET_EVENTS.GAME_ANSWER_UPDATED, answerUpdatePayload)
+              io.to(socketId).emit(SOCKET_EVENTS.ANSWER_UPDATED, answerUpdatePayload)
             }
           })
         }

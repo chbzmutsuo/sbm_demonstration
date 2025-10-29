@@ -44,7 +44,7 @@
     "src/**/*.tsx",
     ".next/types/**/*.ts",
     "next.config.ts",
-    "src/app/(apps)/portal/portal-mock.js"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",
@@ -56,15 +56,14 @@
     ".next/static/**/*",
     "src/app/(apps)/KM/**/*",
     "src/app/(apps)/counseling/**/*",
-    "src/app/(apps)/edu/**/*",
     "src/app/(apps)/keihi/**/*",
     "src/app/(apps)/kickswrap/**/*",
-    "src/app/(apps)/market/**/*",
     "src/app/(apps)/migrations/**/*",
     "src/app/(apps)/page/**/*",
     "src/app/(apps)/portal/**/*",
     "src/app/(apps)/sbm/**/*",
     "src/app/(apps)/stock/**/*",
+    "src/app/(apps)/tbm/**/*",
     "src/app/(apps)/tmp/**/*",
     "src/app/(apps)/training/**/*"
   ]

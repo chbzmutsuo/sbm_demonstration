@@ -79,9 +79,9 @@ const parameters = async (props: {params; query; session; scopes: ReturnType<typ
         modelNames: [`roleMaster`],
         setParams: async () => ({
           myTable: {
-            update: false,
-            create: false,
-            delete: false,
+            update: scopes.admin,
+            create: scopes.admin,
+            delete: scopes.admin,
           },
         }),
       },

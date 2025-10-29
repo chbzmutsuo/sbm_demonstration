@@ -13,7 +13,6 @@ import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
 import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 
-import {Code} from '@cm/class/Code'
 import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
 
 export const getColMinWidth = (col: colType) => {
@@ -79,7 +78,7 @@ export const transposeColumns = (columns: colType[], transposeColumnsOptions?: t
         col.form = {...col.form}
 
         if (col.forSelect.codeMaster) {
-          col.forSelect.optionsOrOptionFetcher = new Code(col.forSelect.codeMaster).array
+          col.forSelect.optionsOrOptionFetcher = col.forSelect.codeMaster.array
         }
         col.format = defaultFormat
       }

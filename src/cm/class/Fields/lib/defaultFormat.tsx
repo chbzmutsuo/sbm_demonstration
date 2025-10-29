@@ -41,7 +41,7 @@ export const defaultFormat = (value, row, col) => {
     let displayValue = value
 
     if (col.forSelect?.codeMaster) {
-      displayValue = col.forSelect.codeMaster?.[value]?.label
+      displayValue = col.forSelect.codeMaster?.byCode(value)?.label
     }
 
     const isEditable = col?.td?.editable

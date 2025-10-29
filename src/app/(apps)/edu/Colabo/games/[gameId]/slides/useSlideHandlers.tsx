@@ -1,13 +1,7 @@
 'use client'
 
-import {useState, useEffect} from 'react'
-import {Button} from '@cm/components/styles/common-components/Button'
 import {toast} from 'react-toastify'
 import {createSlide, deleteSlide, updateSlide, updateSlideOrder} from '../../../colabo-server-actions'
-import QRCodeDisplay from '../../../parts/QRCodeDisplay'
-import Link from 'next/link'
-import useGlobal from '@cm/hooks/globalHooks/useGlobal'
-import {HREF} from '@cm/lib/methods/urls'
 import {arrayMove} from '@dnd-kit/sortable'
 
 export default function useSlideHandlers({

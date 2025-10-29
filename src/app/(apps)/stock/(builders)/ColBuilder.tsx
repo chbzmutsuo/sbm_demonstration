@@ -220,7 +220,7 @@ export class ColBuilder {
         label: '種類',
         form: {},
         forSelect: {
-          codeMaster: STOCK_CODE.STOCK_CONFIG.TYPE,
+          codeMaster: STOCK_CODE.STOCK_CONFIG_TYPE,
         },
       },
       {
@@ -228,7 +228,7 @@ export class ColBuilder {
         label: '名前',
         form: {},
         forSelect: {
-          codeMaster: STOCK_CODE.STOCK_CONFIG.NAME,
+          codeMaster: STOCK_CODE.STOCK_CONFIG_NAME,
         },
       },
       {id: 'value', label: '値', form: {}, type: 'float'},

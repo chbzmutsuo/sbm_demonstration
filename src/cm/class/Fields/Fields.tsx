@@ -79,6 +79,7 @@ export class Fields {
           colValue = '********'
         } else if (col.forSelect) {
           const value = DH__convertDataType(NestHandler.GetNestedValue(pseudoId, row), col.type, 'client')
+
           colValue = defaultFormat(value, row, col) as string
         } else {
           colValue = DH__convertDataType(NestHandler.GetNestedValue(pseudoId, row), col.type, 'client')

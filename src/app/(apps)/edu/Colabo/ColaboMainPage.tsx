@@ -6,6 +6,7 @@ import Link from 'next/link'
 import useModal from '@cm/components/utils/modal/useModal'
 import {HREF} from '@cm/lib/methods/urls'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import SocketInitializer from './components/SocketInitializer'
 
 interface ColaboMainPageProps {
   myGames: any[]
@@ -23,6 +24,9 @@ export default function ColaboMainPage({myGames, schools, teachers, subjects, cl
 
   return (
     <div className="container mx-auto p-6">
+      {/* Socket.ioサーバー初期化 */}
+      <SocketInitializer />
+
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Colabo - インタラクティブスライド授業</h1>
         <p className="text-gray-600">リアルタイムでつながる、双方向授業プラットフォーム</p>

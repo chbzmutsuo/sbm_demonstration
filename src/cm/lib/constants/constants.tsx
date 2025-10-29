@@ -6,9 +6,9 @@ export const Z_INDEX = {
   theadleft: 10,
   EasySearcher: 40,
   appBar: 50,
-  popover: 60,
   overlay: 70,
   modal: 80,
+  popover: 85,
   loader: 90,
   max: 999999,
 }

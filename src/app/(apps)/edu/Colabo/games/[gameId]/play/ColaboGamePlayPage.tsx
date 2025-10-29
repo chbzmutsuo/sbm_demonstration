@@ -1,8 +1,8 @@
 'use client'
 
 import {useState} from 'react'
-import {useColaboSocket, type SlideStates} from '../../../hooks/useColaboSocket'
-import {type SlideMode} from '../../../lib/socket-config'
+import {useColaboSocket} from '../../../hooks/useColaboSocket'
+import {type SlideMode, type SlideStates} from '../../../lib/socket-config'
 
 import StudentView from './StudentView'
 import {Button} from '@cm/components/styles/common-components/Button'
@@ -37,35 +37,31 @@ export default function ColaboGamePlayPage({game, role, userId, student}: Colabo
   const [sharedAnswers, setSharedAnswers] = useState<any[]>([])
   const [isCorrectRevealed, setIsCorrectRevealed] = useState(false)
 
-  console.log('初期状態:', {
-    currentSlideId: game.currentSlideId,
-    initialSlideIndex,
-    initialSlideStates,
-  })
-
   // Socket.io接続
+
   const socket = useColaboSocket({
     gameId: game.id,
     role,
     userId,
     userName: role === 'student' ? student?.name : game.Teacher?.name,
     onSlideChange: (slideId, slideIndex) => {
-      console.log('スライド変更:', {slideId, slideIndex})
       setCurrentSlideIndex(slideIndex)
       // スライドが変わったらリセット
       setIsCorrectRevealed(false)
       setSharedAnswers([])
     },
     onSlideModeChange: (slideId, mode) => {
-      console.log('スライドモード変更:', {slideId, mode})
-      setSlideStates(prev => ({...prev, [slideId]: mode}))
+      setSlideStates(prev => {
+        const newStates = {...prev, [slideId]: mode}
+        return newStates
+      })
+
       if (mode === 'view') {
         // 表示モードに戻ったらリセット
         setIsCorrectRevealed(false)
       }
     },
     onSlideStatesSync: states => {
-      console.log('スライド状態同期:', states)
       setSlideStates(states)
     },
     onCurrentSlideSync: currentSlideId => {
@@ -88,17 +84,10 @@ export default function ColaboGamePlayPage({game, role, userId, student}: Colabo
       // 生徒のみ：回答保存完了
       console.log('回答が保存されました:', data)
     },
-    onSharedAnswer: data => {
-      // 共有された回答を追加
-      setSharedAnswers(prev => [...prev, data])
-    },
-    onRevealCorrect: data => {
-      // 正答公開
-      setIsCorrectRevealed(true)
-    },
   })
 
   const currentSlide = game.Slide[currentSlideIndex ?? 0] || null
+
   const currentSlideMode = currentSlide ? slideStates[currentSlide.id] : null
 
   // 接続状態の表示
@@ -170,7 +159,6 @@ export default function ColaboGamePlayPage({game, role, userId, student}: Colabo
                 currentSlideMode={currentSlideMode}
                 answerStats={answerStats}
                 socket={socket}
-                onSlideChange={setCurrentSlideIndex}
               />
             ) : (
               <StudentView

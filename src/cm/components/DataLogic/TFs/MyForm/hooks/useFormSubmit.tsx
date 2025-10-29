@@ -192,10 +192,10 @@ export const useFormSubmit = ({
 
         // データを取得して、レコードを変更する
         await findTheDataAndChangeRecord({res})
+
         // モーダルを閉じるなどのクローズ処理を実行する
         await handleClosing(res)
         setformData(null)
-
         setUploading(false)
 
         // // 成功メッセージ

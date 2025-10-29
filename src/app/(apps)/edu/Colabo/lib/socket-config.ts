@@ -3,8 +3,7 @@
  * Colaboアプリのリアルタイム通信用の設定と型定義
  */
 
-// Socket.ioの接続パス
-export const SOCKET_PATH = '/api/colabo-socket/'
+// Socket.ioの接続パス（App Router）
 
 // Socket.io接続URL（環境に応じて自動設定）
 export const SOCKET_URL =
@@ -12,7 +11,7 @@ export const SOCKET_URL =
 
 // Socket.io接続設定
 export const SOCKET_CONFIG = {
-  path: SOCKET_PATH,
+  path: '/edu/Colabo/api/socket',
   transports: ['polling', 'websocket'], // pollingを先に試す
   reconnection: true,
   reconnectionAttempts: 10, // 再接続試行回数を増やす
@@ -41,7 +40,7 @@ export const SOCKET_EVENTS = {
 
   // 回答関連（生徒）
   STUDENT_SUBMIT_ANSWER: 'student:submit-answer',
-  STUDENT_ANSWER_SAVED: 'student:answer-saved',
+  ANSWER_SAVED: 'answer:saved',
 
   // 結果共有（教師のみ）
   TEACHER_SHARE_ANSWER: 'teacher:share-answer',
@@ -49,13 +48,16 @@ export const SOCKET_EVENTS = {
 
   // 全体同期
   GAME_STATE_SYNC: 'game:state-sync',
-  GAME_ANSWER_UPDATED: 'game:answer-updated',
+  ANSWER_UPDATED: 'answer:updated',
+  ANSWER_SHARED: 'answer:shared',
+  CORRECT_REVEALED: 'correct:revealed',
 } as const
 
 // 型定義
 
 export type SocketRole = 'teacher' | 'student'
 export type SlideMode = 'view' | 'answer' | 'result'
+export type SlideStates = Record<number, SlideMode | null>
 
 // 接続ペイロード
 export interface JoinGamePayload {
@@ -89,8 +91,7 @@ export interface CloseAnswerPayload {
 export interface SubmitAnswerPayload {
   gameId: number
   slideId: number
-  studentId: number
-  answerData: any
+  answer: any
 }
 
 // 回答共有ペイロード

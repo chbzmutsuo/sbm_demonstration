@@ -1,6 +1,5 @@
 'use client'
-import {C_Stack, CenterScreen} from '@cm/components/styles/common-components/common-components'
-import {T_LINK} from '@cm/components/styles/common-components/links'
+import { CenterScreen} from '@cm/components/styles/common-components/common-components'
 import React from 'react'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {HREF} from '@cm/lib/methods/urls'

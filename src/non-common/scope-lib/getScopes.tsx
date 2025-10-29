@@ -45,13 +45,16 @@ export const getScopes = (session: anyObject, options: getScopeOptionsProps) => 
     },
 
     getTbmScopes: () => {
-      const userId = !admin ? session?.id : Number(query?.g_userId ?? session?.id ?? 0)
-      const tbmBaseId = !admin ? session?.tbmBaseId : Number(query?.g_tbmBaseId ?? session?.tbmBaseId ?? 0)
+      const eigyoshoKirikae = !!arr__findCommonValues([`営業所切替`], roleNames)
+      const fakable = admin || eigyoshoKirikae
+
+      const userId = !fakable ? session?.id : Number(query?.g_userId ?? session?.id ?? 0)
+      const tbmBaseId = !fakable ? session?.tbmBaseId : Number(query?.g_tbmBaseId ?? session?.tbmBaseId ?? 0)
 
       const isSystemAdmin = !!arr__findCommonValues([`管理者`], roleNames) || admin
       const isShocho = !!arr__findCommonValues([`所長`], roleNames)
 
-      return {userId, tbmBaseId, isSystemAdmin, isShocho}
+      return {userId, tbmBaseId, isSystemAdmin, isShocho, eigyoshoKirikae}
     },
   }
 

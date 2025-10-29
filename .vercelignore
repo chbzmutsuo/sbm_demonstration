@@ -51,13 +51,13 @@ src/app/**/sbm
 src/app/**/sohken
 src/app/**/aquapot
 src/app/**/shinsei
-src/app/**/edu
 src/app/**/apex
 src/app/**/Advantage
 src/app/**/tmp
 src/app/**/achievement
 src/app/**/kingOfTime
-#src/app/**/keihi
-#src/app/**/stock
-#src/app/**/kickswrap
+#src/app/**/edu
 #src/app/**/KM
+#src/app/**/kickswrap
+#src/app/**/stock
+#src/app/**/keihi

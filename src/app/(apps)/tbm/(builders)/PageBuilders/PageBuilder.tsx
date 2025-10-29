@@ -28,14 +28,16 @@ export class PageBuilder {
     const {useGlobalProps} = props
 
     const {admin, getTbmScopes} = useGlobalProps.accessScopes()
-    const {userId, tbmBaseId} = getTbmScopes()
+    const {userId, eigyoshoKirikae, tbmBaseId} = getTbmScopes()
 
-    const columns = new Fields([
-      {id: 'g_tbmBaseId', label: '営', forSelect: {}},
-      {id: 'g_userId', label: 'ド', forSelect: {}},
-    ]).transposeColumns()
+    const columns = admin
+      ? new Fields([
+          {id: 'g_tbmBaseId', label: '営', forSelect: {}},
+          {id: 'g_userId', label: 'ド', forSelect: {}},
+        ]).transposeColumns()
+      : new Fields([{id: 'g_tbmBaseId', label: '営', forSelect: {}}]).transposeColumns()
 
-    if (admin) {
+    if (admin || eigyoshoKirikae) {
       return () => <GlobalIdSelector {...{useGlobalProps, columns}} />
     }
   }

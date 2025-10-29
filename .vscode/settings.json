@@ -109,10 +109,9 @@
     "**/portal/**": true,
     "**/sbm/**": true,
     "**/stock/**": true,
+    "**/tbm/**": true,
     "**/tmp/**": true,
-    "**/training/**": true,
-    "**/edu/**": true,
-    "**/market/**": true
+    "**/training/**": true
   },
   "typescript.tsserver.log": "off",
   "typescript.tsserver.maxTsServerMemory": 4096,
@@ -123,15 +122,14 @@
   "typescript.preferences.autoImportFileExcludePatterns": [
     "KM",
     "counseling",
-    "edu",
     "keihi",
     "kickswrap",
-    "market",
     "migrations",
     "page",
     "portal",
     "sbm",
     "stock",
+    "tbm",
     "tmp",
     "training"
   ],

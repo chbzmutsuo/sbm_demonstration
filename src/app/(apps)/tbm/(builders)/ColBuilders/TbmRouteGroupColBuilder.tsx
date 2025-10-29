@@ -88,7 +88,7 @@ export const TbmRouteGroupColBuilder = (props: columnGetterType) => {
         label: '区分',
         td: {style: {...regularStyle, minWidth: 180, fontSize: 12}},
         form: {...defaultRegister, defaultValue: `01`},
-        forSelect: {codeMaster: TBM_CODE.ROUTE_KBN.raw},
+        forSelect: {codeMaster: TBM_CODE.ROUTE_KBN},
       },
       {
         id: 'name',
