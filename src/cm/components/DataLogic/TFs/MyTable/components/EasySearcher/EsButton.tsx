@@ -9,6 +9,7 @@ import {EasySearchObject} from '@cm/class/builders/QueryBuilderVariables'
 import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
 import {twMerge} from 'tailwind-merge'
 import useMyNavigation from '@cm/hooks/globalHooks/useMyNavigation'
+import {cn} from '@cm/shadcn/lib/utils'
 
 export type EsButtonProps = {
   IsSingleItemGroup: boolean
@@ -29,13 +30,15 @@ export const EsButton = (props: EsButtonProps) => {
     ...(notZero && notify ? (typeof notify === 'object' ? notify : {}) : {}),
   }
 
-  let iconBtnColor = !notZero ? '' : notZero && notify ? 'red' : `gray`
+  let iconBtnColor = isActive ? '' : !notZero ? '' : notZero && notify ? 'red' : `gray`
   if (typeof notify === 'object') {
     iconBtnColor = 'yellow'
   }
 
   const activeClass = twMerge(
-    isActive ? 'bg-white ring-2 ring-primary-main bg-primary-main/10  text-gray-900 font-bold shadow-lg ' : ''
+    isActive
+      ? 'bg-white ring-2 ring-primary-main bg-primary-main/30  animate-pulse  rounded scale-110 text-gray-900 font-bold shadow-lg '
+      : ''
   )
 
   const nextQuery = createNextQuery({dataSource})
@@ -45,7 +48,7 @@ export const EsButton = (props: EsButtonProps) => {
       onClick={() => shallowAddQuery(nextQuery)}
       className={cl(
         //
-        `transition-all duration-200 transform rounded-full  `,
+        `transition-all duration-200 transform    `,
         `flex h-[26px] items-center    hover:bg-gray-200 onHover`,
         ` transition-colors  `,
         `p-0.5 text-xs gap-0.5`,
@@ -53,11 +56,11 @@ export const EsButton = (props: EsButtonProps) => {
         activeClass
       )}
     >
-      <MarkDownDisplay className={` text-xs leading-3`}>{label}</MarkDownDisplay>
+      <MarkDownDisplay className={` text-[11px] leading-3 `}>{label}</MarkDownDisplay>
       {/* } */}
       <IconBtn
         {...{
-          className: twMerge('  px-[4px]! py-[0px]! text-[10px] font-medium', notZero ? '' : 'opacity-50'),
+          className: cn('!px-[1px] !py-[0px] ', notZero ? '' : 'opacity-50'),
           color: iconBtnColor,
 
           // style: countBtnStyle,

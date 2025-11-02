@@ -74,27 +74,33 @@ const MyTable = React.memo<MyTableProps>(props => {
     return mainTable
   }
 
+  const MyTableControlsMemo = (
+    <MyTableControls
+      {...{
+        SearchingStatusMemo,
+        TableConfigProps,
+        ClientProps2,
+        isInfiniteScrollMode,
+        setInfiniteScrollMode,
+        recordCount,
+        totalCount,
+        hasMore,
+        mainTableProps,
+        paginationProps,
+        sectionStyle,
+        getPaginationProps: mainTableProps.getPaginationProps,
+        myTable: ClientProps2.myTable,
+      }}
+    />
+  )
+  const TABLE_CONTROL_POSITION = process.env.NEXT_PUBLIC_TABLE_CONTROL_POSITION || 'top'
+
   return (
     <div>
       <div>
-        <MyTableControls
-          {...{
-            SearchingStatusMemo,
-            TableConfigProps,
-            ClientProps2,
-            isInfiniteScrollMode,
-            setInfiniteScrollMode,
-            recordCount,
-            totalCount,
-            hasMore,
-            mainTableProps,
-            paginationProps,
-            sectionStyle,
-            getPaginationProps: mainTableProps.getPaginationProps,
-            myTable: ClientProps2.myTable,
-          }}
-        />
+        {TABLE_CONTROL_POSITION === 'top' && MyTableControlsMemo}
         {renderTableContent()}
+        {TABLE_CONTROL_POSITION === 'bottom' && MyTableControlsMemo}
       </div>
     </div>
   )

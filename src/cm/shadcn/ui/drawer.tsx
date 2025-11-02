@@ -99,7 +99,7 @@ function DrawerHeader({className, ...props}: React.ComponentProps<'div'>) {
 }
 
 function DrawerFooter({className, ...props}: React.ComponentProps<'div'>) {
-  return <div data-slot="drawer-footer" className={cn('mt-auto flex flex-col gap-2 p-4', className)} {...props} />
+  return <div data-slot="drawer-footer" className={cn('mt-auto flex flex-col gap-2 p-2', className)} {...props} />
 }
 
 function DrawerTitle({className, ...props}: React.ComponentProps<typeof DrawerPrimitive.Title>) {

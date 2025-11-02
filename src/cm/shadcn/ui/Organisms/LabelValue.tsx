@@ -1,5 +1,5 @@
-import {cn} from '@shadcn/lib/utils';
-import React from 'react';
+import {cn} from '@shadcn/lib/utils'
+import React from 'react'
 
 export default function LabelValue({
   label,
@@ -8,11 +8,11 @@ export default function LabelValue({
   labelClass = '',
   valueClass = '',
 }: {
-  label: string | React.ReactNode;
-  value: string | React.ReactNode;
-  labelClass?: string;
-  valueClass?: string;
-  direction?: 'row' | 'column';
+  label: string | React.ReactNode
+  value: string | React.ReactNode
+  labelClass?: string
+  valueClass?: string
+  direction?: 'row' | 'column'
 }) {
   return (
     <div className={cn('flex justify-between text-xs gap-1', direction === 'column' && 'flex-col')}>
@@ -21,5 +21,5 @@ export default function LabelValue({
         <div className={` flex justify-end`}>{value} </div>
       </div>
     </div>
-  );
+  )
 }

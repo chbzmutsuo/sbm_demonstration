@@ -86,8 +86,6 @@ const BasicForm = (props: BasicFormType) => {
 
   const {transposedRowsForForm} = makeFormsByColumnObj(columns)
 
-  const maxCols = transposedRowsForForm.length <= 1 ? {xl: 1} : {xl: 2}
-
   if (alignMode === `row`) {
     return (
       <FormProvider {...ReactHookForm}>
@@ -108,6 +106,37 @@ const BasicForm = (props: BasicFormType) => {
                     {/* ボタン */}
                   </div>
                   <ChildComponent />
+                </Fragment>
+              )
+            })}
+          </R_Stack>
+        </form>
+      </FormProvider>
+    )
+  } else if (alignMode === `rowBlock`) {
+    return (
+      <FormProvider {...ReactHookForm}>
+        <form {...{ref: formRef, id: formId, onSubmit}}>
+          <R_Stack className={` items-stretch w-full`}>
+            {transposedRowsForForm.map((columns, i) => {
+              return (
+                <Fragment key={i}>
+                  <FormSection {...{columns, ControlOptions}}>
+                    <C_Stack className={cn(`gap-8`)}>
+                      {columns.map((col: colType, formItemIndex) => {
+                        const use2ColSpan = getUse2ColSpan(col)
+                        const uniqueKey = `${i}-${formItemIndex}`
+                        const colSpan = use2ColSpan ? `md:col-span-2 ` : ` md:col-span-1`
+
+                        return (
+                          <div key={uniqueKey} className={cn(colSpan)}>
+                            <ControlGroup {...{...props, col, formItemIndex}} />
+                          </div>
+                        )
+                      })}
+                      {/* ボタン */}
+                    </C_Stack>
+                  </FormSection>
                 </Fragment>
               )
             })}

@@ -189,7 +189,7 @@ export const getOffsetWidth = (width: string | number, offsetWidth = 0, PC?: boo
 
   // ブレークポイントごとに幅を変えるinline styleの例
   if (typeof window !== 'undefined') {
-    if (use2ColSpan) {
+    if (use2ColSpan && PC) {
       // xl以上ならtextareaを2倍に
       result = `calc(${strWidth} * ${multiple} + ${offsetWidth}px) `
     } else {

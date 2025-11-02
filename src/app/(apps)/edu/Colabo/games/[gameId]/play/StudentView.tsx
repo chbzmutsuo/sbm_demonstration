@@ -224,7 +224,6 @@ export default function StudentView({
                   onSubmit={handlePsychoSubmit}
                   isReadOnly={hasSubmitted || currentSlideMode === 'view'}
                   currentMode={currentSlideMode}
-                  onRetry={handleRetryAnswer}
                 />
               </div>
             )}
@@ -352,15 +351,6 @@ export default function StudentView({
                         <div className="text-gray-800">{shared.content}</div>
                       </div>
                     ))}
-                  </div>
-                )}
-
-                {/* やり直しボタン（回答済みの場合） */}
-                {hasSubmitted && currentSlide.templateType !== 'psycho' && (
-                  <div className="mt-6 text-center">
-                    <Button onClick={handleRetryAnswer} className="bg-orange-600 hover:bg-orange-700">
-                      回答をやり直す
-                    </Button>
                   </div>
                 )}
               </div>

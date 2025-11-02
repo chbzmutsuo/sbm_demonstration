@@ -15,6 +15,7 @@ export type prismaMethodType =
   | 'groupBy'
   | 'aggregate'
   | 'transaction'
+  | 'count'
 
 export type PrismaClientOrigin = keyof import('.prisma/client').PrismaClient
 

@@ -232,7 +232,7 @@ export const VirtualMainTable = React.memo<MainTableProps>(props => {
                     {myTable?.showHeader && (
                       <thead>
                         <tr>
-                          <th className="text-center bg-gray-100 font-bold border border-gray-300 px-2 py-1">操作</th>
+                          <th className="text-center bg-gray-100 font-bold border border-gray-300 px-2 py-1"></th>
                           {columns[0]
                             ?.filter(col => col?.td?.hidden !== true)
                             .map((col, idx) => (

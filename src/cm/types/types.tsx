@@ -13,7 +13,7 @@ import {twMerge} from 'tailwind-merge'
 
 // エイリアスimport
 import type {acceptType, FileData, fileInfo} from '@cm/types/file-types'
-import type {ControlContextType, ControlOptionType} from '@cm/types/form-control-type'
+import type {alignModeType, ControlContextType, ControlOptionType} from '@cm/types/form-control-type'
 import type {PrismaModelNames} from '@cm/types/prisma-types'
 
 // 相対パスimport
@@ -241,18 +241,6 @@ export type extraFormStateType = {
 }
 
 type myformCreateDeleteMethod = ((props: myFormDefaultUpsertPropType) => void) | boolean | anyObject
-
-export type MyFormType = {
-  create?: upsertControllerType
-  delete?: myformCreateDeleteMethod
-  style?: anyObject
-  className?: string
-  showHeader?: (formData: anyObject) => JSX.Element
-  customActions?: JSXReturnFunc
-  basicFormClassName?: string
-  basicFormControlOptions?: ControlOptionType
-  onFormItemBlur?: onFormItemBlurType
-}
 
 export type MyModalType = {
   style?: CSSProperties

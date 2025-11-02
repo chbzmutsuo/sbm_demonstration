@@ -2,6 +2,10 @@ import {colorVariants} from '@cm/lib/methods/colors'
 import {tv} from 'tailwind-variants'
 import React from 'react'
 import {htmlProps} from '@cm/components/styles/common-components/type'
+import {TextProps} from '@cm/lib/methods/Coloring'
+import {iconBtnColorVariants} from '@cm/components/styles/common-components/IconBtn'
+import {cl} from '@cm/lib/methods/common'
+import {colorClassMaster} from '@cm/lib/methods/colorVariants'
 
 export const textColorVariants: Record<colorVariants, string> = {
   gray: 'text-gray-500 ',
@@ -51,13 +55,27 @@ const textVariants = tv({
   variants: {color: textColorVariants},
 })
 
-export const Text = (props: htmlProps & {color?: colorVariants}) => {
-  const {className, style, color = `red`, ...rest} = props
+export const Text = (props: htmlProps & TextProps) => {
+  const {className, style, color = `red`, asLink = false, ...rest} = props
+
+  const colorUndetected = !iconBtnColorVariants[color ?? ''] && color
+  const colorClass = colorUndetected ? '' : colorClassMaster.text[color]
+
+  const customeStyle = {
+    ...(colorUndetected
+      ? {
+          color: color,
+        }
+      : {}),
+    ...style,
+  }
 
   const elementProps = {
-    className: textVariants({color, class: className}),
-    style,
-    ...rest,
+    ...{
+      className: cl(colorClass, asLink ? 'underline underline-offset-2 cursor-pointer' : '', className),
+      style: customeStyle,
+      ...rest,
+    },
   }
   return <span {...elementProps} />
 }

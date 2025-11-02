@@ -3,7 +3,7 @@
 import React, {useCallback} from 'react'
 
 import useGlobal, {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobal'
-import {Center, C_Stack, R_Stack} from 'src/cm/components/styles/common-components/common-components'
+import {C_Stack, R_Stack} from 'src/cm/components/styles/common-components/common-components'
 
 import {PrismaModelNames} from '@cm/types/prisma-types'
 
@@ -152,7 +152,7 @@ const Main = ({
 
   return (
     <div>
-      <R_Stack className={` items-stretch  gap-0.5`}>
+      <R_Stack className={` items-center  flex-nowrap gap-2`}>
         <ShowAllFilterBtn {...{dataModelName, RowGroups, activeExGroup, createNextQuery, nonActiveExGroup, hideEasySearch}} />
         <C_Stack className={` w-full `}>
           {ShownRowGroups.map((EsGroupClientPropList, i) => {
@@ -166,7 +166,7 @@ const Main = ({
                       {/* <R_Stack className={`${border}  relative pr-6 `}> */}
                       <Wrapper>
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4 px-1">
+                          <div className="flex items-center gap-4 px-0.5">
                             <div className={` `}>
                               <EsGroupClient {...{EsGroupClientProp, createNextQuery}} />
                             </div>
@@ -190,12 +190,12 @@ const ShowAllFilterBtn = ({dataModelName, RowGroups, activeExGroup, createNextQu
     return null
   }
   return (
-    <Wrapper>
-      <Center>
+    <div>
+      <>
         <GlobalModal
           id={`${dataModelName}-Es-Modal`}
           Trigger={
-            <span className={`t-link pb-1 text-xs `}>
+            <span className={`t-link  text-xs `}>
               <CircledIcon>
                 <SquareArrowRight />
               </CircledIcon>
@@ -214,7 +214,7 @@ const ShowAllFilterBtn = ({dataModelName, RowGroups, activeExGroup, createNextQu
             }}
           />
         </GlobalModal>
-      </Center>
-    </Wrapper>
+      </>
+    </div>
   )
 }

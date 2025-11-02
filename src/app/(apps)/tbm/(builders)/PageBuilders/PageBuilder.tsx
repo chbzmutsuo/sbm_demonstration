@@ -26,7 +26,6 @@ export class PageBuilder {
 
   static getGlobalIdSelector = (props: {useGlobalProps: useGlobalPropType}) => {
     const {useGlobalProps} = props
-
     const {admin, getTbmScopes} = useGlobalProps.accessScopes()
     const {userId, eigyoshoKirikae, tbmBaseId} = getTbmScopes()
 

@@ -85,7 +85,7 @@ const MyForm = React.memo<DetailPagePropType>(props => {
       <section className="mx-auto w-fit ">
         <div className={`pb-8`}>
           <BasicForm
-            alignMode="grid"
+            alignMode={myForm?.alignMode ?? 'grid'}
             latestFormData={latestFormData}
             onSubmit={wrappedHandleOnSubmit}
             ControlOptions={myForm?.basicFormControlOptions}

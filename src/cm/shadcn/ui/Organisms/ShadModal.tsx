@@ -91,7 +91,7 @@ const ShadModal = React.memo((props: ShadModalProps) => {
                   <DrawerDescription>{description}</DrawerDescription>
                 </DrawerHeader>
 
-                <div className="w-fit mx-auto p-4">{children}</div>
+                <div className="w-fit mx-auto">{children}</div>
 
                 <DrawerFooter>{footer}</DrawerFooter>
               </div>

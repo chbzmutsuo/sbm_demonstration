@@ -1,4 +1,5 @@
 'use client'
+
 import {Button} from '@cm/components/styles/common-components/Button'
 import {SlideBlock} from '../../../(components)/SlideBlock'
 import {useState, useEffect} from 'react'
@@ -281,6 +282,8 @@ export default function TeacherView({
             ) : (
               <div className="text-center py-4 text-gray-500">まだ回答がありません</div>
             )}
+
+
           </div>
         )}
       </div>

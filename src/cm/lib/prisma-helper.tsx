@@ -41,6 +41,7 @@ const METHOD_MESSAGES: Record<prismaMethodType, string> = {
   groupBy: 'をグループ化しました',
   aggregate: 'を集計しました',
   transaction: 'を更新しました',
+  count: 'の件数を取得しました',
 } as const
 
 /**

@@ -99,7 +99,7 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
           <DrawerPortal>
             <DrawerContent
               onOpenAutoFocus={onOpenAutoFocus}
-              className="PopoverContent  rounded-lg  bg-white p-1  shadow-md border border-gray-200 "
+              className="PopoverContent  rounded-lg  bg-white  shadow-md border border-gray-200 "
             >
               <div className="mx-auto w-full max-w-sm">
                 <DrawerHeader className={headerClass}>

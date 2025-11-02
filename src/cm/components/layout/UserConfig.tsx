@@ -1,87 +1,57 @@
+import useNavMenu from '@cm/components/layout/Navigation/useNavMenu'
 import {R_Stack} from '@cm/components/styles/common-components/common-components'
 import {T_LINK} from '@cm/components/styles/common-components/links'
-import {Paper} from '@cm/components/styles/common-components/paper'
-import {LabelValue} from '@cm/components/styles/common-components/ParameterCard'
-
 import MyPopover from '@cm/components/utils/popover/MyPopover'
-import {CircleUserIcon} from 'lucide-react'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import useWindowSize from '@cm/hooks/useWindowSize'
 import {HREF} from '@cm/lib/methods/urls'
-import {signOut} from 'next-auth/react'
-import React, {useMemo} from 'react'
-import {sleep} from '@cm/lib/methods/common'
+import {Card} from '@cm/shadcn/ui/card'
+import LabelValue from '@cm/shadcn/ui/Organisms/LabelValue'
+import { UserCircleIcon} from 'lucide-react'
 
-// 型定義を改善
-interface UserConfigSession {
-  scopes: {login: boolean}
-  name: string
-  email?: string
-  roles: Array<{name: string}>
-}
+import React from 'react'
 
-interface UserConfigProps {
-  session?: UserConfigSession
-  rootPath?: string
-  query?: any
-  width?: number
-}
-
-// スタイル定数をコンポーネント外に移動
-const STYLING_CONFIG = {styles: {wrapper: {padding: 0, width: '100%'}}} as const
-
-export const UserConfig = React.memo(() => {
-  const {roles, accessScopes, session, rootPath, query, router, toggleLoad} = useGlobal()
+export const UserConfig = () => {
+  const {router, accessScopes, session, rootPath, query} = useGlobal()
   const {width} = useWindowSize()
+  const HK_NAV = useNavMenu()
 
-  // 幅計算をメモ化
-  const dimensions = useMemo(() => {
-    const maxWidth = Math.min(width * 0.8, 400)
-    const minWidth = Math.min(width * 0.8, 240)
-    return {maxWidth, minWidth}
-  }, [width])
+  const styling = {styles: {wrapper: {padding: 0, width: `100%`}}}
+  const maxWidth = Math.min(width * 0.8, 400)
+  const minWidth = Math.min(width * 0.8, 240)
 
-  // ログアウトURLをメモ化
-  const logoutHref = useMemo(() => HREF('/logout', {rootPath}, query), [rootPath, query])
-  const loginHref = useMemo(() => HREF('/login', {rootPath}, query), [rootPath, query])
-
-  // ロール名の文字列をメモ化
-  const roleNames = useMemo(() => session?.roles?.map(role => role.name).join(','), [session?.roles])
-
-  if (!session?.scopes.login) {
-    return <T_LINK href={loginHref}>ログイン</T_LINK>
-  }
-
-  return (
-    <div>
-      <MyPopover mode="click" button={<CircleUserIcon className=" text-gray-500 onHover" />}>
-        <Paper>
-          <R_Stack style={dimensions}>
-            <LabelValue styling={STYLING_CONFIG} label="氏名" value={session?.name} />
-            <LabelValue styling={STYLING_CONFIG} label="Email" value={session?.email} />
-            <LabelValue styling={STYLING_CONFIG} label="権限" value={roleNames} />
-            <R_Stack className="w-full justify-end">
-              <button
-                className={`t-link`}
-                onClick={async () => {
-                  toggleLoad(
-                    async () => {
-                      await signOut({redirect: false})
-                      await sleep(500)
-                      router.push(`/login`)
-                    },
-                    {refresh: false, mutate: false}
-                  )
-                }}
-              >
-                ログアウト
+  if (accessScopes().login) {
+    return (
+      <div
+        onMouseEnter={() => {
+          HK_NAV.handleCloseMenu(HK_NAV.activeNavWrapper)
+        }}
+      >
+        <MyPopover
+          {...{
+            mode: `click`,
+            alertOnClose: false,
+            button: (
+              <button className={`row-stack gap-0`}>
+                <UserCircleIcon className={` w-7 text-gray-700 `} />
               </button>
-            </R_Stack>
-          </R_Stack>
-        </Paper>
-      </MyPopover>
-    </div>
-  )
-})
+            ),
+          }}
+        >
+          <Card>
+            <R_Stack style={{maxWidth, minWidth, margin: `auto`}}>
+              <LabelValue {...{styling, label: `氏名`, value: session.name}} />
+              <LabelValue {...{styling, label: `Email`, value: session?.email}} />
 
-UserConfig.displayName = 'UserConfig'
+              <R_Stack className={`w-full justify-end`}>
+                <T_LINK href={HREF(`/logout`, {rootPath}, query)}>ログアウト</T_LINK>
+              </R_Stack>
+            </R_Stack>
+          </Card>
+        </MyPopover>
+      </div>
+    )
+  } else {
+    return <T_LINK href={HREF(`/login`, {rootPath}, query)}>ログイン</T_LINK>
+  }
+}

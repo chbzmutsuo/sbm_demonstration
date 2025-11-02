@@ -26,7 +26,7 @@ app.prepare().then(() => {
 
   // Socket.ioサーバーを初期化
   const io = new Server(httpServer, {
-    path: '/edu/Colabo/api/socket',
+    path: '/api/colabo-socket',
     addTrailingSlash: false,
     cors: {
       origin: dev ? 'http://localhost:3000' : true,

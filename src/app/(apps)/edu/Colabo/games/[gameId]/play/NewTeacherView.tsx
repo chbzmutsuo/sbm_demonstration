@@ -11,6 +11,9 @@ import {calculateScores} from '../../../lib/psycho-questions'
 interface SocketActions {
   changeSlide: (slideId: number, slideIndex: number) => void
   changeMode: (slideId: number, mode: SlideMode) => void
+  closeAnswer: (slideId: number) => void
+  shareAnswer: (slideId: number, answerId: number, isAnonymous: boolean) => void
+  revealCorrect: (slideId: number) => void
 }
 
 interface TeacherViewProps {
@@ -20,6 +23,7 @@ interface TeacherViewProps {
   currentSlideMode: SlideMode | null
   answerStats: AnswerStats | null
   socket: SocketActions
+  onSlideChange: (slideId: number, index: number) => void
 }
 
 export default function NewTeacherView({
@@ -29,44 +33,46 @@ export default function NewTeacherView({
   currentSlideMode,
   answerStats,
   socket,
+  onSlideChange,
 }: TeacherViewProps) {
   const [answers, setAnswers] = useState<SlideAnswer[]>([])
   const [isLoadingAnswers, setIsLoadingAnswers] = useState(false)
 
   const totalSlides = game.Slide?.length || 0
-
   const totalStudents = game.GameStudent?.length || 0
 
   // スライドを切り替え
   const handleChangeSlide = async (newIndex: number) => {
-    if (newIndex < 0 || newIndex >= totalSlides) {
-      console.warn('[NewTeacherView] 無効なインデックス:', newIndex)
-      return
-    }
+    if (newIndex < 0 || newIndex >= totalSlides) return
 
     const newSlide = game.Slide?.[newIndex]
-    if (!newSlide) return
+    if (newSlide) {
+      // DBに教師の現在のスライドを保存
+      await updateCurrentSlide(game.id, newSlide.id)
 
-    console.log('[TeacherView] スライド変更:', {newIndex, slideId: newSlide.id})
+      // Socket.io経由で全員に通知
+      socket.changeSlide(newSlide.id, newIndex)
 
-    // DBに教師の現在のスライドを保存
-    await updateCurrentSlide(game.id, newSlide.id)
-
-    // Socket.io経由で全員に通知
-    socket.changeSlide(newSlide.id, newIndex)
+      console.log('スライド変更:', {slideId: newSlide.id, slideIndex: newIndex})
+      onSlideChange(newSlide.id, newIndex)
+    }
   }
 
   // モードを変更
   const handleChangeMode = async (mode: SlideMode) => {
     if (!currentSlide) return
 
-    console.log('[TeacherView] モード変更:', {slideId: currentSlide.id, mode})
-
     // DBにモードを保存
     await updateSlideMode(currentSlide.id, mode)
 
     // Socket.io経由で全員に通知
     socket.changeMode(currentSlide.id, mode)
+  }
+
+  // 回答を締め切る
+  const handleCloseAnswer = () => {
+    if (!currentSlide) return
+    socket.closeAnswer(currentSlide.id)
   }
 
   // 回答を取得（共有状態も含む）
@@ -183,6 +189,15 @@ export default function NewTeacherView({
               📊 結果
             </Button>
           </div>
+
+          {/* 回答締切ボタン */}
+          {currentSlideMode === 'answer' && (
+            <div className="mt-4">
+              <Button onClick={handleCloseAnswer} className="w-full bg-red-600 hover:bg-red-700">
+                ⏱️ 回答を締め切る
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* スライドプレビュー */}
