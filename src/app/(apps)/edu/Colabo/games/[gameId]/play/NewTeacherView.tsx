@@ -6,7 +6,7 @@ import {useState, useEffect} from 'react'
 import {getSlideAnswers, updateSlideMode, updateCurrentSlide, deleteSlideAnswer} from '../../../colabo-server-actions'
 import {toast} from 'react-toastify'
 import type {GameData, SlideData, SlideMode, SlideAnswer, AnswerStats} from '../../../types/game-types'
-import {calculateScores} from '../../../lib/psycho-questions'
+import {calculateScores} from '../../../../api/colabo-socket/psycho-questions'
 
 interface SocketActions {
   changeSlide: (slideId: number, slideIndex: number) => void

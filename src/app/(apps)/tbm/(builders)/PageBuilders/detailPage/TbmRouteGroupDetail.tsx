@@ -27,36 +27,38 @@ export default function TbmRouteGroupDetail(props: DetailPagePropType) {
   )
 
   const handleSaveShare = async () => {
-    await doStandardPrisma('tbmRouteGroupShare', 'deleteMany', {where: {tbmRouteGroupId}})
+    if (tbmRouteGroupId) {
+      await doStandardPrisma('tbmRouteGroupShare', 'deleteMany', {where: {tbmRouteGroupId}})
 
-    const res = await doTransaction({
-      transactionQueryList: [
-        // 既存の共有設定を削除
+      const res = await doTransaction({
+        transactionQueryList: [
+          // 既存の共有設定を削除
 
-        // 新しい共有設定を追加
-        ...shareBaseIds.map(tbmBaseId => ({
-          model: 'tbmRouteGroupShare',
-          method: 'create',
-          queryObject: {
-            data: {
-              tbmRouteGroupId,
-              tbmBaseId,
-              isActive: true,
+          // 新しい共有設定を追加
+          ...shareBaseIds.map(tbmBaseId => ({
+            model: 'tbmRouteGroupShare',
+            method: 'create',
+            queryObject: {
+              data: {
+                tbmRouteGroupId,
+                tbmBaseId,
+                isActive: true,
+              },
+            },
+          })),
+
+          // 便の共有状態フラグを更新
+          {
+            model: 'tbmRouteGroup',
+            method: 'update',
+            queryObject: {
+              where: {id: tbmRouteGroupId},
+              data: {isShared: shareBaseIds.length > 0},
             },
           },
-        })),
-
-        // 便の共有状態フラグを更新
-        {
-          model: 'tbmRouteGroup',
-          method: 'update',
-          queryObject: {
-            where: {id: tbmRouteGroupId},
-            data: {isShared: shareBaseIds.length > 0},
-          },
-        },
-      ],
-    })
+        ],
+      })
+    }
   }
   const {tbmBaseId: currentBaseId} = session.scopes.getTbmScopes()
 
@@ -145,7 +147,8 @@ export default function TbmRouteGroupDetail(props: DetailPagePropType) {
       label: `基本情報`,
       component: (
         <div>
-          <ShareManagement />
+          {!!props.formData?.id && <ShareManagement />}
+
           <MyForm
             {...{
               ...props,

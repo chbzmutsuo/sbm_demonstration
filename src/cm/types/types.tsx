@@ -13,7 +13,7 @@ import {twMerge} from 'tailwind-merge'
 
 // エイリアスimport
 import type {acceptType, FileData, fileInfo} from '@cm/types/file-types'
-import type {alignModeType, ControlContextType, ControlOptionType} from '@cm/types/form-control-type'
+import type {ControlContextType} from '@cm/types/form-control-type'
 import type {PrismaModelNames} from '@cm/types/prisma-types'
 
 // 相対パスimport
@@ -24,7 +24,7 @@ import type {prismaDataExtractionQueryType} from 'src/cm/components/DataLogic/TF
 import type {ClientPropsType2} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
 import type {EasySearchObject} from 'src/cm/class/builders/QueryBuilderVariables'
 import {forSelcetType, multipleSelectProps} from '@cm/types/select-types'
-import {upsertControllerType} from '@cm/types/form-types'
+import {upsertControllerType, MyFormType} from '@cm/types/form-types'
 import {anyObject} from '@cm/types/utility-types'
 import {UseRecordsReturn} from '@cm/components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
 

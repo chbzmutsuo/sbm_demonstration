@@ -15,12 +15,12 @@ import {transposeColumns} from 'src/cm/class/Fields/lib/transposeColumns'
 import {NestHandler} from '@cm/class/NestHandler'
 
 import React from 'react'
-import {NumHandler} from '@cm/class/NumHandler'
 
 import {TableInfo, TableInfoWrapper} from '@cm/class/builders/ColBuilderVariables'
 import {DH__convertDataType} from '@cm/class/DataHandler/type-converter'
 import {cn} from '@shadcn/lib/utils'
 import {defaultFormat} from '@cm/class/Fields/lib/defaultFormat'
+import {NumHandler} from '../NumHandler'
 
 export const defaultSelect = {id: true, name: true}
 export const masterDataSelect = {...defaultSelect, color: true}
@@ -67,32 +67,34 @@ export class Fields {
       const existingValues: any[] = []
       const undefinedLabels: any[] = []
 
-      columns.forEach(col => {
-        const pseudoId = props.convertColId?.[col.id] ?? col.id
-        let colValue = ''
+      columns
+        .filter(col => col.td?.hidden !== true)
+        .forEach(col => {
+          const pseudoId = props.convertColId?.[col.id] ?? col.id
+          let colValue = ''
 
-        if (col.format) {
-          colValue = col.format(value, row, col)
-        } else if (col.type === 'price') {
-          colValue = NumHandler.toPrice(colValue)
-        } else if (col.type === 'password') {
-          colValue = '********'
-        } else if (col.forSelect) {
-          const value = DH__convertDataType(NestHandler.GetNestedValue(pseudoId, row), col.type, 'client')
+          if (col.format) {
+            colValue = col.format(value, row, col)
+          } else if (col.type === 'price') {
+            colValue = NumHandler.toPrice(colValue)
+          } else if (col.type === 'password') {
+            colValue = '********'
+          } else if (col.forSelect) {
+            const value = DH__convertDataType(NestHandler.GetNestedValue(pseudoId, row), col.type, 'client')
 
-          colValue = defaultFormat(value, row, col) as string
-        } else {
-          colValue = DH__convertDataType(NestHandler.GetNestedValue(pseudoId, row), col.type, 'client')
-        }
+            colValue = defaultFormat(value, row, col) as string
+          } else {
+            colValue = DH__convertDataType(NestHandler.GetNestedValue(pseudoId, row), col.type, 'client')
+          }
 
-        const item = {label: col.label, value: colValue}
+          const item = {label: col.label, value: colValue}
 
-        if (hideUndefinedValue && !colValue) {
-          undefinedLabels.push(item)
-        } else {
-          existingValues.push(item)
-        }
-      })
+          if (hideUndefinedValue && !colValue) {
+            undefinedLabels.push(item)
+          } else {
+            existingValues.push(item)
+          }
+        })
 
       return (
         <TableInfoWrapper {...{showShadow, label: props.wrapperLabel ?? ''}}>

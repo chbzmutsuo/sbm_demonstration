@@ -1,5 +1,7 @@
+import {MyFormType} from '@cm/types/form-types'
 import type {PrismaModelNames} from '@cm/types/prisma-types'
-import {MyFormType, editTypePropType, additionalPropsType, PageBuilderGetterType, MyModalType, MyTableType} from '@cm/types/types'
+import {editTypePropType, additionalPropsType, PageBuilderGetterType, MyModalType, MyTableType} from '@cm/types/types'
+
 import type {CSSProperties} from 'react'
 
 export type surroundings = {

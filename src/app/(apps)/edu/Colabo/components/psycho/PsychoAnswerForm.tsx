@@ -3,7 +3,7 @@
 import {useState, useEffect} from 'react'
 import {Button} from '@cm/components/styles/common-components/Button'
 import {C_Stack} from '@cm/components/styles/common-components/common-components'
-import {flattenQuestions, RATING_LABELS, RATING_VALUES} from '../../lib/psycho-questions'
+import {flattenQuestions, RATING_LABELS, RATING_VALUES} from '../../../api/colabo-socket/psycho-questions'
 import {toast} from 'react-toastify'
 
 interface PsychoAnswerFormProps {

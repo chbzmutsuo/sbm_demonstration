@@ -1,6 +1,7 @@
 import {GetDevice, getWindow} from 'src/cm/hooks/useWindowSize'
 import {CSSProperties} from 'react'
-import {MyFormType, MyTableType} from '@cm/types/types'
+import {MyTableType} from '@cm/types/types'
+import {MyFormType} from '@cm/types/form-types'
 export const getTableStickyStyles = (props: any) => {
   const commons = {
     background: '#f4f4f4',

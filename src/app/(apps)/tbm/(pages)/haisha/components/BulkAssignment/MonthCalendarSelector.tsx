@@ -43,7 +43,10 @@ export const MonthCalendarSelector: React.FC<MonthCalendarSelectorProps> = ({
 
   // 月のカレンダー日付を生成
   useEffect(() => {
-    const {days} = Days.month.getMonthDatum(month)
+    const {days, getWeeks} = Days.month.getMonthDatum(month)
+
+    const weeks = getWeeks('月')
+
     setCalendarDays(days)
   }, [month])
 
@@ -178,7 +181,7 @@ export const MonthCalendarSelector: React.FC<MonthCalendarSelectorProps> = ({
   }
 
   // 曜日ヘッダー
-  const weekdays = ['日', '月', '火', '水', '木', '金', '土']
+  const weekdays = ['月', '火', '水', '木', '金', '土', '日']
 
   // 既存スケジュール情報の表示用コンポーネント
   const ScheduleInfo = ({schedule}: {schedule: ExistingSchedule}) => {
@@ -240,44 +243,68 @@ export const MonthCalendarSelector: React.FC<MonthCalendarSelectorProps> = ({
         ))}
 
         {/* カレンダー日付 */}
-        {calendarDays.map((date, i) => {
-          const isSelected = isDateSelected(date)
-          const hasCalendar = hasRouteGroupCalendar(date)
-          const existingSchedule = getExistingSchedule(date)
-          const hasSchedule = !!existingSchedule
+        {/* 月曜始まりカレンダーに対応 */}
+        {(() => {
+          const weeks = Days.month.getMonthDatum(month).getWeeks('月')
+          // 月曜始まりにする: calendarDays を週ごと（月曜→日曜）に分割
 
-          const dayOfWeek = date.getDay()
+          return weeks.map((daysInWeek, rowIdx) =>
+            daysInWeek.map((date, colIdx) => {
+              if (!date) {
+                return <div key={`empty-${rowIdx}-${colIdx}`} className="p-2 min-h-16" />
+              }
+              const isSelected = isDateSelected(date)
+              const hasCalendar = hasRouteGroupCalendar(date)
+              const existingSchedule = getExistingSchedule(date)
+              const hasSchedule = !!existingSchedule
 
-          return (
-            <button
-              key={`day-${i}`}
-              type="button"
-              onClick={() => handleDateClick(date)}
-              className={cn(
-                'text-center p-2 rounded-md relative flex flex-col items-center min-h-16',
-                isSelected ? 'bg-blue-500 text-white' : 'bg-white',
-                hasCalendar ? 'bg-yellow-100' : '',
-                isSelected && hasCalendar ? 'bg-blue-400' : '',
-                hasSchedule && !isSelected ? 'bg-green-100' : '',
-                hasSchedule && isSelected ? 'bg-green-400' : '',
-                'hover:bg-blue-100 transition-colors border'
-              )}
-            >
-              <div
-                className={cn(
-                  'font-bold text-base',
-                  dayOfWeek === 0 ? 'text-red-500' : dayOfWeek === 6 ? 'text-blue-500' : 'text-gray-700',
-                  isSelected ? 'text-white' : ''
-                )}
-              >
-                {date.getDate()}
-              </div>
+              // 月曜始まりなので曜日変換
+              // colIdx: 0(月), 1(火), ..., 6(日)
+              // 曜日ラベル: ['月', '火', '水', '木', '金', '土', '日']
+              // let dayOfWeek = date.getDay() // JS: 0=日, 1=月...
+              // カレンダー上のカラムindex: colIdx
 
-              {/* 既存スケジュール情報の表示 */}
-              {hasSchedule && existingSchedule && <ScheduleInfo schedule={existingSchedule} />}
-            </button>
+              const isInMonth = Days.validate.isSameMonth(date, month)
+              if (!isInMonth) {
+                return (
+                  <div key={`empty-${rowIdx}-${colIdx}`} className="p-2 min-h-16">
+                    <div className="text-gray-500">{formatDate(date, 'D(ddd)')}</div>
+                  </div>
+                )
+              }
+
+              return (
+                <button
+                  key={`day-${rowIdx}-${colIdx}`}
+                  type="button"
+                  onClick={() => handleDateClick(date)}
+                  className={cn(
+                    'text-center p-2 rounded-md relative flex flex-col items-center min-h-16',
+                    isSelected ? 'bg-blue-500 text-white' : 'bg-white',
+                    hasCalendar ? 'bg-yellow-100' : '',
+                    isSelected && hasCalendar ? 'bg-blue-400' : '',
+                    hasSchedule && !isSelected ? 'bg-green-100' : '',
+                    hasSchedule && isSelected ? 'bg-green-400' : '',
+                    'hover:bg-blue-100 transition-colors border'
+                  )}
+                >
+                  <div
+                    className={cn(
+                      'font-bold text-base',
+                      // colIdx: 0(月)=gray, 5(土)=blue, 6(日)=red
+                      colIdx === 6 ? 'text-red-500' : colIdx === 5 ? 'text-blue-500' : 'text-gray-700',
+                      isSelected ? 'text-white' : ''
+                    )}
+                  >
+                    {date.getDate()}
+                  </div>
+                  {/* 既存スケジュール情報の表示 */}
+                  {hasSchedule && existingSchedule && <ScheduleInfo schedule={existingSchedule} />}
+                </button>
+              )
+            })
           )
-        })}
+        })()}
       </div>
 
       <div className="mt-4 text-sm grid grid-cols-2 gap-2">

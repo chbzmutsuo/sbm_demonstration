@@ -7,7 +7,7 @@ import BlockItem from './BlockItem'
 import {C_Stack, Circle, R_Stack} from '@cm/components/styles/common-components/common-components'
 import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 import {PlusIcon} from 'lucide-react'
-import {PSYCHO_QUESTIONS, RATING_LABELS} from '../../lib/psycho-questions'
+import {PSYCHO_QUESTIONS, RATING_LABELS} from '../../../api/colabo-socket/psycho-questions'
 
 interface RightSidebarProps {
   selectedSlide: any | null

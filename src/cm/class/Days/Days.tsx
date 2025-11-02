@@ -226,9 +226,9 @@ export class Days {
       if (isShukujitsu) {
         return {style: {...getColorStyles('#fbeb8e')}}
       } else if (formatDate(date, 'ddd') === '土') {
-        return {style: {...getColorStyles('#ffd7d7')}}
-      } else if (formatDate(date, 'ddd') === '日') {
         return {style: {...getColorStyles('#c6eeff')}}
+      } else if (formatDate(date, 'ddd') === '日') {
+        return {style: {...getColorStyles('#ffd7d7')}}
       }
     },
 

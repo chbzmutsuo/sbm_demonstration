@@ -2,7 +2,7 @@
 
 import {useState} from 'react'
 import {useColaboSocket, type SlideStates} from '../../../hooks/useColaboSocket'
-import {type SlideMode} from '../../../lib/socket-config'
+import {type SlideMode} from '../../../../api/colabo-socket/socket-config'
 
 import StudentView from './StudentView'
 import {Button} from '@cm/components/styles/common-components/Button'

@@ -28,42 +28,13 @@ export default function UnkoMeisaiCC({monthlyTbmDriveList}: {monthlyTbmDriveList
 
             return {
               csvTableRow: [
-                // {
-                //   //
-                //   label: 'ID',
-                //   cellValue: schedule.id,
-                //   className: 't-link cursor-pointer',
-                //   onClick: () => UnkoMeisaiModalReturn.handleOpen({id: schedule.id}),
-                // },
                 ...cols.map((props: any, colIdx) => {
                   const [dataKey, item] = props
 
                   let value
                   if (item.type === `date`) {
                     value = formatDate(item.cellValue, 'short')
-                  }
-                  // else if ([`M_postalHighwayFee`, `O_generalHighwayFee`].includes(dataKey)) {
-                  //   value = (
-                  //     <input
-                  //       {...{
-                  //         defaultValue: schedule[dataKey],
-                  //         type: 'number',
-                  //         className: `border-b bg-gray-100/70 w-[70px] px-1 text-xs`,
-                  //         onBlur: async (e: any) => {
-                  //           const res = await doStandardPrisma('tbmDriveSchedule', 'update', {
-                  //             where: {id: schedule.id ?? 0},
-                  //             data: {
-                  //               [dataKey]: Number(e.target.value),
-                  //             },
-                  //           })
-
-                  //           toastIfFailed(res)
-                  //         },
-                  //       }}
-                  //     />
-                  //   )
-                  // }
-                  else {
+                  } else {
                     value = item.cellValue
                   }
 

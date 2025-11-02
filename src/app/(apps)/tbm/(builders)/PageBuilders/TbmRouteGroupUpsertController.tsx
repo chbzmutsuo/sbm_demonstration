@@ -49,10 +49,14 @@ export const TbmRouteGroupUpsertController = {
     }
 
     const res = await doStandardPrisma(`tbmRouteGroup`, `upsert`, {
-      where: {id: id},
+      where: {id: id ?? 0},
       create: {
         ...basezPayload,
-        Mid_TbmRouteGroup_TbmCustomer: tbmCustomerId ? {create: {tbmCustomerId}} : undefined,
+        Mid_TbmRouteGroup_TbmCustomer: tbmCustomerId
+          ? {
+              create: {tbmCustomerId},
+            }
+          : undefined,
       },
       update: {
         ...basezPayload,

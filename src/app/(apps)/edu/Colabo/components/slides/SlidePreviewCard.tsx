@@ -1,7 +1,7 @@
 'use client'
 
 import {SlideBlock} from '@app/(apps)/edu/Colabo/(components)/SlideBlock'
-import {PSYCHO_QUESTIONS} from '../../lib/psycho-questions'
+import {PSYCHO_QUESTIONS} from '../../../api/colabo-socket/psycho-questions'
 import {Trash} from 'lucide-react'
 import {R_Stack} from '@cm/components/styles/common-components/common-components'
 

@@ -6,8 +6,8 @@ import AuthButton from '../components/AuthButton'
 import {useGoogleAuth} from '../hooks/useGoogleAuth'
 import type {AnalysisResult} from '../types'
 
-const PageBuilder = () => {
-  const {isAuthenticated, handleSignIn, handleSignOut, accessToken} = useGoogleAuth()
+const TeamSynapseTopCC = () => {
+  const {isAuthenticated, handleSignIn, accessToken} = useGoogleAuth()
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
 
@@ -18,14 +18,9 @@ const PageBuilder = () => {
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Team Synapse</h1>
           <p className="text-lg text-gray-600">Google Workspaceコミュニケーション分析ツール</p>
-          {isAuthenticated && (
-            <button onClick={handleSignOut} className="mt-4 text-sm text-gray-600 hover:text-gray-900 underline">
-              ログアウト
-            </button>
-          )}
         </div>
 
-        {/* 認証ボタン（未認証時のみ表示） */}
+        {/* 認証ボタン */}
         {!isAuthenticated && (
           <div className="bg-white rounded-lg shadow-md p-8 mb-8 text-center">
             <h2 className="text-xl font-semibold mb-4">まずはGoogleアカウントで認証してください</h2>
@@ -34,7 +29,7 @@ const PageBuilder = () => {
           </div>
         )}
 
-        {/* メインコンテンツ（認証済みの場合のみ表示） */}
+        {/* メインコンテンツ */}
         {isAuthenticated && (
           <>
             <InputForm
@@ -59,4 +54,4 @@ const PageBuilder = () => {
   )
 }
 
-export default PageBuilder
+export default TeamSynapseTopCC

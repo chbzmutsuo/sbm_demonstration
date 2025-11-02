@@ -173,10 +173,10 @@ const MainDatePicker = (props: anyObject) => {
   }
 
   return (
-    <div className="relative z-[1000]">
+    <div className="relative z-1000">
       {' '}
       {/* z-indexを明示的に設定 */}
-      <C_Stack className="gap-4">
+      <C_Stack className="gap-4 items-center">
         {/* ボタンエリア */}
         <div className="flex gap-2 justify-between">
           <Button
@@ -211,7 +211,7 @@ const MainDatePicker = (props: anyObject) => {
 
         {/* 8桁数値入力フィールド - 最前面に配置 */}
         <div
-          className="relative z-[1001] p-3 bg-white border border-gray-200 rounded-lg shadow-sm"
+          className="relative z-[1001] p-1 "
           style={{position: 'relative', zIndex: 1001}} // インラインスタイルでも確実に設定
         >
           <label className="block text-sm font-medium text-gray-700 mb-2">8桁数値で直接入力 (例: 20231025)</label>

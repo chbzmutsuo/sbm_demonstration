@@ -3,17 +3,17 @@ import type {Server as HTTPServer} from 'http'
 import type {Socket} from 'socket.io'
 import {
   SOCKET_EVENTS,
-  type JoinGamePayload,
-  type ChangeSlidePayload,
-  type ChangeModePayload,
-  type CloseAnswerPayload,
-  type SubmitAnswerPayload,
-  type ShareAnswerPayload,
-  type RevealCorrectPayload,
-  type AnswerUpdatedPayload,
-  type SocketErrorPayload,
-  type SocketRole,
-} from '@app/(apps)/edu/Colabo/lib/socket-config'
+  JoinGamePayload,
+  ChangeSlidePayload,
+  ChangeModePayload,
+  CloseAnswerPayload,
+  SubmitAnswerPayload,
+  ShareAnswerPayload,
+  RevealCorrectPayload,
+  AnswerUpdatedPayload,
+  SocketRole,
+  SocketErrorPayload,
+} from '@app/(apps)/edu/api/colabo-socket/socket-config'
 import prisma from 'src/lib/prisma'
 
 // Socket.ioの設定を無効化（Next.jsのbodyParser）

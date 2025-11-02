@@ -1,4 +1,4 @@
-import {PageBuilder} from '../(builders)/PageBuilder'
+import {PageBuilder} from 'src/app/(apps)/teamSynapse/(builders)/PageBuilder'
 import Admin from '@cm/components/layout/Admin/Admin'
 
 export default async function AppLayout(props) {
@@ -8,7 +8,7 @@ export default async function AppLayout(props) {
     <Admin
       {...{
         AppName: 'テストアプリ',
-        PagesMethod: 'Advantage_PAGES',
+        PagesMethod: 'teamSynapse_PAGES',
         PageBuilderGetter: {class: PageBuilder, getter: 'getGlobalIdSelector'},
       }}
     >

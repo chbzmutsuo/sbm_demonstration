@@ -62,6 +62,7 @@ export const updateSimply = async (props: {
   })
 
   let updatedModelRes: requestResultType
+
   if (id) {
     updatedModelRes = await generalDoStandardPrisma(dataModelName, 'update', {
       where: {id: id ?? 0},

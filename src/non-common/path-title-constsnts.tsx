@@ -38,6 +38,47 @@ const getEduCommonMenus = ({isSchoolLeader, admin}) => {
 }
 
 export const PAGES: any = {
+  teamSynapse_PAGES: (props: PageGetterType) => {
+    const {roles, session, rootPath, query, pathname, dynamicRoutingParams} = props
+
+    const scopes = getScopes(session, {query, roles})
+
+    const {admin} = scopes
+
+    const normalPaths: pathItemType[] = [
+      //
+      {
+        //
+        ROOT: [rootPath],
+        tabId: '',
+        label: 'TOP',
+        exclusiveTo: 'always',
+      },
+    ]
+
+    const adminPaths: pathItemType[] = []
+    const pathSource = [
+      //
+      ...normalPaths,
+      ...adminPaths,
+    ] as pathItemType[]
+
+    const {cleansedPathSource, navItems, breads, allPathsPattenrs} = CleansePathSource({
+      rootPath,
+      pathSource,
+      pathname,
+      query,
+      session,
+      dynamicRoutingParams,
+    })
+
+    return {
+      allPathsPattenrs,
+      pathSource: cleansedPathSource,
+      navItems,
+      breads,
+    }
+  },
   tbm_PAGES,
   KM_PAGES,
   stock_PAGES,
