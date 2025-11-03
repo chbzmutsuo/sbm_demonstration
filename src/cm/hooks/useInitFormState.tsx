@@ -1,7 +1,7 @@
 'use client '
 import {useJotaiByKey} from '@cm/hooks/useJotai'
 import {useRouter} from 'next/navigation'
-import { useEffect} from 'react'
+import {useEffect} from 'react'
 
 /**
  *prismaのデータが更新された時にも、ステートを最新に保つ

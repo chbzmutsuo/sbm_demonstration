@@ -100,6 +100,29 @@ export async function initQueryObject({model, method, queryObject, prismaModel})
 
     delete queryObject?.create?.id
     delete queryObject?.update?.id
+
+    // モデルのスキーマに存在しないフィールドを削除
+    const modelRelations = getRelationalModels({schemaAsObj: getSchema(), parentName: model})
+    const modelFields = modelRelations?.singleAttributeObj
+
+    if (modelFields) {
+      targetKeys.forEach(key => {
+        if (queryObject[key]) {
+          Object.keys(queryObject[key]).forEach(fieldName => {
+            // スキーマに存在しないフィールドを削除
+            if (!modelFields[fieldName] && fieldName !== 'id') {
+              delete queryObject[key][fieldName]
+            }
+
+            // 更新時には外部キーフィールドを削除（リレーション変更は通常行わないため）
+            if (method === 'update' && key === 'data' && fieldName.endsWith('Id') && fieldName !== 'id') {
+              // ただし、既存の値が存在する場合のみ削除（新規作成時は必要）
+              delete queryObject[key][fieldName]
+            }
+          })
+        }
+      })
+    }
   }
 }
 

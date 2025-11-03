@@ -10,7 +10,6 @@ export const useGoogleAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [accessToken, setAccessToken] = useState<string | null>(null)
 
-  console.log({isAuthenticated}) //logs
   useEffect(() => {
     // Google Identity Services ライブラリのロード
     const script = document.createElement('script')

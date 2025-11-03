@@ -110,7 +110,7 @@ export const ChildCreator = React.memo((props: ChildCreatorProps) => {
     [easySearchPrismaDataOnServer?.availableEasySearchObj]
   )
 
-  const {formData, setformData} = useInitFormState(null, [])
+  const {formData, setformData} = useInitFormState(null, [], false, dataModelName)
 
   const toggleLoadFunc = useMemo(
     () => props.additional?.toggleLoadFunc ?? (async cb => await cb()),

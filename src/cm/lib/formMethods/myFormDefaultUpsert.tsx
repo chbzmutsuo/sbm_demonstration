@@ -8,6 +8,7 @@ export const myFormDefaultUpsert: (props: myFormDefaultUpsertPropType) => Promis
   props: myFormDefaultUpsertPropType
 ) => {
   const {latestFormData, extraFormState, dataModelName, additional, formData, columns} = props
+
   const latestFormDataWithImageUrl = await updateWithImageAndAddUrlToLatestFormData({
     latestFormData,
     extraFormState,

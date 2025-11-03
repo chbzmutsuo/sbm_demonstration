@@ -3,7 +3,7 @@
 import {setCustomParams} from '@cm/components/DataLogic/helpers/SetCustomParams'
 
 import {getScopes} from 'src/non-common/scope-lib/getScopes'
-import {PageBuilder} from '../../(builders)/TeamSynapseTopCC'
+import {PageBuilder} from '../../(builders)/PageBuilder'
 import {ColBuilder} from '../../(builders)/ColBuilder'
 import {QueryBuilder} from '../../(builders)/QueryBuilder'
 

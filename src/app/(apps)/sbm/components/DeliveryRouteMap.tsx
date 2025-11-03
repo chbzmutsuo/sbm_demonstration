@@ -7,6 +7,7 @@ import {formatDate} from '@cm/class/Days/date-utils/formatters'
 // Google Maps APIのタイプ定義
 declare global {
   interface Window {
+    //@ts-expect-error - google is not typed
     google: any
     initMap: () => void
   }
@@ -194,7 +195,7 @@ const DeliveryRouteMap: React.FC<DeliveryRouteMapProps> = ({reservations, teamId
           destination,
           waypoints,
           optimizeWaypoints: optimizeRoute,
-          travelMode: 'DRIVING',
+          travelMode: window.google.maps.TravelMode.DRIVING,
         },
         (response: any, status: any) => {
           if (status === 'OK') {
