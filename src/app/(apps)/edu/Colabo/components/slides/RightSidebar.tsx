@@ -2,12 +2,11 @@
 
 import {Button} from '@cm/components/styles/common-components/Button'
 import {useState, useEffect} from 'react'
-import BlockItem from './BlockItem'
 
 import {C_Stack, Circle, R_Stack} from '@cm/components/styles/common-components/common-components'
 import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 import {PlusIcon} from 'lucide-react'
-import {PSYCHO_QUESTIONS, RATING_LABELS} from '../../../api/colabo-socket/psycho-questions'
+import {PSYCHO_QUESTIONS, RATING_LABELS} from '../../lib/psycho-questions'
 
 interface RightSidebarProps {
   selectedSlide: any | null
@@ -17,8 +16,6 @@ interface RightSidebarProps {
 }
 
 export default function RightSidebar({selectedSlide, handleUpdateSlide, handleDeleteSlide}: RightSidebarProps) {
-  const [editingBlock, setEditingBlock] = useState<any | null>(null)
-
   // ローカル編集状態
   const [localTitle, setLocalTitle] = useState('')
   const [localQuestion, setLocalQuestion] = useState('')
@@ -118,75 +115,6 @@ export default function RightSidebar({selectedSlide, handleUpdateSlide, handleDe
     })
   }
 
-  // ブロック追加
-  const handleAddBlock = (blockType: string) => {
-    if (!selectedSlide) return
-    const newBlock = {
-      id: `temp_${Date.now()}`,
-      blockType,
-      content: '',
-      sortOrder: selectedSlide.contentData?.blocks?.length || 0,
-    }
-    const updatedBlocks = [...(selectedSlide.contentData?.blocks || []), newBlock]
-    handleUpdateSlide(selectedSlide.id, {
-      contentData: {
-        ...selectedSlide.contentData,
-        blocks: updatedBlocks,
-      },
-    })
-    setEditingBlock(newBlock)
-  }
-
-  // ブロック更新
-  const handleUpdateBlock = (blockId: string, updates: any) => {
-    if (!selectedSlide) return
-    const updatedBlocks = selectedSlide.contentData?.blocks?.map((b: any) => (b.id === blockId ? {...b, ...updates} : b))
-    handleUpdateSlide(selectedSlide.id, {
-      contentData: {
-        ...selectedSlide.contentData,
-        blocks: updatedBlocks,
-      },
-    })
-  }
-
-  // ブロック削除
-  const handleDeleteBlock = (blockId: string) => {
-    if (!selectedSlide) return
-    const updatedBlocks = selectedSlide.contentData?.blocks?.filter((b: any) => b.id !== blockId)
-    handleUpdateSlide(selectedSlide.id, {
-      contentData: {
-        ...selectedSlide.contentData,
-        blocks: updatedBlocks,
-      },
-    })
-    setEditingBlock(null)
-  }
-
-  // ブロック移動
-  const handleMoveBlock = (blockId: string, direction: 'up' | 'down') => {
-    if (!selectedSlide) return
-    const blocks = selectedSlide.contentData?.blocks || []
-    const index = blocks.findIndex((b: any) => b.id === blockId)
-    if (index === -1) return
-
-    const newIndex = direction === 'up' ? index - 1 : index + 1
-    if (newIndex < 0 || newIndex >= blocks.length) return
-
-    const newBlocks = [...blocks]
-    ;[newBlocks[index], newBlocks[newIndex]] = [newBlocks[newIndex], newBlocks[index]]
-    // 更新sortOrder
-    newBlocks.forEach((block, i) => {
-      block.sortOrder = i
-    })
-
-    handleUpdateSlide(selectedSlide.id, {
-      contentData: {
-        ...selectedSlide.contentData,
-        blocks: newBlocks,
-      },
-    })
-  }
-
   return (
     <div className="w-96 bg-white border-l border-gray-200 flex flex-col">
       {/* セクション1: テンプレート追加 */}
@@ -220,41 +148,12 @@ export default function RightSidebar({selectedSlide, handleUpdateSlide, handleDe
               {/* ノーマルスライドの場合 */}
               {selectedSlide.templateType === 'normal' && (
                 <section>
-                  <h4 className="font-semibold text-sm text-gray-700 ">ブロック</h4>
-
-                  {/* ブロック一覧 */}
-                  <C_Stack className={`gap-8`}>
-                    {selectedSlide.contentData?.blocks && selectedSlide.contentData.blocks.length > 0 && (
-                      <div className="space-y-6">
-                        {selectedSlide.contentData.blocks.map((block: any, index: number) => (
-                          <BlockItem
-                            key={block.id}
-                            block={block}
-                            index={index}
-                            totalBlocks={selectedSlide.contentData.blocks.length}
-                            isEditing={editingBlock?.id === block.id}
-                            onEdit={() => setEditingBlock(block)}
-                            handleUpdateBlock={handleUpdateBlock}
-                            onDelete={() => handleDeleteBlock(block.id)}
-                            onMove={handleMoveBlock}
-                          />
-                        ))}
-                      </div>
-                    )}
-
-                    {/* ブロック追加ボタン */}
-                    <R_Stack>
-                      <Button size="sm" onClick={() => handleAddBlock('text')}>
-                        <PlusIcon className="inline" /> 📝 テキスト
-                      </Button>
-                      <Button size="sm" onClick={() => handleAddBlock('image')}>
-                        <PlusIcon className="inline" /> 🖼️ 画像
-                      </Button>
-                      <Button size="sm" onClick={() => handleAddBlock('link')}>
-                        <PlusIcon className="inline" /> 🔗 リンク
-                      </Button>
-                    </R_Stack>
-                  </C_Stack>
+                  <div className="bg-blue-50 p-3 rounded-lg text-sm text-blue-800">
+                    <p className="font-medium mb-1">ノーマルスライドについて</p>
+                    <p className="text-xs">
+                      スライド上で直接ブロックを編集できます。中央のプレビューエリアでブロックをクリックして編集してください。
+                    </p>
+                  </div>
                 </section>
               )}
 

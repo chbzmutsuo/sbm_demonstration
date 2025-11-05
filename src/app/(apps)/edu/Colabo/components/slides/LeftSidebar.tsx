@@ -58,7 +58,13 @@ interface LeftSidebarProps {
 }
 
 export default function LeftSidebar({slides, selectedSlideId, onSelectSlide, onReorderSlides, onAddSlide}: LeftSidebarProps) {
-  const sensors = useSensors(useSensor(PointerSensor))
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px動いたらドラッグ開始（クリックとの区別）
+      },
+    })
+  )
 
   const handleDragEnd = (event: any) => {
     const {active, over} = event
@@ -117,6 +123,7 @@ export default function LeftSidebar({slides, selectedSlideId, onSelectSlide, onR
           <div className="text-center py-8 text-gray-400 text-sm">
             <div className="text-2xl mb-2">📄</div>
             <p>スライドがありません</p>
+            <p className="text-xs mt-2 text-gray-500">上のボタンからスライドを追加してください</p>
           </div>
         )}
       </div>

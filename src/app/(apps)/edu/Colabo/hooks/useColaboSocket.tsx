@@ -16,7 +16,7 @@ import {
   type SocketErrorPayload,
   type SocketRole,
   type SlideMode,
-} from '../../api/colabo-socket/socket-config'
+} from '../lib/socket-config'
 
 // 接続状態の型
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error'

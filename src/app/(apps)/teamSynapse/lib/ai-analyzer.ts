@@ -12,18 +12,14 @@ const callGeminiAPI = async (prompt: string, apiKey: string): Promise<any> => {
     body: JSON.stringify({
       contents: [
         {
-          parts: [
-            {
-              text: prompt,
-            },
-          ],
+          parts: [{text: prompt}],
         },
       ],
       generationConfig: {
         temperature: 0.7,
         topK: 40,
         topP: 0.95,
-        maxOutputTokens: 8192,
+        maxOutputTokens: 16384, // 複数の分析結果を含むため、トークン数を増やす
       },
     }),
   })
@@ -44,96 +40,73 @@ const callGeminiAPI = async (prompt: string, apiKey: string): Promise<any> => {
   return JSON.parse(text)
 }
 
-// Step 1: 観点提案
-const proposeViewpoints = async (messages: CollectedMessage[], apiKey: string): Promise<Viewpoints> => {
-  const prompt = `あなたはプロのビジネスアナリストです。
-以下のコミュニケーション履歴（JSON）を読み込み、マネージャーが特に注目すべき「主要な観点（トピック、案件名、行動特性など）」を3〜5個提案してください。
+// 統合分析：3ステップを1回のAPI呼び出しで実行
+export const analyzeWithAI = async (messages: CollectedMessage[], apiKey: string): Promise<AnalysisResult> => {
+  try {
+    console.log('AI分析を開始します（統合実行）...')
 
-# 制約
-- 出力は必ず以下のJSON形式とすること。
-- {"viewpoints": ["観点1", "観点2", "観点3"]}
-
-# 入力データ
-${JSON.stringify(messages, null, 2)}
-
-出力:
-`
-
-  console.log('Step 1: 観点提案を実行中...')
-  const result = await callGeminiAPI(prompt, apiKey)
-  console.log('Step 1完了:', result)
-  return result as Viewpoints
-}
-
-// Step 2: 事実分析
-const analyzeFacts = async (messages: CollectedMessage[], viewpoints: string[], apiKey: string): Promise<FactAnalysis> => {
-  const viewpointsList = viewpoints.map(v => `- ${v}`).join('\n')
-
-  const prompt = `あなたはプロのビジネスアナリストです。
-以下の入力データ（JSON）に基づき、指定された「分析観点」ごとに、関連する具体的な「事実」を入力データから抽出してください。
-
-# 分析観点
-${viewpointsList}
-
-# 制約
-- 出力は必ず以下のJSON形式とすること。
-- 各観点に対する事実は、入力データから抽出した具体的な内容を3〜5個の箇条書き（文字列配列）でまとめること。
-- 例: {
-    "観点1": ["事実1", "事実2"],
-    "観点2": ["事実3", "事実4"]
-  }
+    const prompt = `あなたはプロのビジネスアナリストであり、経験豊富な営業マネージャーです。
+以下のコミュニケーション履歴（JSON）を読み込み、以下の3ステップの分析を一度に実行してください。
 
 # 入力データ
 ${JSON.stringify(messages, null, 2)}
 
-出力:
-`
+# 分析ステップ
 
-  console.log('Step 2: 事実分析を実行中...')
-  const result = await callGeminiAPI(prompt, apiKey)
-  console.log('Step 2完了:', result)
-  return result as FactAnalysis
-}
+## Step 1: 観点提案
+マネージャーが特に注目すべき「主要な観点（トピック、案件名、行動特性など）」を3〜5個提案してください。
 
-// Step 3: 行動提案
-const suggestActions = async (factAnalysis: FactAnalysis, apiKey: string): Promise<ActionSuggestions> => {
-  const prompt = `あなたは経験豊富な営業マネージャーです。
-以下の「事実分析レポート」（JSON）に基づき、部下（相手）に対して取るべき「ネクストアクション」を3〜5個提案してください。
+## Step 2: 事実分析
+Step 1で提案した観点ごとに、入力データから抽出した具体的な「事実」を3〜5個の箇条書きでまとめてください。
 
-# 制約
-- アクションは「カテゴリ」（例：感謝・労い、確認・懸念、指導・助言、関係構築）と「具体的な提案」で構成すること。
-- 出力は必ず以下のJSON形式とすること。
-- {
+## Step 3: 行動提案
+Step 2の事実分析に基づき、部下（相手）に対して取るべき「ネクストアクション」を3〜5個提案してください。
+アクションは「カテゴリ」（例：感謝・労い、確認・懸念、指導・助言、関係構築）と「具体的な提案」で構成してください。
+
+# 出力形式
+以下のJSON形式で出力してください。必ず有効なJSONのみを出力し、説明文やコメントは含めないでください。
+
+{
+  "viewpoints": {
+    "viewpoints": ["観点1", "観点2", "観点3"]
+  },
+  "factAnalysis": {
+    "観点1": ["事実1", "事実2", "事実3"],
+    "観点2": ["事実4", "事実5", "事実6"],
+    "観点3": ["事実7", "事実8"]
+  },
+  "actionSuggestions": {
     "actions": [
       {"category": "感謝・労い", "suggestion": "具体的な提案1"},
-      {"category": "確認・懸念", "suggestion": "具体的な提案2"}
+      {"category": "確認・懸念", "suggestion": "具体的な提案2"},
+      {"category": "関係構築", "suggestion": "具体的な提案3"}
     ]
   }
-
-# 事実分析レポート
-${JSON.stringify(factAnalysis, null, 2)}
+}
 
 出力:
 `
 
-  console.log('Step 3: 行動提案を実行中...')
-  const result = await callGeminiAPI(prompt, apiKey)
-  console.log('Step 3完了:', result)
-  return result as ActionSuggestions
-}
+    console.log('統合分析を実行中...')
+    const result = await callGeminiAPI(prompt, apiKey)
+    console.log('分析完了:', result)
 
-// 全体の分析フロー
-export const analyzeWithAI = async (messages: CollectedMessage[]): Promise<AnalysisResult> => {
-  try {
-    const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY!
-    // Step 1: 観点提案
-    const viewpoints = await proposeViewpoints(messages, apiKey)
+    // 結果のバリデーションと整形
+    let viewpoints: Viewpoints
+    if (result.viewpoints && typeof result.viewpoints === 'object') {
+      if (Array.isArray(result.viewpoints.viewpoints)) {
+        viewpoints = result.viewpoints
+      } else if (Array.isArray(result.viewpoints)) {
+        viewpoints = {viewpoints: result.viewpoints}
+      } else {
+        viewpoints = {viewpoints: []}
+      }
+    } else {
+      viewpoints = {viewpoints: []}
+    }
 
-    // Step 2: 事実分析
-    const factAnalysis = await analyzeFacts(messages, viewpoints.viewpoints, apiKey)
-
-    // Step 3: 行動提案
-    const actionSuggestions = await suggestActions(factAnalysis, apiKey)
+    const factAnalysis: FactAnalysis = result.factAnalysis || {}
+    const actionSuggestions: ActionSuggestions = result.actionSuggestions || {actions: result.actions || []}
 
     return {
       viewpoints,

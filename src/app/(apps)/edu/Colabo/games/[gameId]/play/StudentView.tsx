@@ -196,10 +196,33 @@ export default function StudentView({
           <div className="space-y-6">
             {/* ノーマルスライドのブロック表示 */}
             {currentSlide.templateType === 'normal' && (
-              <div className="space-y-4">
-                {currentSlide.contentData?.blocks?.map((block: any, index: number) => (
-                  <SlideBlock key={index} block={block} isPreview={true} />
-                ))}
+              <div className="space-y-6">
+                {(() => {
+                  // rows構造があればrowsを使用、なければblocksを使用（後方互換）
+                  const rows = currentSlide.contentData?.rows
+                  const blocks = currentSlide.contentData?.blocks
+
+                  if (rows && rows.length > 0) {
+                    return rows.map((row: any, rowIndex: number) => (
+                      <div
+                        key={row.id || rowIndex}
+                        className="grid gap-4"
+                        style={{
+                          gridTemplateColumns: `repeat(${row.columns || 1}, minmax(0, 1fr))`,
+                        }}
+                      >
+                        {row.blocks?.map((block: any, blockIndex: number) => (
+                          <SlideBlock key={block.id || blockIndex} block={block} isPreview={true} />
+                        ))}
+                      </div>
+                    ))
+                  } else if (blocks && blocks.length > 0) {
+                    return blocks.map((block: any, index: number) => (
+                      <SlideBlock key={index} block={block} isPreview={true} />
+                    ))
+                  }
+                  return null
+                })()}
               </div>
             )}
 
@@ -224,6 +247,7 @@ export default function StudentView({
                   onSubmit={handlePsychoSubmit}
                   isReadOnly={hasSubmitted || currentSlideMode === 'view'}
                   currentMode={currentSlideMode}
+                  onRetry={handleRetryAnswer}
                 />
               </div>
             )}
@@ -351,6 +375,15 @@ export default function StudentView({
                         <div className="text-gray-800">{shared.content}</div>
                       </div>
                     ))}
+                  </div>
+                )}
+
+                {/* やり直しボタン（回答済みの場合） */}
+                {hasSubmitted && currentSlide.templateType !== 'psycho' && (
+                  <div className="mt-6 text-center">
+                    <Button onClick={handleRetryAnswer} className="bg-orange-600 hover:bg-orange-700">
+                      回答をやり直す
+                    </Button>
                   </div>
                 )}
               </div>

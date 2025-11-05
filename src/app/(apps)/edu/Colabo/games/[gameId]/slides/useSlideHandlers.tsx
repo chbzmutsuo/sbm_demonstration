@@ -30,7 +30,17 @@ export default function useSlideHandlers({
         templateType,
         contentData: {
           title: '',
-          blocks: [],
+          ...(templateType === 'normal'
+            ? {
+                rows: [
+                  {
+                    id: `row_${Date.now()}`,
+                    columns: 1,
+                    blocks: [],
+                  },
+                ],
+              }
+            : {blocks: []}),
         },
         sortOrder,
       })

@@ -1,4 +1,4 @@
-export type colorVariants = '' | 'red' | 'blue' | 'green' | 'yellow' | 'sub' | 'primary' | 'gray' | 'orange'
+export type colorVariants = '' | 'red' | 'blue' | 'green' | 'yellow' | 'sub' | 'primary' | 'gray' | 'orange' | 'transparent'
 export const colorClassMaster = {
   base: {
     gray: 'bg-gray-100 border-gray-400 text-gray-800',

@@ -50,7 +50,12 @@ export default function SlideManagementPage({game}: SlideManagementPageProps) {
 
   const headerHeight = 70
 
-  const panelStyle = {maxHeight: bodyHeight - appbarHeight - headerHeight - 20, overflow: 'auto'}
+  const panelStyle = {
+    border: '0.5px solid #e0e0e0',
+    background: 'white',
+    maxHeight: bodyHeight - appbarHeight - headerHeight - 20,
+    overflow: 'auto',
+  }
 
   return (
     <div className="flex flex-col  bg-gray-50">
@@ -88,7 +93,7 @@ export default function SlideManagementPage({game}: SlideManagementPageProps) {
 
       {/* メインコンテンツ: 3ペインレイアウト */}
       <Card>
-        <R_Stack className=" justify-center bg-gray-100 p-3  rounded w-fit mx-auto gap-0 items-stretch">
+        <R_Stack className=" justify-center items-stretch bg-gray-100 p-3  rounded w-fit mx-auto gap-0 ">
           {/* 左サイドバー: スライドサムネイル */}
           <div style={panelStyle}>
             <LeftSidebar
@@ -107,6 +112,7 @@ export default function SlideManagementPage({game}: SlideManagementPageProps) {
               selectedSlideId={selectedSlideId}
               onSelectSlide={setSelectedSlideId}
               handleDeleteSlide={handleDeleteSlide}
+              handleUpdateSlide={handleUpdateSlide}
             />
           </div>
 

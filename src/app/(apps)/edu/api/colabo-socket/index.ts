@@ -13,7 +13,7 @@ import {
   AnswerUpdatedPayload,
   SocketRole,
   SocketErrorPayload,
-} from '@app/(apps)/edu/api/colabo-socket/socket-config'
+} from '@app/(apps)/edu/Colabo/lib/socket-config'
 import prisma from 'src/lib/prisma'
 
 // Socket.ioの設定を無効化（Next.jsのbodyParser）
@@ -542,7 +542,7 @@ function handleLeaveGame(socket: Socket, gameId: number) {
 /**
  * Next.js APIハンドラー
  */
-export default function handler(req: any, res: any) {
+export const GET = (req: any, res: any) => {
   // Socket.ioが既に初期化されている場合
   if (res.socket.server.io) {
     console.log('[Colabo Socket.io] Socket.ioサーバーは既に起動済み')

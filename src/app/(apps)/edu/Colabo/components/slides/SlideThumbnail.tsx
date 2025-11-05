@@ -2,6 +2,7 @@
 
 import {useSortable} from '@dnd-kit/sortable'
 import {CSS} from '@dnd-kit/utilities'
+import {GripVertical} from 'lucide-react'
 
 interface SlideThumbnailProps {
   slide: any
@@ -17,6 +18,7 @@ export default function SlideThumbnail({slide, index, isSelected, onSelect}: Sli
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 50 : 1,
   }
 
   const getTemplateIcon = (type: string) => {
@@ -37,21 +39,32 @@ export default function SlideThumbnail({slide, index, isSelected, onSelect}: Sli
   }
 
   return (
-    <div ref={setNodeRef} style={style} className="relative">
-      <button
-        onClick={onSelect}
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`relative ${
+        isDragging ? 'shadow-lg ring-2 ring-blue-500 rounded-lg' : ''
+      }`}
+    >
+      <div
         className={`
-          w-full text-left rounded-lg border-2 transition-all
+          w-full text-left rounded-lg border-2 transition-all cursor-pointer
           ${isSelected ? 'border-blue-500 bg-blue-50 shadow-md' : 'border-gray-200 bg-white hover:border-gray-300'}
+          ${isDragging ? 'bg-blue-100 border-blue-400' : ''}
         `}
       >
-        {/* ドラッグハンドル */}
-        <div {...attributes} {...listeners} className="absolute top-1 right-1 cursor-move p-1 text-gray-400 hover:text-gray-600">
-          ⋮⋮
+        {/* ドラッグハンドル - 左側に配置してより目立つ */}
+        <div
+          {...attributes}
+          {...listeners}
+          className="absolute left-0 top-0 bottom-0 w-6 flex items-center justify-center cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-l-lg transition-colors"
+          onClick={e => e.stopPropagation()}
+        >
+          <GripVertical className="w-4 h-4" />
         </div>
 
         {/* サムネイル内容 */}
-        <div className="p-2">
+        <div className="p-2 pl-8" onClick={onSelect}>
           {/* スライド番号 */}
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-semibold text-gray-600">#{index + 1}</span>
@@ -67,7 +80,7 @@ export default function SlideThumbnail({slide, index, isSelected, onSelect}: Sli
             )}
           </div>
         </div>
-      </button>
+      </div>
     </div>
   )
 }

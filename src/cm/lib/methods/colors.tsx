@@ -1,4 +1,5 @@
-export type colorVariants = '' | 'red' | 'blue' | 'green' | 'orange' | 'yellow' | 'sub' | 'primary' | 'gray' | 'transparent'
+import {colorVariants} from '@cm/lib/methods/colorVariants'
+
 export const baseColorList: colorVariants[] = [
   'gray',
   'red',

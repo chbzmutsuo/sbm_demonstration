@@ -8,23 +8,36 @@ export const collectData = async (
 ): Promise<CollectedMessage[]> => {
   const allMessages: CollectedMessage[] = []
 
-  // 1. Gmailからメッセージを取得
-  console.log('Gmail取得開始...')
-  const gmailMessages = await fetchGmailMessages(accessToken, formData)
-  allMessages.push(...gmailMessages)
-  console.log(`Gmail: ${gmailMessages.length}件取得`)
+  // 有効なサービスからのみデータを取得
+  if (formData.enabledServices.includes('gmail')) {
+    console.log('Gmail取得開始...')
+    const gmailMessages = await fetchGmailMessages(
+      accessToken,
+      formData.gmail.targetEmails,
+      formData.gmail.dateFrom,
+      formData.gmail.dateTo
+    )
+    allMessages.push(...gmailMessages)
+    console.log(`Gmail: ${gmailMessages.length}件取得`)
+  }
 
-  // 2. Gmail添付のDriveファイルIDを抽出（簡易実装）
-  // 実際にはGmailメッセージからDriveリンクを解析する必要がある
-  // ここではスキップし、必要に応じて拡張可能にする
-
-  // 3. Google Chatからメッセージを取得
-  if (formData.chatRoomId) {
+  if (formData.enabledServices.includes('chat') && formData.chat.roomId) {
     console.log('Chat取得開始...')
-    const chatMessages = await fetchChatMessages(accessToken, formData)
+    const chatMessages = await fetchChatMessages(
+      accessToken,
+      formData.chat.roomId,
+      formData.chat.dateFrom,
+      formData.chat.dateTo,
+      formData.gmail.targetEmails // Gmailで指定したアドレスをフィルタに使用
+    )
     allMessages.push(...chatMessages)
     console.log(`Chat: ${chatMessages.length}件取得`)
   }
+
+  // Driveは現時点ではUIのみ実装
+  // if (formData.enabledServices.includes('drive') && formData.drive.folderUrl) {
+  //   // TODO: Drive実装
+  // }
 
   // 日付順にソート
   allMessages.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())

@@ -113,12 +113,6 @@ export async function initQueryObject({model, method, queryObject, prismaModel})
             if (!modelFields[fieldName] && fieldName !== 'id') {
               delete queryObject[key][fieldName]
             }
-
-            // 更新時には外部キーフィールドを削除（リレーション変更は通常行わないため）
-            if (method === 'update' && key === 'data' && fieldName.endsWith('Id') && fieldName !== 'id') {
-              // ただし、既存の値が存在する場合のみ削除（新規作成時は必要）
-              delete queryObject[key][fieldName]
-            }
           })
         }
       })

@@ -6,7 +6,7 @@ import {useState, useEffect} from 'react'
 import {getSlideAnswers, updateSlideMode, updateCurrentSlide, deleteSlideAnswer} from '../../../colabo-server-actions'
 import {toast} from 'react-toastify'
 import type {GameData, SlideData, SlideMode, SlideAnswer, AnswerStats} from '../../../types/game-types'
-import {calculateScores} from '../../../../api/colabo-socket/psycho-questions'
+import {calculateScores} from '../../../lib/psycho-questions'
 
 interface SocketActions {
   changeSlide: (slideId: number, slideIndex: number) => void
@@ -52,8 +52,6 @@ export default function NewTeacherView({
 
       // Socket.io経由で全員に通知
       socket.changeSlide(newSlide.id, newIndex)
-
-      console.log('スライド変更:', {slideId: newSlide.id, slideIndex: newIndex})
       onSlideChange(newSlide.id, newIndex)
     }
   }
@@ -206,10 +204,36 @@ export default function NewTeacherView({
             <h3 className="text-lg font-semibold mb-4">{currentSlide.contentData?.title || 'スライドプレビュー'}</h3>
             <div className="space-y-4 min-h-96">
               {/* ノーマルスライド */}
-              {currentSlide.templateType === 'normal' &&
-                currentSlide.contentData?.blocks?.map((block, index) => (
-                  <SlideBlock key={index} block={block} isPreview={true} />
-                ))}
+              {currentSlide.templateType === 'normal' && (
+                <div className="space-y-6">
+                  {(() => {
+                    // rows構造があればrowsを使用、なければblocksを使用（後方互換）
+                    const rows = currentSlide.contentData?.rows
+                    const blocks = currentSlide.contentData?.blocks
+
+                    if (rows && rows.length > 0) {
+                      return rows.map((row: any, rowIndex: number) => (
+                        <div
+                          key={row.id || rowIndex}
+                          className="grid gap-4"
+                          style={{
+                            gridTemplateColumns: `repeat(${row.columns || 1}, minmax(0, 1fr))`,
+                          }}
+                        >
+                          {row.blocks?.map((block: any, blockIndex: number) => (
+                            <SlideBlock key={block.id || blockIndex} block={block} isPreview={true} />
+                          ))}
+                        </div>
+                      ))
+                    } else if (blocks && blocks.length > 0) {
+                      return blocks.map((block: any, index: number) => (
+                        <SlideBlock key={index} block={block} isPreview={true} />
+                      ))
+                    }
+                    return null
+                  })()}
+                </div>
+              )}
 
               {/* 選択クイズ */}
               {currentSlide.templateType === 'choice' && (

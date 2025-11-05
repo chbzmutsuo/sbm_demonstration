@@ -1,0 +1,37 @@
+model TeamSynapseAnalysis {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @default(now()) @updatedAt()
+
+  // ユーザー情報
+  userId    Int?
+  userEmail String?   // Google認証時のメールアドレス
+
+  // 入力設定内容（連携サービスとパラメータ）
+  enabledServices Json // ServiceType[]: ['gmail', 'chat', 'drive']
+
+  // Gmail設定
+  gmailTargetEmails Json // string[]
+  gmailDateFrom     DateTime?
+  gmailDateTo       DateTime?
+
+  // Chat設定
+  chatRoomId   String?
+  chatDateFrom DateTime?
+  chatDateTo   DateTime?
+
+  // Drive設定
+  driveFolderUrl String?
+
+  // AI分析結果（JSON）
+  analysisResult Json // AnalysisResult型のJSON
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+
+
+
+
+

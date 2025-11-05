@@ -7,7 +7,7 @@ import {useGoogleAuth} from '../hooks/useGoogleAuth'
 import type {AnalysisResult} from '../types'
 
 const TeamSynapseTopCC = () => {
-  const {isAuthenticated, handleSignIn, accessToken} = useGoogleAuth()
+  const {isAuthenticated, handleSignIn, handleSignOut, accessToken, isLoading} = useGoogleAuth()
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
 
@@ -20,8 +20,16 @@ const TeamSynapseTopCC = () => {
           <p className="text-lg text-gray-600">Google Workspaceコミュニケーション分析ツール</p>
         </div>
 
+        {/* ローディング状態 */}
+        {isLoading && (
+          <div className="bg-white rounded-lg shadow-md p-8 mb-8 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">認証状態を確認中...</p>
+          </div>
+        )}
+
         {/* 認証ボタン */}
-        {!isAuthenticated && (
+        {!isLoading && !isAuthenticated && (
           <div className="bg-white rounded-lg shadow-md p-8 mb-8 text-center">
             <h2 className="text-xl font-semibold mb-4">まずはGoogleアカウントで認証してください</h2>
             <p className="text-gray-600 mb-6">Gmail、Google Drive、Google Chatの読み取り権限が必要です</p>
@@ -30,8 +38,16 @@ const TeamSynapseTopCC = () => {
         )}
 
         {/* メインコンテンツ */}
-        {isAuthenticated && (
+        {!isLoading && isAuthenticated && (
           <>
+            <div className="mb-4 flex justify-end">
+              <button
+                onClick={handleSignOut}
+                className="text-sm text-gray-600 hover:text-gray-800 px-4 py-2 rounded-md hover:bg-gray-100 transition-colors"
+              >
+                ログアウト
+              </button>
+            </div>
             <InputForm
               accessToken={accessToken!}
               onAnalysisComplete={setAnalysisResult}

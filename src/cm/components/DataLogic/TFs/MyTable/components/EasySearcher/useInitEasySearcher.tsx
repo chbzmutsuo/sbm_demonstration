@@ -15,7 +15,7 @@ export default function useInitEasySearcher({
   const [excrusiveGroups, setexcrusiveGroups] = useState({})
   useEffect(() => {
     const excrusiveGroups = {}
-    Object.keys(availableEasySearchObj).map(key => {
+    Object.keys(availableEasySearchObj ?? {}).map(key => {
       const exclusiveGroup: makeEasySearchGroupsProp = availableEasySearchObj[key]?.exclusiveGroup
 
       const {groupIndex, rowGroupIdx} = exclusiveGroup

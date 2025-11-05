@@ -3,7 +3,7 @@
 import {useState, useEffect} from 'react'
 import {Button} from '@cm/components/styles/common-components/Button'
 import {C_Stack} from '@cm/components/styles/common-components/common-components'
-import {flattenQuestions, RATING_LABELS, RATING_VALUES} from '../../../api/colabo-socket/psycho-questions'
+import {flattenQuestions, RATING_LABELS, RATING_VALUES} from '../../lib/psycho-questions'
 import {toast} from 'react-toastify'
 
 interface PsychoAnswerFormProps {
@@ -14,6 +14,7 @@ interface PsychoAnswerFormProps {
   onSubmit: (answerData: any) => Promise<void>
   isReadOnly?: boolean
   currentMode?: 'view' | 'answer' | 'result' | null
+  onRetry?: () => void
 }
 
 export default function PsychoAnswerForm({
@@ -24,6 +25,7 @@ export default function PsychoAnswerForm({
   onSubmit,
   isReadOnly = false,
   currentMode = null,
+  onRetry,
 }: PsychoAnswerFormProps) {
   const [showFurigana, setShowFurigana] = useState(true)
   const [answers, setAnswers] = useState<Record<string, number>>({})
@@ -100,8 +102,8 @@ export default function PsychoAnswerForm({
     return null
   }
 
-  // 結果モードでは自分の回答を表示（スコアと感想のみ）
-  if (currentMode === 'result' && existingAnswer) {
+  // 回答・結果モードで既に回答済みの場合、自分の回答データを表示
+  if ((currentMode === 'answer' || currentMode === 'result') && existingAnswer) {
     const answerData = existingAnswer.answerData
     const curiocity =
       (answerData.curiocity1 || 0) +
@@ -155,6 +157,16 @@ export default function PsychoAnswerForm({
             <div className="bg-pink-50 p-4 rounded-lg">
               <h4 className="font-semibold text-pink-900 mb-2">あなたの感想</h4>
               <p className="text-gray-700 whitespace-pre-wrap">{answerData.impression}</p>
+            </div>
+          )}
+
+          {/* 回答モードの場合、やり直しボタンを表示 */}
+          {currentMode === 'answer' && (
+            <div className="text-center">
+              <p className="text-gray-600 mb-4">回答済みです。やり直したい場合は下のボタンを押してください。</p>
+              <Button onClick={onRetry} className="bg-orange-600 hover:bg-orange-700">
+                回答をやり直す
+              </Button>
             </div>
           )}
         </div>

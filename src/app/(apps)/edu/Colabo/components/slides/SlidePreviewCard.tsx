@@ -1,7 +1,7 @@
 'use client'
 
 import {SlideBlock} from '@app/(apps)/edu/Colabo/(components)/SlideBlock'
-import {PSYCHO_QUESTIONS} from '../../../api/colabo-socket/psycho-questions'
+import {PSYCHO_QUESTIONS} from '../../lib/psycho-questions'
 import {Trash} from 'lucide-react'
 import {R_Stack} from '@cm/components/styles/common-components/common-components'
 
@@ -63,16 +63,37 @@ export default function SlidePreviewCard({slide, index, isSelected, onSelect, ha
         {/* ノーマルスライド */}
         {slide.templateType === 'normal' && (
           <div className="space-y-4">
-            {slide.contentData?.blocks && slide.contentData.blocks.length > 0 ? (
-              slide.contentData.blocks.map((block: any, blockIndex: number) => (
-                <SlideBlock key={blockIndex} block={block} isPreview={true} />
-              ))
-            ) : (
-              <div className="text-center text-gray-400 py-12">
-                <p>コンテンツがありません</p>
-                <p className="text-sm mt-2">右側のパネルでブロックを追加してください</p>
-              </div>
-            )}
+            {(() => {
+              // rows構造があればrowsを使用、なければblocksを使用（後方互換）
+              const rows = slide.contentData?.rows
+              const blocks = slide.contentData?.blocks
+
+              if (rows && rows.length > 0) {
+                return rows.map((row: any, rowIndex: number) => (
+                  <div
+                    key={row.id || rowIndex}
+                    className="grid gap-4"
+                    style={{
+                      gridTemplateColumns: `repeat(${row.columns || 1}, minmax(0, 1fr))`,
+                    }}
+                  >
+                    {row.blocks?.map((block: any, blockIndex: number) => (
+                      <SlideBlock key={block.id || blockIndex} block={block} isPreview={true} />
+                    ))}
+                  </div>
+                ))
+              } else if (blocks && blocks.length > 0) {
+                return blocks.map((block: any, blockIndex: number) => (
+                  <SlideBlock key={blockIndex} block={block} isPreview={true} />
+                ))
+              }
+              return (
+                <div className="text-center text-gray-400 py-12">
+                  <p>コンテンツがありません</p>
+                  <p className="text-sm mt-2">右側のパネルでブロックを追加してください</p>
+                </div>
+              )
+            })()}
           </div>
         )}
 

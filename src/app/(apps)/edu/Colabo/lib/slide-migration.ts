@@ -1,0 +1,57 @@
+/**
+ * スライドデータのマイグレーション関数
+ * 既存のblocks構造をrows構造に変換
+ */
+
+import type {SlideContentData, SlideRow, SlideBlock} from '../types/game-types'
+
+/**
+ * 既存のblocks配列をrows構造に変換
+ * 既存データは1行・1列として扱う
+ */
+export function migrateBlocksToRows(contentData: any): SlideContentData {
+  // 既にrowsが存在する場合はそのまま返す
+  if (contentData.rows && Array.isArray(contentData.rows)) {
+    return contentData
+  }
+
+  // blocksが存在しない場合は空のrowsを作成
+  if (!contentData.blocks || !Array.isArray(contentData.blocks) || contentData.blocks.length === 0) {
+    return {
+      ...contentData,
+      rows: [
+        {
+          id: `row_${Date.now()}`,
+          columns: 1,
+          blocks: [],
+        },
+      ],
+    }
+  }
+
+  // blocksを1行にまとめる（各ブロックを1列として配置）
+  const rows: SlideRow[] = [
+    {
+      id: `row_${Date.now()}`,
+      columns: 1,
+      blocks: contentData.blocks.map((block: SlideBlock, index: number) => ({
+        ...block,
+        sortOrder: index,
+      })),
+    },
+  ]
+
+  return {
+    ...contentData,
+    rows,
+  }
+}
+
+/**
+ * スライドコンテンツデータを正規化（rows構造を確保）
+ */
+export function normalizeSlideContentData(contentData: any): SlideContentData {
+  return migrateBlocksToRows(contentData)
+}
+
+

@@ -33,10 +33,23 @@ export type AnalysisResult = {
   actionSuggestions: ActionSuggestions
 }
 
+// 連携サービス
+export type ServiceType = 'gmail' | 'chat' | 'drive'
+
 // フォーム入力の型
 export type AnalysisFormData = {
-  targetEmails: string[]
-  dateFrom: string
-  dateTo: string
-  chatRoomId?: string
+  enabledServices: ServiceType[]
+  gmail: {
+    targetEmails: string[]
+    dateFrom: string
+    dateTo: string
+  }
+  chat: {
+    roomId: string
+    dateFrom: string
+    dateTo: string
+  }
+  drive: {
+    folderUrl: string
+  }
 }

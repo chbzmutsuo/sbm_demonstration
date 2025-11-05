@@ -29,9 +29,17 @@ export interface SlideData {
 // スライドコンテンツデータ
 export interface SlideContentData {
   title?: string
-  blocks?: SlideBlock[]
+  blocks?: SlideBlock[] // 互換性のため残す（後方互換）
+  rows?: SlideRow[] // 新しいグリッドレイアウト構造
   question?: string
   choices?: Choice[]
+}
+
+// スライド行（グリッドレイアウト）
+export interface SlideRow {
+  id: string
+  columns: number // 1-6の列数
+  blocks: SlideBlock[]
 }
 
 // ブロック
@@ -46,6 +54,7 @@ export interface SlideBlock {
   backgroundColor?: string
   fontWeight?: string
   textDecoration?: string
+  fontSize?: number // 8-100pxのフォントサイズ
   sortOrder: number
 }
 
