@@ -1,70 +1,64 @@
 import React, {useMemo} from 'react'
-import {htmlProps} from '@cm/components/styles/common-components/type'
-import {colorVariants, getColorStyles} from '@cm/lib/methods/colors'
+
+import {getColorStyles} from '@cm/lib/methods/colors'
+import {colorVariants} from '@cm/lib/methods/colorVariants'
 import {CSSProperties} from 'react'
 
 import {twMerge} from 'tailwind-merge'
 import {tv} from 'tailwind-variants'
+import {htmlProps} from '@cm/types/utility-types'
+import {iconBtnProps} from '@cm/lib/methods/Coloring'
 
 export const IconBtnBaseClass = ` rounded-full px-2 py-0.5  text-[15px]  `
 
-export const IconBtn = React.memo(
-  (
-    props: htmlProps & {
-      color?: colorVariants | string
-      active?: boolean
-      vivid?: boolean
-      rounded?: boolean
-      disabled?: boolean
-    }
-  ) => {
-    const {className, style, color, active = true, vivid = true, rounded = false, children, ...rest} = props
+export const IconBtn = React.memo((props: htmlProps & iconBtnProps) => {
+  const {className, style, color, active = true, vivid = true, rounded = false, children, ...rest} = props
 
-    const colorUndetected = !iconBtnColorVariants[color ?? ''] && color
+  const colorUndetected = !iconBtnColorVariants[color ?? ''] && color
 
-    const customeStyle = useMemo(() => {
+  const customeStyle = useMemo(() => {
+    if (colorUndetected) {
       if (vivid && color) {
         return {
-          ...getColorStyles(color ? color + '90' : ''),
+          background: color + 'CC',
+          ...getColorStyles(color + 'CC'),
           border: '2px solid ' + color,
         }
       }
 
-      if (colorUndetected) {
-        return {
-          background: color + '40',
-          color: color,
-          border: '1px solid ' + color,
-        }
+      return {
+        background: color + '20',
+        color: color,
+        border: '2px solid ' + color,
       }
-      return {}
-    }, [vivid, color, colorUndetected])
+    }
+    return {}
+  }, [vivid, color, colorUndetected])
 
-    const classNameOutput = tv({
-      base: twMerge(color ? `shadow-2xs border-[0.5px]  inline-block` : '', IconBtnBaseClass, className),
-      variants: {
-        color: iconBtnColorVariants,
-        active: {false: 'opacity-30', true: 'opacity-100'},
-        rounded: {false: 'rounded'},
-        vivid: {true: 'text-inherit bg-inherit border-inherit'},
-        disabled: {true: 'disabled !cursor-not-allowed'},
-      },
-      defaultVariants: {
-        color: '',
-        rounded: true,
-        active: true,
-        vivid: false,
-        disabled: false,
-      },
-    })({color: color as any, active, rounded, disabled: props.disabled})
+  const classNameOutput = tv({
+    base: twMerge(color ? `shadow-2xs border-[0.5px]  inline-block` : '', IconBtnBaseClass, className),
+    variants: {
+      color: iconBtnColorVariants,
+      active: {false: 'opacity-[35%]', true: 'opacity-100'},
+      rounded: {false: 'rounded'},
+      vivid: {true: 'text-inherit bg-inherit border-inherit'},
+      disabled: {true: 'disabled !cursor-not-allowed'},
+    },
+    defaultVariants: {
+      color: '',
+      rounded: true,
+      active: true,
+      vivid: false,
+      disabled: false,
+    },
+  })({color: color as any, active, rounded, disabled: props.disabled})
 
-    return (
-      <div className={classNameOutput} style={{...customeStyle, ...style}} disabled={props.disabled} {...rest}>
-        {children}
-      </div>
-    )
-  }
-)
+  return (
+    <div className={classNameOutput} style={{...customeStyle, ...style}} disabled={props.disabled} {...rest}>
+      {children}
+    </div>
+  )
+})
 
 export const CircledIcon = React.memo(
   (
@@ -97,7 +91,11 @@ export const IconBtnForSelect = React.memo(
     const {children, color, className, style} = props
 
     return (
-      <IconBtn color={color} style={style} className={twMerge(`rounded-sm text-gray-800! p-0.5! px-1! text-sm!`, className)}>
+      <IconBtn
+        color={color}
+        style={style}
+        className={twMerge(`rounded-sm text-gray-800! p-0.5! px-1! !text-xs text-gray-800`, className)}
+      >
         {children}
       </IconBtn>
     )

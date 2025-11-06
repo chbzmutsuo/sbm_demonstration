@@ -15,7 +15,7 @@ export const HaishaCard = React.memo((props: HaishaCardProps) => {
     const userWorkStatus = user?.UserWorkStatus?.find(item => Days.validate.isSameDate(item.date, date))
 
     return (
-      <section className="mb-2">
+      <section className="mb-2 ">
         <R_Stack className="w-full items-center justify-between gap-1">
           <R_Stack className="gap-1">
             {mode === 'DRIVER' && user && (
@@ -52,15 +52,17 @@ export const HaishaCard = React.memo((props: HaishaCardProps) => {
 
               return (
                 <div key={tbmDriveSchedule.id}>
-                  <ScheduleCard
-                    tbmDriveSchedule={tbmDriveSchedule}
-                    user={User}
-                    date={date}
-                    setModalOpen={setModalOpen}
-                    fetchData={fetchData}
-                    query={query}
-                    tbmBase={tbmBase}
-                  />
+                  <div className={`bg-white`}>
+                    <ScheduleCard
+                      tbmDriveSchedule={tbmDriveSchedule}
+                      user={User}
+                      date={date}
+                      setModalOpen={setModalOpen}
+                      fetchData={fetchData}
+                      query={query}
+                      tbmBase={tbmBase}
+                    />
+                  </div>
                 </div>
               )
             })}

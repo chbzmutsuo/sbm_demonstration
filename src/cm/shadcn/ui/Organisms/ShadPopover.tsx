@@ -30,6 +30,10 @@ type ShadPopoverProps = {
   footer?: JSX.Element
   children: JSX.Element
   mode?: 'click' | 'hover'
+  closeOnHoverLeave?: boolean
+  closeOnOutsideClick?: boolean
+  confirmBeforeClose?: boolean
+  confirmMessage?: string
 }
 const ShadPopover = React.memo((props: ShadPopoverProps) => {
   const {
@@ -43,6 +47,10 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
     description,
     mode = 'hover',
     footer,
+    closeOnHoverLeave = true,
+    closeOnOutsideClick = true,
+    confirmBeforeClose = false,
+    confirmMessage = '閉じてもよろしいですか？',
   } = props
   const mobile = useIsMobile()
   const [isOpen, setIsOpen] = React.useState(false)
@@ -55,6 +63,14 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
 
   const handleOpenChange = React.useCallback(
     (newOpen: boolean) => {
+      // 閉じる処理の場合、確認メッセージを表示
+      if (!newOpen && confirmBeforeClose) {
+        const shouldClose = window.confirm(confirmMessage)
+        if (!shouldClose) {
+          return // ユーザーがキャンセルした場合は閉じない
+        }
+      }
+
       if (!isControlled) {
         setIsOpen(newOpen)
       }
@@ -63,7 +79,7 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
         setopen(newOpen)
       }
     },
-    [setopen, isControlled]
+    [setopen, isControlled, confirmBeforeClose, confirmMessage]
   )
 
   const handleMouseEnter = React.useCallback(() => {
@@ -74,9 +90,10 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
 
   const handleMouseLeave = React.useCallback(() => {
     if (mode === 'click') return
+    if (!closeOnHoverLeave) return // ホバーで閉じない設定の場合は何もしない
 
     handleOpenChange(false)
-  }, [mode, handleOpenChange])
+  }, [mode, handleOpenChange, closeOnHoverLeave])
 
   const handleTriggerClick = React.useCallback(
     (e: React.MouseEvent) => {
@@ -87,6 +104,18 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
       handleOpenChange(!openState)
     },
     [mode, openState, handleOpenChange]
+  )
+
+  const handleInteractOutside = React.useCallback(
+    (e: Event) => {
+      if (!closeOnOutsideClick) {
+        e.preventDefault()
+        return
+      }
+      // closeOnOutsideClickがtrueの場合は、handleOpenChangeが呼ばれる
+      // その中でconfirmBeforeCloseの確認が行われる
+    },
+    [closeOnOutsideClick]
   )
 
   if (mobile) {
@@ -140,6 +169,7 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
             className="PopoverContent  p-3 w-fit  mx-auto  shadow-lg shadow-gray-500 border border-gray-200 bg-white"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
+            onInteractOutside={handleInteractOutside}
           >
             <div className={`bg-white   `}>{children}</div>
           </PopoverContent>

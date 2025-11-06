@@ -75,8 +75,12 @@ export const SlideBlock = ({
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    // textarea内のキーボードイベントが親要素（DndContext）に伝播しないようにする
+    e.stopPropagation()
+
     // Escapeキーで編集をキャンセル
     if (e.key === 'Escape') {
+      e.preventDefault()
       handleCancel()
     }
     // Enterキーは改行として扱う（デフォルト動作を許可）
@@ -121,15 +125,12 @@ export const SlideBlock = ({
         {isPreview ? (
           <MarkDownDisplay>{content}</MarkDownDisplay>
         ) : isEditing ? (
-          <div className="w-full">
+          <div className="w-full ">
             <textarea
               ref={inputRef as React.RefObject<HTMLTextAreaElement>}
               value={editValue}
               onChange={e => setEditValue(e.target.value)}
-              onBlur={e => {
-                console.log(e, 'blue') //logs
-                handleSave()
-              }}
+              onBlur={handleSave}
               onKeyDown={handleKeyDown}
               className="w-full min-h-[60px] border-2 border-blue-500 rounded p-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
               style={getTextStyle()}
@@ -137,11 +138,8 @@ export const SlideBlock = ({
             />
           </div>
         ) : (
-          <div className="w-full relative">
-            <div
-              className="border rounded p-2  bg-gray-50 cursor-text hover:border-blue-400 transition-colors"
-              onClick={handleStartEditing}
-            >
+          <div className="w-full relative hover:bg-blue-500/10 cursor-pointer">
+            <div className=" p-2    hover:border-blue-400 transition-colors" onClick={handleStartEditing}>
               {content ? (
                 <MarkDownDisplay>{content}</MarkDownDisplay>
               ) : (

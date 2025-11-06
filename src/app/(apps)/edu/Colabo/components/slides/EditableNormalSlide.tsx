@@ -2,10 +2,11 @@
 
 import {useState, useEffect, useCallback} from 'react'
 import {Button} from '@cm/components/styles/common-components/Button'
-import {Plus} from 'lucide-react'
+import {Plus, Eye, Edit} from 'lucide-react'
 import EditableSlideRow from './EditableSlideRow'
+import {SlideBlock} from '@app/(apps)/edu/Colabo/(components)/SlideBlock'
 import {normalizeSlideContentData} from '../../lib/slide-migration'
-import type {SlideRow, SlideBlock} from '../../types/game-types'
+import type {SlideRow, SlideBlock as SlideBlockType} from '../../types/game-types'
 import {DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent} from '@dnd-kit/core'
 import {arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy} from '@dnd-kit/sortable'
 import {useSortable} from '@dnd-kit/sortable'
@@ -29,6 +30,7 @@ function SortableRowItem({
   onUpdateBlock,
   onDeleteBlock,
   onAddBlock,
+  isPreviewMode,
 }: {
   row: SlideRow
   rowIndex: number
@@ -37,9 +39,10 @@ function SortableRowItem({
   onDeleteRow: (rowId: string) => void
   onAddRow: (afterRowId: string) => void
   onMoveBlock: (blockId: string, direction: 'up' | 'down' | 'left' | 'right') => void
-  onUpdateBlock: (blockId: string, updates: Partial<SlideBlock>) => void
+  onUpdateBlock: (blockId: string, updates: Partial<SlideBlockType>) => void
   onDeleteBlock: (blockId: string) => void
   onAddBlock: (rowId: string, blockType: 'text' | 'image' | 'link') => void
+  isPreviewMode: boolean
 }) {
   const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({id: row.id})
 
@@ -49,6 +52,23 @@ function SortableRowItem({
     opacity: isDragging ? 0.5 : 1,
   }
 
+  // プレビューモード時は編集UIを非表示にして、SlidePreviewCardと同じ表示にする
+  if (isPreviewMode) {
+    return (
+      <div
+        className="grid gap-4"
+        style={{
+          gridTemplateColumns: `repeat(${row.columns || 1}, minmax(0, 1fr))`,
+        }}
+      >
+        {row.blocks?.map((block: any, blockIndex: number) => (
+          <SlideBlock key={block.id || blockIndex} block={block} isPreview={true} />
+        ))}
+      </div>
+    )
+  }
+
+  // 編集モード時はドラッグ&ドロップ可能
   return (
     <div ref={setNodeRef} style={style}>
       <EditableSlideRow
@@ -63,6 +83,7 @@ function SortableRowItem({
         onDeleteBlock={onDeleteBlock}
         onAddBlock={onAddBlock}
         isEditing={true}
+        dragHandleProps={{...attributes, ...listeners}}
       />
     </div>
   )
@@ -72,6 +93,7 @@ export default function EditableNormalSlide({slide, index, onUpdateSlide, onSele
   // スライドコンテンツデータを正規化
   const normalizedContentData = normalizeSlideContentData(slide.contentData || {})
   const [rows, setRows] = useState<SlideRow[]>(normalizedContentData.rows || [])
+  const [isPreviewMode, setIsPreviewMode] = useState(false)
 
   // スライドのcontentDataが変更されたらrowsを更新
   useEffect(() => {
@@ -199,7 +221,7 @@ export default function EditableNormalSlide({slide, index, onUpdateSlide, onSele
 
   // ブロックを更新
   const handleUpdateBlock = useCallback(
-    (blockId: string, updates: Partial<SlideBlock>) => {
+    (blockId: string, updates: Partial<SlideBlockType>) => {
       const newRows = rows.map(row => ({
         ...row,
         blocks: row.blocks.map(block => (block.id === blockId ? {...block, ...updates} : block)),
@@ -226,7 +248,7 @@ export default function EditableNormalSlide({slide, index, onUpdateSlide, onSele
     (rowId: string, blockType: 'text' | 'image' | 'link') => {
       const newRows = rows.map(row => {
         if (row.id === rowId) {
-          const newBlock: SlideBlock = {
+          const newBlock: SlideBlockType = {
             id: `block_${Date.now()}`,
             blockType,
             content: blockType === 'text' ? 'テキストを入力' : blockType === 'link' ? 'リンクテキスト' : '',
@@ -274,56 +296,101 @@ export default function EditableNormalSlide({slide, index, onUpdateSlide, onSele
             <h2 className="text-xl font-bold text-gray-800">スライド #{index + 1} - ノーマル</h2>
             {slide.contentData?.title && <p className="text-sm text-gray-600 mt-1">{slide.contentData.title}</p>}
           </div>
+          <Button
+            onClick={e => {
+              e.stopPropagation()
+              setIsPreviewMode(!isPreviewMode)
+            }}
+            className={`flex items-center gap-2 ${isPreviewMode ? 'bg-gray-600 hover:bg-gray-700' : 'bg-green-600 hover:bg-green-700'}`}
+          >
+            {isPreviewMode ? (
+              <>
+                <Edit className="w-4 h-4" />
+                編集モード
+              </>
+            ) : (
+              <>
+                <Eye className="w-4 h-4" />
+                プレビューモード
+              </>
+            )}
+          </Button>
         </div>
       </div>
 
       {/* スライド内容 */}
       <div className="p-8 min-h-[400px] bg-white aspect-video" onClick={e => e.stopPropagation()}>
         {rows.length > 0 ? (
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleRowDragEnd}>
-            <SortableContext items={rows.map(r => r.id)} strategy={verticalListSortingStrategy}>
-              <div className="space-y-4">
-                {rows.map((row, rowIndex) => (
-                  <SortableRowItem
-                    key={row.id}
-                    row={row}
-                    rowIndex={rowIndex}
-                    totalRows={rows.length}
-                    onUpdateRow={handleUpdateRow}
-                    onDeleteRow={handleDeleteRow}
-                    onAddRow={handleAddRow}
-                    onMoveBlock={handleMoveBlock}
-                    onUpdateBlock={handleUpdateBlock}
-                    onDeleteBlock={handleDeleteBlock}
-                    onAddBlock={handleAddBlock}
-                  />
-                ))}
-              </div>
-            </SortableContext>
-          </DndContext>
+          isPreviewMode ? (
+            // プレビューモード: 編集UIを非表示
+            <div className="space-y-4">
+              {rows.map((row, rowIndex) => (
+                <SortableRowItem
+                  key={row.id}
+                  row={row}
+                  rowIndex={rowIndex}
+                  totalRows={rows.length}
+                  onUpdateRow={handleUpdateRow}
+                  onDeleteRow={handleDeleteRow}
+                  onAddRow={handleAddRow}
+                  onMoveBlock={handleMoveBlock}
+                  onUpdateBlock={handleUpdateBlock}
+                  onDeleteBlock={handleDeleteBlock}
+                  onAddBlock={handleAddBlock}
+                  isPreviewMode={true}
+                />
+              ))}
+            </div>
+          ) : (
+            // 編集モード: ドラッグ&ドロップ可能
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleRowDragEnd}>
+              <SortableContext items={rows.map(r => r.id)} strategy={verticalListSortingStrategy}>
+                <div className="space-y-4">
+                  {rows.map((row, rowIndex) => (
+                    <SortableRowItem
+                      key={row.id}
+                      row={row}
+                      rowIndex={rowIndex}
+                      totalRows={rows.length}
+                      onUpdateRow={handleUpdateRow}
+                      onDeleteRow={handleDeleteRow}
+                      onAddRow={handleAddRow}
+                      onMoveBlock={handleMoveBlock}
+                      onUpdateBlock={handleUpdateBlock}
+                      onDeleteBlock={handleDeleteBlock}
+                      onAddBlock={handleAddBlock}
+                      isPreviewMode={false}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          )
         ) : (
           <div className="text-center text-gray-400 py-12">
             <p>コンテンツがありません</p>
-            <Button
-              onClick={e => {
-                e.stopPropagation()
-                const newRow: SlideRow = {
-                  id: `row_${Date.now()}`,
-                  columns: 1,
-                  blocks: [],
-                }
-                updateSlideContent([newRow])
-              }}
-              className="mt-4 bg-blue-600 hover:bg-blue-700"
-            >
-              <Plus className="w-4 h-4 inline mr-2" />
-              最初の行を追加
-            </Button>
+            {!isPreviewMode && (
+              <Button
+                onClick={e => {
+                  e.stopPropagation()
+                  const newRow: SlideRow = {
+                    id: `row_${Date.now()}`,
+                    columns: 1,
+                    blocks: [],
+                  }
+                  updateSlideContent([newRow])
+                }}
+                className="mt-4 bg-blue-600 hover:bg-blue-700"
+              >
+                <Plus className="w-4 h-4 inline mr-2" />
+                最初の行を追加
+              </Button>
+            )}
           </div>
         )}
 
-        {/* 行追加ボタン（行が存在する場合） */}
-        {rows.length > 0 && (
+        {/* 行追加ボタン（行が存在する場合、編集モード時のみ） */}
+        {rows.length > 0 && !isPreviewMode && (
           <div className="mt-4 flex justify-center">
             <Button
               onClick={e => {

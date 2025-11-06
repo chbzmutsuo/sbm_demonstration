@@ -34,6 +34,7 @@ interface EditableSlideRowProps {
   onDeleteBlock: (blockId: string) => void
   onAddBlock: (rowId: string, blockType: 'text' | 'image' | 'link') => void
   isEditing: boolean
+  dragHandleProps?: any
 }
 
 function SortableBlockItem({
@@ -76,7 +77,7 @@ function SortableBlockItem({
   return (
     <div className="relative">
       {isEditing && (
-        <div className="absolute -top-2 left-2 flex gap-1 z-10">
+        <div className="absolute -top-2 left-2 flex gap-1 z-5">
           {/* プロパティ編集ボタン（Popover） */}
           <R_Stack>
             <BlockEditPopover
@@ -136,6 +137,7 @@ export default function EditableSlideRow({
   onDeleteBlock,
   onAddBlock,
   isEditing,
+  dragHandleProps,
 }: EditableSlideRowProps) {
   const [isColumnSettingOpen, setIsColumnSettingOpen] = useState(false)
   const [isBlockTypeMenuOpen, setIsBlockTypeMenuOpen] = useState(false)
@@ -255,7 +257,13 @@ export default function EditableSlideRow({
       {isEditing && (
         <div className="flex items-center justify-between  mb-4">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-medium text-gray-700">行 {rowIndex + 1}</span>
+            <span
+              className="text-[10px] font-medium text-gray-700"
+              {...(dragHandleProps || {})}
+              style={{cursor: dragHandleProps ? 'grab' : 'default'}}
+            >
+              行 {rowIndex + 1}
+            </span>
             {/* 列数設定 */}
             <div className="relative">
               <button

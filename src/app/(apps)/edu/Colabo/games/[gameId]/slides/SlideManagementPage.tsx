@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect} from 'react'
+import {useEffect} from 'react'
 import {Button} from '@cm/components/styles/common-components/Button'
 import QRCodeDisplay from '../../../parts/QRCodeDisplay'
 import Link from 'next/link'
@@ -12,7 +12,7 @@ import RightSidebar from '../../../components/slides/RightSidebar'
 import useModal from '@cm/components/utils/modal/useModal'
 import useSlideHandlers from './useSlideHandlers'
 import {useJotaiByKey} from '@cm/hooks/useJotai'
-import { R_Stack} from '@cm/components/styles/common-components/common-components'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
 import {Card} from '@cm/shadcn/ui/card'
 import useWindowSize from '@cm/hooks/useWindowSize'
 
