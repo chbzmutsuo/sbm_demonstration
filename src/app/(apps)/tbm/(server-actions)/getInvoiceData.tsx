@@ -41,6 +41,7 @@ export type CategoryDetail = {
   category: string
   categoryCode: string
   routeName: string
+  name: string
   trips: number
   unitPrice: number
   amount: number
@@ -183,6 +184,7 @@ export const getInvoiceData = async ({
           category,
           categoryCode,
           routeName,
+          name: routeSchedules[0]?.TbmRouteGroup.name || '',
           trips,
           unitPrice,
           amount,

@@ -1,5 +1,5 @@
 'use client'
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import type {AnalysisFormData, AnalysisResult, ServiceType} from '../types'
 import {collectData} from '../lib/data-collector'
 import {analyzeWithAI} from '../lib/ai-analyzer'

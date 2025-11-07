@@ -1,5 +1,5 @@
 import React from 'react'
-import {colorVariants} from '@cm/lib/methods/colors'
+import {colorVariants} from '@cm/lib/methods/colorVariants'
 import {htmlProps} from '@cm/types/utility-types'
 import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 import {Text} from '@cm/components/styles/common-components/Alert'

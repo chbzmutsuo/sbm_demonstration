@@ -43,29 +43,25 @@ export const HaishaCard = React.memo((props: HaishaCardProps) => {
     return (
       <section>
         <C_Stack className="gap-1">
-          {scheduleListOnDate
-            .sort((a, b) => {
-              return String(a.TbmRouteGroup.departureTime ?? '').localeCompare(String(b.TbmRouteGroup.departureTime ?? ''))
-            })
-            .map((tbmDriveSchedule, i) => {
-              const User = scheduleListOnDate.find(item => item.userId === tbmDriveSchedule.userId)?.User
+          {scheduleListOnDate.map((tbmDriveSchedule, i) => {
+            const User = scheduleListOnDate.find(item => item.userId === tbmDriveSchedule.userId)?.User
 
-              return (
-                <div key={tbmDriveSchedule.id}>
-                  <div className={`bg-white`}>
-                    <ScheduleCard
-                      tbmDriveSchedule={tbmDriveSchedule}
-                      user={User}
-                      date={date}
-                      setModalOpen={setModalOpen}
-                      fetchData={fetchData}
-                      query={query}
-                      tbmBase={tbmBase}
-                    />
-                  </div>
+            return (
+              <div key={tbmDriveSchedule.id}>
+                <div className={`bg-white`}>
+                  <ScheduleCard
+                    tbmDriveSchedule={tbmDriveSchedule}
+                    user={User}
+                    date={date}
+                    setModalOpen={setModalOpen}
+                    fetchData={fetchData}
+                    query={query}
+                    tbmBase={tbmBase}
+                  />
                 </div>
-              )
-            })}
+              </div>
+            )
+          })}
         </C_Stack>
       </section>
     )

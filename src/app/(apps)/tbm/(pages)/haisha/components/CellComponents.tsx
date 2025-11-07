@@ -2,7 +2,7 @@
 import React from 'react'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {R_Stack, C_Stack} from '@cm/components/styles/common-components/common-components'
-import {CarIcon, MapPinIcon, Notebook, PlusCircleIcon, SquarePen, TruckIcon, UserIcon} from 'lucide-react'
+import {CarIcon, Clock, MapPinIcon, Notebook, PlusCircleIcon, SquarePen, TruckIcon, UserIcon} from 'lucide-react'
 import Link from 'next/link'
 import {HREF} from '@cm/lib/methods/urls'
 import {createUpdate} from '@cm/lib/methods/createUpdate'
@@ -22,6 +22,7 @@ import {
   UserWithWorkStatus,
 } from '../types/haisha-page-types'
 import {shorten} from '@cm/lib/methods/common'
+import {TimeHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
 
 const WorkStatusList = TBM_CODE.WORK_STATUS_KBN.array
 
@@ -140,10 +141,31 @@ export const ScheduleCard = React.memo(
           tbmDriveSchedule.duplicated ? 'bg-red-300' : 'white'
         )}
       >
-        <C_Stack className="gap-1">
+        <C_Stack className="gap-1 relative">
+          <div className={` absolute top-0 right-0 text-[10px] text-gray-500`}>{tbmDriveSchedule.id}</div>
           <section className={`row-stack flex-nowrap gap-0 leading-4 -ml-1.5`}>
             <MapPinIcon className={`h-3 text-blue-800 stroke-2 `} />
             <MarkDownDisplay>{new RouteGroupCl(TbmRouteGroup).name}</MarkDownDisplay>
+          </section>
+
+          <section className={`row-stack flex-nowrap gap-0 leading-4 -ml-1.5`}>
+            <Clock className={`h-3 text-blue-800 stroke-2 `} />
+            <span>
+              {(() => {
+                const departureTime = TimeHandler.formatTimeString(TbmRouteGroup.departureTime, 'display')
+                const finalArrivalTime = TimeHandler.formatTimeString(TbmRouteGroup.finalArrivalTime, 'display')
+
+                if (departureTime && finalArrivalTime) {
+                  return `${departureTime} - ${finalArrivalTime}`
+                } else if (departureTime) {
+                  return `出発: ${departureTime}`
+                } else if (finalArrivalTime) {
+                  return `到着: ${finalArrivalTime}`
+                } else {
+                  return '時刻未設定'
+                }
+              })()}
+            </span>
           </section>
 
           <section className={`row-stack flex-nowrap gap-0 leading-4 -ml-1.5`}>

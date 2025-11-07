@@ -4,7 +4,7 @@ import {contextsType} from '@cm/components/DataLogic/TFs/MyForm/components/HookF
 import {breakLines} from 'src/cm/lib/value-handler'
 
 import {IconBtnForSelect} from '@cm/components/styles/common-components/IconBtn'
-import {colorVariants} from '@cm/lib/methods/colors'
+import {colorVariants} from '@cm/lib/methods/colorVariants'
 
 export const SelectOption = (props: {contexts: contextsType; option: optionType; optionStyle: any}) => {
   const contexts = props.contexts

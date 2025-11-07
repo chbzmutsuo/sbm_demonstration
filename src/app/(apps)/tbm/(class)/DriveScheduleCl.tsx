@@ -165,14 +165,14 @@ export class DriveScheduleCl {
       //   label: 'B便CD',
       //   cellValue: schedule.TbmRouteGroup.code,
       // },
-      name: {
-        label: 'C便名',
-        cellValue: schedule.TbmRouteGroup.name,
-        style: {minWidth: 160},
-      },
       routeName: {
         label: '路線名',
         cellValue: schedule.TbmRouteGroup.routeName,
+        style: {minWidth: 160},
+      },
+      name: {
+        label: 'C便名',
+        cellValue: schedule.TbmRouteGroup.name,
         style: {minWidth: 160},
       },
       vehicleType: {

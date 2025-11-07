@@ -1,4 +1,4 @@
-import {colorVariants} from '@cm/lib/methods/colors'
+import {colorVariants} from '@cm/lib/methods/colorVariants'
 import {tv} from 'tailwind-variants'
 import React from 'react'
 import {htmlProps} from '@cm/components/styles/common-components/type'

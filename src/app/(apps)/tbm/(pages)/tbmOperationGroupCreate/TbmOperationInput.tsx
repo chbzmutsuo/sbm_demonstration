@@ -7,7 +7,7 @@ import {Button} from '@cm/components/styles/common-components/Button'
 import {Absolute, C_Stack, Center, R_Stack} from '@cm/components/styles/common-components/common-components'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {atomKey, useJotaiByKey} from '@cm/hooks/useJotai'
-import {colorVariants} from '@cm/lib/methods/colors'
+import {colorVariants} from '@cm/lib/methods/colorVariants'
 
 import React from 'react'
 

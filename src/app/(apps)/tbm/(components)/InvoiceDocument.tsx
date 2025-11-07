@@ -152,6 +152,7 @@ export const InvoiceDocument = forwardRef<HTMLDivElement, InvoiceDocumentProps>(
             <thead>
               <tr className="bg-gray-100">
                 <th className="border border-gray-400 p-2">路線名</th>
+                <th className="border border-gray-400 p-2">便名</th>
                 <th className="border border-gray-400 p-2">回数</th>
                 <th className="border border-gray-400 p-2">単価</th>
                 <th className="border border-gray-400 p-2">運賃</th>
@@ -163,6 +164,7 @@ export const InvoiceDocument = forwardRef<HTMLDivElement, InvoiceDocumentProps>(
               {details.map((detail, index) => (
                 <tr key={index}>
                   <td className="border border-gray-400 p-2">{detail.routeName}</td>
+                  <td className="border border-gray-400 p-2">{detail.name}</td>
                   <td className="border border-gray-400 p-2 text-center">{detail.trips}</td>
                   <td className="border border-gray-400 p-2 text-right">{detail.unitPrice.toLocaleString()}</td>
                   <td className="border border-gray-400 p-2 text-right">{detail.amount.toLocaleString()}</td>
@@ -171,7 +173,9 @@ export const InvoiceDocument = forwardRef<HTMLDivElement, InvoiceDocumentProps>(
                 </tr>
               ))}
               <tr className="bg-gray-100 font-bold">
-                <td className="border border-gray-400 p-2">小計</td>
+                <td className="border border-gray-400 p-2" colSpan={2}>
+                  小計
+                </td>
                 <td className="border border-gray-400 p-2 text-center">
                   {details.reduce((sum, detail) => sum + detail.trips, 0)}
                 </td>

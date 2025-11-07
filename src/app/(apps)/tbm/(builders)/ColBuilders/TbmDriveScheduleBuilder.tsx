@@ -60,8 +60,7 @@ export const TbmDriveScheduleBuilder = (props: columnGetterType) => {
         defaultValue: TbmVehicle?.id,
       },
       forSelect: {
-        dependenceColIds: ['tbmBaseId'],
-        config: VehicleCl.getVehicleForSelectConfig({tbmBaseId: tbmBase?.id}),
+        config: VehicleCl.getVehicleForSelectConfig({}),
       },
     },
     {

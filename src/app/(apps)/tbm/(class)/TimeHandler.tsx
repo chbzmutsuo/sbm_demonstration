@@ -1,4 +1,3 @@
-
 /**
  * 統合時間処理ユーティリティクラス
  * 24時間超え対応（25時、26時等）、基本的な時間計算、請求処理ロジック
@@ -46,6 +45,7 @@ export class TimeHandler {
   static compareTimeStrings(a: string | null | undefined, b: string | null | undefined): number {
     const valueA = this.getTimeOrderValue(a)
     const valueB = this.getTimeOrderValue(b)
+
     return valueA - valueB
   }
 

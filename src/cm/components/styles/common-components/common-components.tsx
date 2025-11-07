@@ -153,7 +153,7 @@ import {htmlProps} from 'src/cm/components/styles/common-components/type'
 
 import {CssString} from 'src/cm/components/styles/cssString'
 import {Z_INDEX} from '@cm/lib/constants/constants'
-import {colorVariants} from '@cm/lib/methods/colors'
+import {colorVariants} from '@cm/lib/methods/colorVariants'
 import {iconBtnColorVariants} from '@cm/components/styles/common-components/IconBtn'
 import {cn} from '@shadcn/lib/utils'
 

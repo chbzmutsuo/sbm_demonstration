@@ -127,6 +127,7 @@
     "**/sara/**": true,
     "**/KM/**": true,
     "**/counseling/**": true,
+    "**/edu/**": true,
     "**/keihi/**": true,
     "**/kickswrap/**": true,
     "**/migrations/**": true,
@@ -136,8 +137,7 @@
     "**/stock/**": true,
     "**/teamSynapse/**": true,
     "**/tmp/**": true,
-    "**/training/**": true,
-    "**/tbm/**": true
+    "**/training/**": true
   },
   "typescript.tsserver.log": "off",
   "typescript.disableAutomaticTypeAcquisition": true,
@@ -150,6 +150,7 @@
   "typescript.preferences.autoImportFileExcludePatterns": [
     "KM",
     "counseling",
+    "edu",
     "keihi",
     "kickswrap",
     "migrations",
@@ -157,7 +158,6 @@
     "portal",
     "sbm",
     "stock",
-    "tbm",
     "teamSynapse",
     "tmp",
     "training"

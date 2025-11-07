@@ -1,5 +1,5 @@
 import type {CollectedMessage, AnalysisFormData} from '../types'
-import {fetchGmailMessages, fetchDriveDocuments, fetchChatMessages} from './google-apis'
+import {fetchGmailMessages, fetchChatMessages} from './google-apis'
 
 // データ収集と整形（Step 0）
 export const collectData = async (

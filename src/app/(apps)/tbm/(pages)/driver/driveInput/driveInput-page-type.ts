@@ -1,4 +1,5 @@
 import prisma from 'src/lib/prisma'
+import {TimeHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
 
 export type driveInputPageType = {
   driveScheduleList: Awaited<ReturnType<typeof getDriveInputPageData>>
@@ -23,5 +24,11 @@ export const getDriveInputPageData = async ({user, whereQuery}: {user: any; wher
       TbmDriveScheduleImage: {},
     },
   })
-  return driveScheduleList
+  return driveScheduleList.sort((a, b) => {
+    const dateCompare = a.date.getTime() - b.date.getTime()
+    if (dateCompare !== 0) return dateCompare
+
+    // 同じ日付の場合は出発時刻でソート
+    return TimeHandler.compareTimeStrings(a.TbmRouteGroup.departureTime, b.TbmRouteGroup.departureTime)
+  })
 }

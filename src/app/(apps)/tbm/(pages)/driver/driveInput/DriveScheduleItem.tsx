@@ -15,6 +15,7 @@ import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 import React from 'react'
+import {isDev} from '@cm/lib/methods/common'
 
 export const DriveScheduleItem = (props: {
   HK_HaishaTableEditorGMF: any
@@ -27,12 +28,12 @@ export const DriveScheduleItem = (props: {
   const {toggleLoad, session, query} = useGlobalProps
 
   return (
-    <R_Stack className="gap-4">
+    <R_Stack className="gap-4 relative">
+      <div className={` absolute top-0 right-0 text-[10px] text-gray-500`}>{drive.id}</div>
       <section>
         <C_Stack>
           <span
             {...{
-              className: `onHover`,
               onClick: async () => {
                 toggleLoad(async () => {
                   await doStandardPrisma(`tbmDriveSchedule`, `update`, {
@@ -70,7 +71,12 @@ export const DriveScheduleItem = (props: {
           >
             {drive.TbmVehicle?.vehicleNumber}
           </TextBlue>
-          <TextGray>出発: {TimeHandler.formatTimeString(drive.TbmRouteGroup?.departureTime, 'display') ?? '未設定'}</TextGray>
+          <R_Stack>
+            <TextGray>出発: {TimeHandler.formatTimeString(drive.TbmRouteGroup?.departureTime, 'display') ?? '未設定'}</TextGray>
+            <TextGray>
+              到着: {TimeHandler.formatTimeString(drive.TbmRouteGroup?.finalArrivalTime, 'display') ?? '未設定'}
+            </TextGray>
+          </R_Stack>
         </C_Stack>
       </section>
 

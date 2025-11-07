@@ -130,7 +130,9 @@ export default function DriveInputCC({driveScheduleList}: {driveScheduleList: dr
                           <div>
                             <span>降車:</span>
                             {odometerEnd ? (
-                              <TextGreen {...{onClick: handleOpenEditGMF, className: TextBtnClass}}>{odometerEnd}</TextGreen>
+                              <TextGreen {...{onClick: handleOpenEditGMF, className: TextBtnClass}}>
+                                {NumHandler.toPrice(odometerEnd)}
+                              </TextGreen>
                             ) : (
                               <TextRed {...{onClick: handleOpenEditGMF, className: TextBtnClass}}>未</TextRed>
                             )}

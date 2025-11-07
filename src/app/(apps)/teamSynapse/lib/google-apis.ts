@@ -1,20 +1,14 @@
 import type {CollectedMessage} from '../types'
 
 // 過去にやり取りした相手のメールアドレスを取得
-export const fetchGmailContactEmails = async (
-  accessToken: string,
-  limit: number = 100
-): Promise<string[]> => {
+export const fetchGmailContactEmails = async (accessToken: string, limit: number = 100): Promise<string[]> => {
   try {
     // 最近のメールから送信者/受信者のアドレスを抽出
-    const response = await fetch(
-      `https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=${limit}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    )
+    const response = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=${limit}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
 
     if (!response.ok) {
       throw new Error(`Gmail API Error: ${response.statusText}`)
@@ -45,7 +39,7 @@ export const fetchGmailContactEmails = async (
         headers.forEach((header: any) => {
           if (header.name === 'From' || header.name === 'To') {
             // メールアドレスを抽出（"Name <email@example.com>" 形式から）
-            const emailMatch = header.value.match(/[\w\.-]+@[\w\.-]+\.\w+/)
+            const emailMatch = header.value.match(/[\w.-]+@[\w.-]+\.\w+/)
             if (emailMatch) {
               emailSet.add(emailMatch[0].toLowerCase())
             }
@@ -101,9 +95,7 @@ export const fetchGmailMessages = async (
 
   try {
     // メール検索クエリの構築
-    const emailQueries = targetEmails
-      .map(email => `(from:${email} OR to:${email} OR cc:${email})`)
-      .join(' OR ')
+    const emailQueries = targetEmails.map(email => `(from:${email} OR to:${email} OR cc:${email})`).join(' OR ')
     const query = `${emailQueries} after:${dateFrom.replace(/-/g, '/')} before:${dateTo.replace(/-/g, '/')}`
 
     // メッセージIDリストの取得
@@ -125,30 +117,24 @@ export const fetchGmailMessages = async (
 
     // 各メッセージの詳細を取得
     for (const {id} of messageIds) {
-      const messageResponse = await fetch(
-        `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}?format=full`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      )
+      const messageResponse = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}?format=full`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
 
       if (!messageResponse.ok) continue
 
       const messageData = await messageResponse.json()
       const headers = messageData.payload?.headers || []
-      const getHeader = (name: string) =>
-        headers.find((h: any) => h.name.toLowerCase() === name.toLowerCase())?.value || ''
+      const getHeader = (name: string) => headers.find((h: any) => h.name.toLowerCase() === name.toLowerCase())?.value || ''
 
       // 本文の取得
       let body = ''
       if (messageData.payload?.body?.data) {
         body = atob(messageData.payload.body.data.replace(/-/g, '+').replace(/_/g, '/'))
       } else if (messageData.payload?.parts) {
-        const textPart = messageData.payload.parts.find(
-          (part: any) => part.mimeType === 'text/plain'
-        )
+        const textPart = messageData.payload.parts.find((part: any) => part.mimeType === 'text/plain')
         if (textPart?.body?.data) {
           body = atob(textPart.body.data.replace(/-/g, '+').replace(/_/g, '/'))
         }
@@ -175,10 +161,7 @@ export const fetchGmailMessages = async (
 }
 
 // Google Drive APIからドキュメントのテキストを取得
-export const fetchDriveDocuments = async (
-  accessToken: string,
-  fileIds: string[]
-): Promise<CollectedMessage[]> => {
+export const fetchDriveDocuments = async (accessToken: string, fileIds: string[]): Promise<CollectedMessage[]> => {
   const documents: CollectedMessage[] = []
 
   for (const fileId of fileIds) {
@@ -197,22 +180,16 @@ export const fetchDriveDocuments = async (
       const metadata = await metadataResponse.json()
 
       // Google DocsまたはSlidesのみ処理
-      if (
-        !metadata.mimeType.includes('document') &&
-        !metadata.mimeType.includes('presentation')
-      ) {
+      if (!metadata.mimeType.includes('document') && !metadata.mimeType.includes('presentation')) {
         continue
       }
 
       // テキストとしてエクスポート
-      const exportResponse = await fetch(
-        `https://www.googleapis.com/drive/v3/files/${fileId}/export?mimeType=text/plain`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      )
+      const exportResponse = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}/export?mimeType=text/plain`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
 
       if (!exportResponse.ok) continue
       const text = await exportResponse.text()
@@ -270,9 +247,8 @@ export const fetchChatMessages = async (
     for (const message of chatMessages) {
       // 対象メールアドレスに関連するメッセージのみフィルタ
       const senderEmail = message.sender?.email || ''
-      const isRelevant = targetEmails.length === 0 || targetEmails.some(email =>
-        senderEmail.toLowerCase().includes(email.toLowerCase())
-      )
+      const isRelevant =
+        targetEmails.length === 0 || targetEmails.some(email => senderEmail.toLowerCase().includes(email.toLowerCase()))
 
       if (isRelevant) {
         messages.push({
@@ -290,4 +266,3 @@ export const fetchChatMessages = async (
 
   return messages
 }
-
