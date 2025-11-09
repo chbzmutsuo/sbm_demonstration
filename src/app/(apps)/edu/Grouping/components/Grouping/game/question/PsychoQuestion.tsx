@@ -1,7 +1,6 @@
 import {Grouping} from '@app/(apps)/edu/class/Grouping'
 import React, {useEffect, useState} from 'react'
 
-import {colType} from '@cm/types/types'
 import {anyObject} from '@cm/types/utility-types'
 import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
 import {Prisma} from '@prisma/client'
@@ -11,6 +10,7 @@ import SimpleTable from '@cm/components/utils/SimpleTable'
 
 import NormalQuestions from '@app/(apps)/edu/Grouping/components/Grouping/game/question/NormalQuestion'
 import {Alert} from '@cm/components/styles/common-components/Alert'
+import {colType} from '@cm/types/col-types'
 
 const PsychoQuestion = React.memo((props: any) => {
   const [sortedQuestions, setsortedQuestions] = useState<any[]>([])

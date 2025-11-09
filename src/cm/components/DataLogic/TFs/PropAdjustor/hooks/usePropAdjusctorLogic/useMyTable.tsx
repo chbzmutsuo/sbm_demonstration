@@ -1,6 +1,6 @@
 import {Fields} from '@cm/class/Fields/Fields'
 import {MyTableType} from '@cm/types/types'
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {useMemo} from 'react'
 
 // 型定義を追加

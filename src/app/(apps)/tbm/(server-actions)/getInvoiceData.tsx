@@ -2,12 +2,13 @@
 
 import prisma from 'src/lib/prisma'
 import {TBM_CODE} from '@app/(apps)/tbm/(class)/TBM_CODE'
-import {DriveScheduleCl, DriveScheduleData} from '@app/(apps)/tbm/(class)/DriveScheduleCl'
+
 import {BillingHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
 import {toUtc} from '@cm/class/Days/date-utils/calculations'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {Days} from '@cm/class/Days/Days'
 import {getInvoiceManualEdit} from './invoiceManualEdit'
+import {DriveScheduleData, getDriveScheduleList} from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fetchUnkoMeisaiData'
 
 // 単価のバリエーションを計算する関数
 function calculatePriceVariations(
@@ -138,7 +139,7 @@ export const getInvoiceData = async ({
   }
 
   // 運行スケジュールデータ取得（承認済みのみ）
-  const driveScheduleList = await DriveScheduleCl.getDriveScheduleList({
+  const driveScheduleList = await getDriveScheduleList({
     whereQuery: {
       ...whereQuery,
       gte: Days.day.subtract(whereQuery.gte, 1),

@@ -124,20 +124,7 @@
     "**/yoshinari/**": true,
     "**/Keihi/**": true,
     "**/achievement/**": true,
-    "**/sara/**": true,
-    "**/KM/**": true,
-    "**/counseling/**": true,
-    "**/edu/**": true,
-    "**/keihi/**": true,
-    "**/kickswrap/**": true,
-    "**/migrations/**": true,
-    "**/page/**": true,
-    "**/portal/**": true,
-    "**/sbm/**": true,
-    "**/stock/**": true,
-    "**/teamSynapse/**": true,
-    "**/tmp/**": true,
-    "**/training/**": true
+    "**/sara/**": true
   },
   "typescript.tsserver.log": "off",
   "typescript.disableAutomaticTypeAcquisition": true,
@@ -147,20 +134,6 @@
   "typescript.suggest.autoImports": true,
   "typescript.suggest.includeAutomaticOptionalChainCompletions": false,
   "typescript.workspaceSymbols.scope": "currentProject",
-  "typescript.preferences.autoImportFileExcludePatterns": [
-    "KM",
-    "counseling",
-    "edu",
-    "keihi",
-    "kickswrap",
-    "migrations",
-    "page",
-    "portal",
-    "sbm",
-    "stock",
-    "teamSynapse",
-    "tmp",
-    "training"
-  ],
+  "typescript.preferences.autoImportFileExcludePatterns": [],
   "editor.stickyScroll.enabled": false
 }

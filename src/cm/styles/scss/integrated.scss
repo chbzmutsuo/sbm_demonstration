@@ -1,9 +1,7 @@
 @charset "UTF-8";
-
-@import "./_tail_theme.scss";
+@import "../../../non-common/styles/tail_theme.scss";
 @import "./_tail_base.scss";
 @import "./_tail_components.scss";
 @import "./_tail_utilities.scss";
 @import "./_animations.scss";
-
-@import "../../../non-common/styles/importToGlobal/_importToGlobal.scss";
+@import "../../../non-common/styles/importToGlobal/importToGlobal";

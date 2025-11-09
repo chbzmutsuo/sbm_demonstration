@@ -43,7 +43,6 @@ export const BulkAssignmentModal: React.FC<BulkAssignmentModalProps> = ({tbmRout
         id: 'selectedDates',
         label: '選択日',
         form: {
-          defaultValue: [],
           hidden: true,
         },
       },

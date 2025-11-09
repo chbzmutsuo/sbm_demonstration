@@ -1,24 +1,6 @@
+import {htmlProps} from '@cm/types/utility-types'
 import {CSSProperties} from 'react'
 import {twMerge} from 'tailwind-merge'
-
-export type htmlProps = {
-  id?: string
-  className?: string
-  ref?: any
-  style?: CSSProperties
-  type?: 'button' | 'submit'
-  disabled?: boolean
-
-  onClick?: any
-
-  onKeyDown?: any
-  onBlur?: any
-  onMouseEnter?: any
-  onMouseLeave?: any
-  onMouseDown?: any
-
-  children?: React.ReactNode
-}
 
 export type elementNameString = `wrapper` | `label` | `value`
 export type customClasses = {

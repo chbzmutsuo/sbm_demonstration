@@ -1,6 +1,6 @@
 import BasicModal from 'src/cm/components/utils/modal/BasicModal'
 import React from 'react'
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobal'
 
 import {myFormDefault} from 'src/cm/constants/defaults'

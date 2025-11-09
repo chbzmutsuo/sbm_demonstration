@@ -1,5 +1,6 @@
 'use client'
-import {colType, colTypeOptional, dataFormatterType} from '@cm/types/types'
+import {dataFormatterType} from '@cm/types/types'
+import {colType, colTypeOptional} from '@cm/types/col-types'
 import {C_Stack, R_Stack} from 'src/cm/components/styles/common-components/common-components'
 
 import {cl} from 'src/cm/lib/methods/common'

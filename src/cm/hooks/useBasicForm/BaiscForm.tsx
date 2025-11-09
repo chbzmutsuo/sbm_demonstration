@@ -1,7 +1,8 @@
 'use client'
 
 import React, {Fragment} from 'react'
-import {colType, onFormItemBlurType} from '@cm/types/types'
+import {onFormItemBlurType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {C_Stack, R_Stack} from 'src/cm/components/styles/common-components/common-components'
 import {FormProvider, UseFormReturn} from 'react-hook-form'
 import {AdditionalBasicFormPropType} from 'src/cm/hooks/useBasicForm/useBasicFormProps'
@@ -20,7 +21,6 @@ import {alignModeType} from '@cm/types/form-control-type'
 
 export type useRegisterType = (props: {col: colType; newestRecord: any}) => {
   currentValue: any
-  shownButDisabled: boolean
   Register: any
 }
 
@@ -48,6 +48,7 @@ export type BasicFormType = {
 const FormSection = React.memo(
   ({columns, ControlOptions, children}: {columns: colType[]; ControlOptions: any; children: React.ReactNode}) => {
     const colFormIndexGroupName = ControlOptions?.showLabel === false ? undefined : columns[0]?.form?.colIndex
+
     return (
       <>
         {isNaN(colFormIndexGroupName) && colFormIndexGroupName ? (
@@ -99,7 +100,7 @@ const BasicForm = (props: BasicFormType) => {
                       const uniqueKey = `${i}-${formItemIndex}`
                       return (
                         <div key={uniqueKey}>
-                          <ControlGroup {...{...props, col, formItemIndex}} />
+                          <ControlGroup {...{...props, col, formItemIndex, alignMode}} />
                         </div>
                       )
                     })}
@@ -126,11 +127,11 @@ const BasicForm = (props: BasicFormType) => {
                       {columns.map((col: colType, formItemIndex) => {
                         const use2ColSpan = getUse2ColSpan(col)
                         const uniqueKey = `${i}-${formItemIndex}`
-                        const colSpan = use2ColSpan ? `md:col-span-2 ` : ` md:col-span-1`
+                        const colSpan = use2ColSpan ? `lg:col-span-2 ` : ` lg:col-span-1`
 
                         return (
                           <div key={uniqueKey} className={cn(colSpan)}>
-                            <ControlGroup {...{...props, col, formItemIndex}} />
+                            <ControlGroup {...{...props, col, formItemIndex, alignMode}} />
                           </div>
                         )
                       })}
@@ -141,6 +142,9 @@ const BasicForm = (props: BasicFormType) => {
               )
             })}
           </R_Stack>
+          <div className={` flex justify-end`}>
+            <ChildComponent />
+          </div>
         </form>
       </FormProvider>
     )
@@ -158,11 +162,11 @@ const BasicForm = (props: BasicFormType) => {
                         {columns.map((col: colType, formItemIndex) => {
                           const use2ColSpan = getUse2ColSpan(col)
                           const uniqueKey = `${i}-${formItemIndex}`
-                          const colSpan = use2ColSpan ? `md:col-span-2 ` : ` md:col-span-1`
+                          const colSpan = use2ColSpan ? `lg:col-span-2 ` : ` lg:col-span-1`
 
                           return (
                             <div key={uniqueKey} className={cn(colSpan)}>
-                              <ControlGroup {...{...props, col, formItemIndex}} />
+                              <ControlGroup {...{...props, col, formItemIndex, alignMode}} />
                             </div>
                           )
                         })}
@@ -199,11 +203,11 @@ const BasicForm = (props: BasicFormType) => {
                         {columns.map((col: colType, formItemIndex) => {
                           const use2ColSpan = getUse2ColSpan(col)
                           const uniqueKey = `${i}-${formItemIndex}`
-                          const colSpan = use2ColSpan ? `md:col-span-2 ` : ` md:col-span-1`
+                          const colSpan = use2ColSpan ? `lg:col-span-2 ` : ` lg:col-span-1`
 
                           return (
                             <div key={uniqueKey} className={cn(colSpan)}>
-                              <ControlGroup {...{...props, col, formItemIndex}} />
+                              <ControlGroup {...{...props, col, formItemIndex, alignMode}} />
                             </div>
                           )
                         })}
@@ -222,52 +226,55 @@ const BasicForm = (props: BasicFormType) => {
   } else if (alignMode === 'console') {
     return (
       <form {...{ref: formRef, id: formId, onSubmit}}>
-        <AutoGridContainer className={`     `} maxCols={{xl: 2}}>
-          {transposedRowsForForm.map((columns, i) => {
-            return (
-              <Fragment key={i}>
-                <div className={` px-4 flex flex-col  `}>
-                  {columns.map((col: colType, formItemIndex) => {
-                    const use2ColSpan = getUse2ColSpan(col)
-                    const uniqueKey = `${i}-${formItemIndex}`
-                    const colSpan = use2ColSpan ? `md:col-span-2 ` : ` md:col-span-1`
+        <C_Stack className={` items-start `}>
+          <AutoGridContainer maxCols={{lg: 2}} className={` gap-8 `}>
+            {transposedRowsForForm.map((columns, i) => {
+              const SectionLabel = columns.find(col => col.form?.colIndex)?.form?.colIndex
 
-                    return (
-                      <div key={uniqueKey} className={cn(colSpan, 'mb-4')}>
-                        <ControlGroup
-                          {...{
-                            ...props,
-                            col,
-                            formItemIndex,
-                            alignMode: 'row',
-                            ControlOptions: {
-                              LabelStyle: {
-                                padding: '4px 8px',
-                                marginRight: '10px',
-                                backgroundColor: 'rgb(240, 240, 240)',
-                                width: 200,
+              return (
+                <Fragment key={i}>
+                  <div className={`  flex flex-col  `}>
+                    <div className={` font-bold text-lg `}>{SectionLabel}</div>
+                    {columns.map((col: colType, formItemIndex) => {
+                      const use2ColSpan = getUse2ColSpan(col)
+                      const uniqueKey = `${i}-${formItemIndex}`
+                      const colSpan = use2ColSpan ? `lg:col-span-2 ` : ` lg:col-span-1`
 
-                                fontSize: '16px',
-                                // color: 'black',
+                      const borderColor = 'rgb(200, 200, 200)'
+                      return (
+                        <div key={uniqueKey} className={cn(colSpan, 'mb-6')}>
+                          <ControlGroup
+                            {...{
+                              ...props,
+                              col,
+                              formItemIndex,
+                              alignMode: 'console',
+                              ControlOptions: {
+                                LabelStyle: {
+                                  padding: '4px 8px',
+                                  marginRight: '6px',
+                                  backgroundColor: 'rgb(240, 240, 240)',
+                                  width: 200,
+                                  fontSize: '16px',
+                                },
+                                ControlStyle: {
+                                  borderRadius: '0px',
+                                },
                               },
-                              ControlStyle: {
-                                borderRadius: '0px',
-                                // border: '0px solid rgb(240, 240, 240)',
-                                // borderBottom: '1px solid rgb(200, 200, 200)',
-                              },
-                            },
-                          }}
-                        />
-                      </div>
-                    )
-                  })}
-                </div>
-              </Fragment>
-            )
-          })}
-        </AutoGridContainer>
-
-        <ChildComponent />
+                            }}
+                          />
+                        </div>
+                      )
+                    })}
+                  </div>
+                </Fragment>
+              )
+            })}
+          </AutoGridContainer>
+        </C_Stack>
+        <div className={`flex justify-center`}>
+          <ChildComponent />
+        </div>
       </form>
     )
   }

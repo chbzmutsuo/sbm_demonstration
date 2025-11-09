@@ -21,8 +21,8 @@ import {TbmVehicle, User} from '@prisma/client'
 import {TbmReportCl} from '@app/(apps)/tbm/(class)/TbmReportCl'
 import {unkoMeisaiKeyValue} from '@app/(apps)/tbm/(class)/TbmReportCl/cols/createUnkoMeisaiRow'
 
-export type fetchUnkoMeisaiDataReturn = Awaited<ReturnType<typeof _getData>>[number]
-const _getData = async (props: {
+export type DriveScheduleData = Awaited<ReturnType<typeof getDriveScheduleList>>[number]
+export const getDriveScheduleList = async (props: {
   whereQuery: {
     gte?: Date | undefined
     lte?: Date | undefined
@@ -78,7 +78,7 @@ export const fetchUnkoMeisaiData = async ({
     },
   })
 
-  const tbmDriveSchedule = await _getData({whereQuery, tbmBaseId, userId})
+  const tbmDriveSchedule = await getDriveScheduleList({whereQuery, tbmBaseId, userId})
 
   const monthlyTbmDriveList = tbmDriveSchedule.map(schedule => {
     const unkoMeisaiKeyValue = TbmReportCl.reportCols.createUnkoMeisaiRow(schedule)
@@ -86,7 +86,7 @@ export const fetchUnkoMeisaiData = async ({
       schedule,
       keyValue: unkoMeisaiKeyValue,
     }
-  }) as {schedule: fetchUnkoMeisaiDataReturn; keyValue: unkoMeisaiKeyValue}[]
+  }) as {schedule: DriveScheduleData; keyValue: unkoMeisaiKeyValue}[]
 
   const userList: userType[] = monthlyTbmDriveList
     .reduce((acc, row) => {

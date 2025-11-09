@@ -1,6 +1,6 @@
 import {defaultSelect, masterDataSelect} from 'src/cm/class/Fields/Fields'
 import {PrismaModelNames} from '@cm/types/prisma-types'
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {anyObject} from '@cm/types/utility-types'
 import {funcOrVar} from 'src/cm/lib/methods/common'
 import {defaultOrderByArray} from '@cm/class/PQuery'

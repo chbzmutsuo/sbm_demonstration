@@ -2,7 +2,7 @@ import {DnDTableRowPropsType} from '@cm/components/DataLogic/TFs/MyTable/compone
 import {tbodyParamsType} from '@cm/components/DataLogic/TFs/MyTable/components/Tbody/Tbody'
 
 import React, {useMemo} from 'react'
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 
 import {getValue} from '@cm/components/DataLogic/TFs/MyTable/components/Tbody/TableCell/lib/getValue'
 

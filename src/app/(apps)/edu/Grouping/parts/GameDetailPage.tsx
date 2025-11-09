@@ -14,7 +14,7 @@ import TaskScoring from '@app/(apps)/edu/Grouping/parts/TaskScoring'
 import {Button} from '@cm/components/styles/common-components/Button'
 import Link from 'next/link'
 import {Card} from '@cm/shadcn/ui/card'
-import MyAccordion from '@cm/components/utils/Accordions/MyAccordion'
+import MyAccordion from '@cm/components/utils/Accordions/Accordion'
 
 export default function GameDetailPage(props) {
   const useGlobalProps = useGlobal()

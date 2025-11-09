@@ -91,11 +91,7 @@ export const IconBtnForSelect = React.memo(
     const {children, color, className, style} = props
 
     return (
-      <IconBtn
-        color={color}
-        style={style}
-        className={twMerge(`rounded-sm text-gray-800! p-0.5! px-1! !text-xs text-gray-800`, className)}
-      >
+      <IconBtn color={color} style={style} className={twMerge(`rounded-sm p-0.5! px-1! !text-sm text-gray-800`, className)}>
         {children}
       </IconBtn>
     )

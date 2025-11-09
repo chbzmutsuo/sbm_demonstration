@@ -1,5 +1,5 @@
 import useSWR from 'swr'
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {anyObject} from '@cm/types/utility-types'
 import {Days} from '@cm/class/Days/Days'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'

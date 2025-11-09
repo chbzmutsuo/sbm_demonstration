@@ -4,7 +4,8 @@ import {DndContext, closestCenter} from '@dnd-kit/core'
 
 import {ClientPropsType2} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
 import {cn} from '@shadcn/lib/utils'
-import {colType, MyTableType} from '@cm/types/types'
+import {MyTableType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {TableConfigPropsType} from '@cm/components/DataLogic/TFs/MyTable/components/TableConfig'
 import {createRowColor, createTrClassName} from '@cm/components/DataLogic/TFs/MyTable/components/Tbody/Tbody-methods'
 

@@ -5,7 +5,7 @@ import MyFileControl from '@cm/components/DataLogic/TFs/MyForm/components/HookFo
 
 import {ControlContextType, ControlOptionType, formPropType} from '@cm/types/form-control-type'
 
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import MyMdEditor from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyMdEditor'
 import MyTextarea from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyTextarea'
 import MyCheckBox from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyCheckBox/MyCheckBox'
@@ -22,7 +22,7 @@ export type ControlProps = {
   col: colType
   currentValue: any
   formProps: formPropType
-  shownButDisabled: boolean
+
   extraFormState: any
   setextraFormState: any
   controlContextValue: ControlContextType
@@ -44,8 +44,6 @@ const Control = ({controlContextValue}) => {
     ControlStyle,
   } = controlContextValue
 
-  const shownButDisabled = ControlOptions?.shownButDisabled ?? false
-
   col.type = col.inputTypeAs ?? col.type ?? 'text'
   const {type} = col
 
@@ -57,7 +55,6 @@ const Control = ({controlContextValue}) => {
     col,
     currentValue,
     formProps,
-    shownButDisabled,
     extraFormState,
     setextraFormState,
     controlContextValue,

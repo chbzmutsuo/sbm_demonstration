@@ -1,6 +1,7 @@
 'use client'
 
-import {colType, colTypeStr} from '@cm/types/types'
+import {colTypeStr} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {anyObject} from '@cm/types/utility-types'
 import {NestHandler} from 'src/cm/class/NestHandler'
 

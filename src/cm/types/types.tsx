@@ -1,4 +1,4 @@
-import type {CSSProperties, ReactNode, Ref, MouseEventHandler, KeyboardEventHandler, FocusEventHandler} from 'react'
+import type {CSSProperties} from 'react'
 import type {JSX} from 'react'
 import type {
   FieldPathValue,
@@ -12,21 +12,21 @@ import type {
 import {twMerge} from 'tailwind-merge'
 
 // エイリアスimport
-import type {acceptType, FileData, fileInfo} from '@cm/types/file-types'
+import type {FileData, fileInfo} from '@cm/types/file-types'
 import type {ControlContextType} from '@cm/types/form-control-type'
 import type {PrismaModelNames} from '@cm/types/prisma-types'
 
 // 相対パスimport
-import type {optionType, transposeColumnsOptionProps} from 'src/cm/class/Fields/col-operator-types'
-import type {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobal'
+import type {optionType, transposeColumnsOptionProps} from '@cm/class/Fields/col-operator-types'
+import type {useGlobalPropType} from '@cm/hooks/globalHooks/useGlobal'
 import type {myFormDefaultUpsertPropType} from '@cm/lib/formMethods/separateFormData'
-import type {prismaDataExtractionQueryType} from 'src/cm/components/DataLogic/TFs/Server/Conf'
+import type {prismaDataExtractionQueryType} from '@cm/components/DataLogic/TFs/Server/Conf'
 import type {ClientPropsType2} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
-import type {EasySearchObject} from 'src/cm/class/builders/QueryBuilderVariables'
-import {forSelcetType, multipleSelectProps} from '@cm/types/select-types'
+import type {EasySearchObject} from '@cm/class/builders/QueryBuilderVariables'
 import {upsertControllerType, MyFormType} from '@cm/types/form-types'
-import {anyObject} from '@cm/types/utility-types'
+import {anyObject, htmlProps} from '@cm/types/utility-types'
 import {UseRecordsReturn} from '@cm/components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
+import {colType} from '@cm/types/col-types'
 
 // --- JSX関連 ---
 export type JSXReturnFunc = (props: any) => JSX.Element
@@ -135,72 +135,6 @@ export type registerType = {
   disabled?: boolean
   deps?: InternalFieldName | InternalFieldName[]
 }
-
-export type colFormProps = {
-  showResetBtn?: boolean
-  placerHolder?: any
-  file?: {
-    accept?: acceptType
-    backetKey: string
-  }
-  send?: boolean //prisma送信時に含めるかどうか(default true)
-  descriptionNoteAfter?: dataFormatterType | string
-  style?: CSSProperties
-  defaultValue?: any
-  register?: registerType
-
-  editFormat?: (props: ControlContextType) => any
-  addFormat?: JSXReturnFunc | any
-  disabled?: boolean | ((props: {record: any; col: any}) => boolean)
-} & TdcreateFormPropss
-
-export type colTypeOptional = {
-  isMain?: boolean
-
-  surroundings?: {
-    form?: {
-      left?: any
-      right?: any
-    }
-  }
-
-  onFormItemBlur?: onFormItemBlurType
-  type?: colTypeStr
-  inputProps?: {
-    step?: number
-    min?: number
-    required?: boolean
-    placeholder?: string
-  } & anyObject
-  inputTypeAs?: colTypeStr
-  th?: {
-    format?: (col: colType) => any
-    style?: CSSProperties
-    divider?: anyObject
-    hidden?: boolean
-    // format: dataFormatterType
-  }
-  affix?: {
-    label?: string
-    prefix?: string
-    suffix?: string
-  }
-  format?: dataFormatterType
-  multipleSelect?: multipleSelectProps
-  forSelect?: forSelcetType
-
-  td?: colTdProps
-  form?: colFormProps | null
-  search?: anyObject
-  sort?: anyObject
-  // Register?: anyObject
-  originalColIdx?: number // このカラムが元々のカラムの何番目か（自動計算のため手動は不要）
-}
-
-export type colType = {
-  id: string
-  label: any
-} & colTypeOptional
 
 export type columnGetterType = {
   useGlobalProps: useGlobalPropType
@@ -357,23 +291,6 @@ export type serverFetchihngDataType = {
 }
 
 export type globalModalString = 'workLogHistory' | `sateiConnection` | `SaleEditor`
-
-// --- htmlProps型・ユーティリティ関数 ---
-export type htmlProps = {
-  id?: string
-  className?: string
-  ref?: Ref<any>
-  style?: CSSProperties
-  type?: 'button' | 'submit'
-  disabled?: boolean
-  onClick?: MouseEventHandler
-  onKeyDown?: KeyboardEventHandler
-  onBlur?: FocusEventHandler
-  onMouseEnter?: MouseEventHandler
-  onMouseLeave?: MouseEventHandler
-  onMouseDown?: MouseEventHandler
-  children?: ReactNode
-}
 
 /**
  * htmlPropsをマージするユーティリティ関数

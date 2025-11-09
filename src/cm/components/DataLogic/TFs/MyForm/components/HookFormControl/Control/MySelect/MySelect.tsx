@@ -23,10 +23,12 @@ const MySelect = React.memo((props: ControlProps) => {
   if (col.forSelect?.radio) {
     return <MyRadio {...props}></MyRadio>
   } else {
+    const diasbled = col?.form?.disabled
     return (
       <div className={`relative`}>
         <ShadPopover
           {...{
+            diasbled,
             mode: 'click',
             PopoverTrigger: <BaseDisplay {...{contexts}} />,
             open: isOptionsVisible,

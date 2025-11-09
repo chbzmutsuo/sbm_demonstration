@@ -3,7 +3,7 @@ import {CsvTableBody} from '@cm/components/styles/common-components/CsvTable/com
 import {CsvTableHead} from '@cm/components/styles/common-components/CsvTable/components/CsvTableHead'
 import {CsvTableVirtualized} from '@cm/components/styles/common-components/CsvTable/CsvTableVirtualized'
 import {TableBordered, TableWrapper} from '@cm/components/styles/common-components/Table'
-import {htmlProps} from '@cm/components/styles/common-components/type'
+import {htmlProps} from '@cm/types/utility-types'
 
 import React, {CSSProperties} from 'react'
 import {twMerge} from 'tailwind-merge'

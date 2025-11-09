@@ -3,7 +3,7 @@
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {useEffect, useMemo, useCallback} from 'react'
 import useDateSwitcherFunc from '@cm/components/utils/dates/DateSwitcher/useDateSwitcherFunc'
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {FitMargin} from '@cm/components/styles/common-components/common-components'
 import useWindowSize from '@cm/hooks/useWindowSize'
 

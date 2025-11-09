@@ -3,7 +3,8 @@
 import {FieldValues, useForm, UseFormReturn} from 'react-hook-form'
 import React, {useCallback, useEffect, useId, useMemo, useRef, useState} from 'react'
 
-import {colType, extraFormStateType, onFormItemBlurType} from '@cm/types/types'
+import {extraFormStateType, onFormItemBlurType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 
 import useGlobal from 'src/cm/hooks/globalHooks/useGlobal'
 import BasicForm from 'src/cm/hooks/useBasicForm/BaiscForm'

@@ -1,4 +1,4 @@
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {sqlResponse} from '@cm/class/SqlBuilder/useRawSql'
 
 import {apiPath} from '@cm/lib/methods/common'

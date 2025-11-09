@@ -47,8 +47,6 @@ export const getValue = ({col, record, dataModelName, mutateRecords, tdStyle}) =
     } else if (col.type === 'json') {
       return String(JSON.stringify(value))
       return <JsonFormatter json={value} />
-    } else if (col.type === 'float' || col.type === 'number') {
-      value = Number(value).toLocaleString()
     }
 
     if (typeof value === `function`) {

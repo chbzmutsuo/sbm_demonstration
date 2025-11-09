@@ -250,19 +250,19 @@ export class Days {
       return intervals
     },
 
-    // getIntervalDatum: (start: Date, end: Date) => {
-    //   const daysInInterval = Days.day.difference(new Date(end), new Date(start))
+    getIntervalDatum: (start: Date, end: Date) => {
+      const daysInInterval = Days.day.difference(new Date(end), new Date(start))
 
-    //   /**今月日数 */
-    //   const days: any[] = []
-    //   for (let i = 0; i <= daysInInterval; i++) {
-    //     const dt = new Date(start)
-    //     const newDate = dt.setDate(dt.getDate() + i)
-    //     days.push(new Date(newDate))
-    //   }
+      /**今月日数 */
+      const days: any[] = []
+      for (let i = 0; i <= daysInInterval; i++) {
+        const dt = new Date(start)
+        const newDate = dt.setDate(dt.getDate() + i)
+        days.push(new Date(newDate))
+      }
 
-    //   return {days}
-    // },
+      return {days}
+    },
 
     getDaysBetweenDates: (startDate: Date, endDate: Date): Date[] => {
       const start = new Date(startDate)

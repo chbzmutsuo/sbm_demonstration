@@ -6,7 +6,7 @@ const defaultSummaryInTdArgs = {
   showShadow: true,
 }
 
-import {colType, colTypeOptional} from '@cm/types/types'
+import {colType, colTypeOptional} from '@cm/types/col-types'
 import {aggregateOnSingleTd, aggregateOnSingleTdProps} from 'src/cm/class/Fields/lib/aggregateOnSingleTd'
 import {addColIndexs} from 'src/cm/class/Fields/lib/addColIndex'
 import {setAttribute} from 'src/cm/class/Fields/lib/setAttribute'

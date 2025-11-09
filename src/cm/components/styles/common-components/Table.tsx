@@ -1,5 +1,5 @@
 import {NumHandler} from '@cm/class/NumHandler'
-import {htmlProps} from 'src/cm/components/styles/common-components/type'
+import {htmlProps} from '@cm/types/utility-types'
 import {cn} from '@shadcn/lib/utils'
 
 export const TableWrapper = (props: any & {className?: string; children: React.ReactNode}) => {

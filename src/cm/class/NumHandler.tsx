@@ -44,4 +44,17 @@ export class NumHandler {
   }
   static WithUnit = (value: number, unit?: string, decimalPoint = 0) =>
     value && NumHandler.toPrice(NumHandler.round(value, decimalPoint)) + (unit ?? '')
+
+  static addPlusMinus(num) {
+    let prefix = ''
+
+    if (num > 0) {
+      prefix = '+'
+    }
+    if (num < 0) {
+      prefix = ''
+    }
+
+    return prefix + num
+  }
 }

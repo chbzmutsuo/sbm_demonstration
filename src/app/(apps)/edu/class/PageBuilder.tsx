@@ -8,12 +8,13 @@ import {DetailPagePropType} from '@cm/types/types'
 
 import ClassroomDetailPage from '@app/(apps)/edu/Grouping/parts/ClassroomDetailPage'
 import StudentDetailById from '@app/(apps)/edu/Grouping/components/Grouping/student/StudentDetailById'
-import MyAccordion from '@cm/components/utils/Accordions/MyAccordion'
+
 import MyForm from '@cm/components/DataLogic/TFs/MyForm/MyForm'
 
 import GameDetailPage from '@app/(apps)/edu/Grouping/parts/GameDetailPage'
 import {C_Stack} from '@cm/components/styles/common-components/common-components'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import MyAccordion from '@cm/components/utils/Accordions/Accordion'
 
 export class PageBuilder {
   static school = {

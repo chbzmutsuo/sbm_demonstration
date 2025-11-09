@@ -1,5 +1,5 @@
 import useWindowSize from '@cm/hooks/useWindowSize'
-import {htmlProps} from '@cm/components/styles/common-components/type'
+import {htmlProps} from '@cm/types/utility-types'
 
 export const StickyTop = ({children, top, style, ...props}: {children: React.ReactNode; top?: number} & htmlProps) => {
   const {appbarHeight} = useWindowSize()

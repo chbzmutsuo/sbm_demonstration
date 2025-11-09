@@ -1,6 +1,7 @@
 import {Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from '@cm/shadcn/ui/card'
 import {cl} from '@cm/lib/methods/common'
-import {htmlProps} from 'src/cm/components/styles/common-components/type'
+import {htmlProps} from '@cm/types/utility-types'
+
 export const Wrapper = (props: htmlProps) => {
   const {className, ...rest} = props
   return <div className={cl('h-fit p-0.5 sm:p-1   shadow bg-white  ', className)}>{props.children}</div>

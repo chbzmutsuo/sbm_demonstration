@@ -1,4 +1,4 @@
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 // --- セレクト・オプション関連型 ---
 import type {CSSProperties} from 'react'
 import type {PrismaModelNames} from '@cm/types/prisma-types'

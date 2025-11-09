@@ -83,7 +83,10 @@ const RoleAllocationTable = ({PageBuilderExtraProps}) => {
   const filteredUsers = users.filter(user => {
     // 検索条件でフィルタ
     const matchesSearch =
-      user.name?.toLowerCase().includes(searchTerm.toLowerCase()) || user.code?.toLowerCase().includes(searchTerm.toLowerCase())
+      user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      String(user.code ?? '')
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase())
 
     // 権限フィルタ
     if (selectedRoleFilter === 'all') {

@@ -5,11 +5,12 @@ import {TimeHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
 
 import {defaultRegister} from '@cm/class/builders/ColBuilderVariables'
 import {Fields} from '@cm/class/Fields/Fields'
-import {colType, columnGetterType} from '@cm/types/types'
+import {columnGetterType} from '@cm/types/types'
 import {createUpdate} from '@cm/lib/methods/createUpdate'
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {useEffect, useState} from 'react'
 import {toast} from 'react-toastify'
+import {colType} from '@cm/types/col-types'
 
 const timeVlidator = (value: string) => {
   if (value) {
@@ -44,7 +45,7 @@ export const TbmRouteGroupColBuilder = (props: columnGetterType) => {
         id: 'serviceNumber',
         label: '服務番号',
         form: {defaultValue: null},
-        td: {style: {...regularStyle, minWidth: 75}},
+        td: {style: {...regularStyle, minWidth: 85}},
         search: {},
       },
 
@@ -165,7 +166,7 @@ export const TbmRouteGroupColBuilder = (props: columnGetterType) => {
         label: `取引先`,
         td: {style: {...regularStyle, minWidth: 200}},
         form: {
-          defaultValue: (alreadyRegisteredFormData, formData, col) => {
+          defaultValue: ({alreadyRegisteredFormData, formData, col}) => {
             return formData?.Mid_TbmRouteGroup_TbmCustomer?.TbmCustomer?.id
           },
         },

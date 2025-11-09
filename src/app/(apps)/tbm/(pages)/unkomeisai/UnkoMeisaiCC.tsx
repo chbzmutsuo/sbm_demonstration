@@ -1,7 +1,8 @@
 'use client'
 
+import {MonthlyTbmDriveData} from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fetchUnkoMeisaiData'
 import UnkomeisaiDetailModal from '@app/(apps)/tbm/(pages)/unkomeisai/[id]/UnkomeisaiDetailModal'
-import {MonthlyTbmDriveData} from '@app/(apps)/tbm/(server-actions)/fetchUnkoMeisaiData'
+
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
 import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'

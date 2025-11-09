@@ -1,5 +1,6 @@
 import {Fields} from '@cm/class/Fields/Fields'
-import {colType, MyTableType} from '@cm/types/types'
+import {MyTableType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {ClientPropsType} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
 
 // 型定義を追加

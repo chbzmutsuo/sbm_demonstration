@@ -1,9 +1,9 @@
 'use client'
 
 import React, {useCallback} from 'react'
-import {htmlProps} from 'src/cm/components/styles/common-components/type'
+import {htmlProps} from '@cm/types/utility-types'
 
-import {cl} from 'src/cm/lib/methods/common'
+import {cl, sleep} from 'src/cm/lib/methods/common'
 import Link from 'next/link'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
@@ -16,9 +16,9 @@ export const T_LINK = React.memo((props: htmlProps & {href: string; target?: '_b
 
   const handleNavigate = useCallback(
     async e => {
-      // setglobalLoaderAtom(true)
-      // await sleep(200)
-      // setglobalLoaderAtom(false)
+      setglobalLoaderAtom(true)
+      await sleep(1000)
+      setglobalLoaderAtom(false)
     },
     [setglobalLoaderAtom]
   )

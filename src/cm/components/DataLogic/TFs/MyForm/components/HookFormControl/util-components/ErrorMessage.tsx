@@ -12,7 +12,7 @@ const ErrorMessage = ({controlContextValue}) => {
     return (
       <div
         className={cn(
-          'absolute -bottom-5 right-2   flex items-center gap-1.5 animate-in slide-in-from-top-1 duration-200',
+          'absolute -bottom-4 right-2   flex items-center gap-1.5 animate-in slide-in-from-top-1 duration-200',
           'min-w-[50px] text-end'
         )}
       >

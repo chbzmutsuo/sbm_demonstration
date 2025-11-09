@@ -6,7 +6,7 @@ import {eigyoshoRecordKey, fetchEigyoshoUriageData} from '@app/(apps)/tbm/(class
 import {tbmTableKeyValue} from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fetchUnkoMeisaiData'
 import {getMidnight} from '@cm/class/Days/date-utils/calculations'
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {User, TbmVehicle} from '@prisma/client'
+import {User} from '@prisma/client'
 
 export type KyuyoRecordKey =
   | 'B_Shukkin'

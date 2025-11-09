@@ -7,7 +7,7 @@ import {Days} from '@cm/class/Days/Days'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {getMidnight, toUtc} from '@cm/class/Days/date-utils/calculations'
 import {ChevronsLeft, ChevronsRight} from 'lucide-react'
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 
 interface DateSwitcherProps {
   additionalCols?: colType[]

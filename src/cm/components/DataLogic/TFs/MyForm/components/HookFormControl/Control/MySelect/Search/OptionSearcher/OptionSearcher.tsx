@@ -4,7 +4,7 @@ import {C_Stack} from 'src/cm/components/styles/common-components/common-compone
 
 import React from 'react'
 
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 
 import {contextsType} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/my-select-types'
 

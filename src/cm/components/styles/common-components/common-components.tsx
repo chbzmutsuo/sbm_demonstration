@@ -149,13 +149,13 @@ export const Circle = (
 }
 
 import JsonFormatter from 'react-json-formatter'
-import {htmlProps} from 'src/cm/components/styles/common-components/type'
 
 import {CssString} from 'src/cm/components/styles/cssString'
 import {Z_INDEX} from '@cm/lib/constants/constants'
 import {colorVariants} from '@cm/lib/methods/colorVariants'
 import {iconBtnColorVariants} from '@cm/components/styles/common-components/IconBtn'
 import {cn} from '@shadcn/lib/utils'
+import {htmlProps} from '@cm/types/utility-types'
 
 export const ParseJSON = ({json}) => {
   const jsonStyle = {

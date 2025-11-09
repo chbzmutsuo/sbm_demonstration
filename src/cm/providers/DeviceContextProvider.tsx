@@ -1,29 +1,89 @@
-// 'use client'
-// import React, {createContext, useContext, ReactNode} from 'react'
-// import useWindowSize from '@cm/hooks/useWindowSize'
-// import {DeviceContextType} from './types'
-// import Loader from '@cm/components/utils/loader/Loader'
+'use client'
+import React, {createContext, useContext, ReactNode, useState, useEffect} from 'react'
+import {GetDevice} from '@cm/hooks/useWindowSize'
 
-// const DeviceContext = createContext<DeviceContextType | null>(null)
+import Loader from '@cm/components/utils/loader/Loader'
 
-// const DeviceContextProvider = ({children}: {children: ReactNode}) => {
-//   const deviceData = useWindowSize()
+export const appbarHeight = 40
+export const footerHeight = 40
+export const headerMargin = 0
+type DeviceContextType = {
+  appbarHeight: number
+  footerHeight
+  bodyHeight: number
+  headerMargin: number
+  useWindowSizeDeps: number[]
+  currentDevice: string
+  width: number
+  height: number
+  device: any
+  SP: boolean
+  TB: boolean
+  PC: boolean
+}
+const DeviceContext = createContext<DeviceContextType | null>(null)
 
-//   const {device, width} = deviceData
+const DeviceContextProvider = ({children}: {children: ReactNode}) => {
+  const [windowSize, setWindowSize] = useState({width: 0, height: 0})
 
-//   if (!device || width === 0) {
-//     return <Loader>Validating Device Data...</Loader>
-//   }
+  const handleResize = () => {
+    const data = {width: window.innerWidth, height: window.innerHeight}
 
-//   return <DeviceContext.Provider value={deviceData}>{children}</DeviceContext.Provider>
-// }
+    setWindowSize(data)
+  }
 
-// export function useDeviceContext() {
-//   const context = useContext(DeviceContext)
-//   if (!context) {
-//     throw new Error('useDeviceContext must be used within DeviceProvider')
-//   }
-//   return context
-// }
+  useEffect(() => {
+    const debounce = (func: () => void, delay: number) => {
+      let timeoutId: NodeJS.Timeout
+      return () => {
+        clearTimeout(timeoutId)
+        timeoutId = setTimeout(func, delay)
+      }
+    }
+    const handleResizeDebounced = debounce(handleResize, 0)
+    window.addEventListener('resize', handleResizeDebounced)
+    handleResize()
+    return () => window.removeEventListener('resize', handleResizeDebounced)
+  }, [])
+  const width = windowSize?.width ?? 0
+  const height = windowSize?.height ?? 0
+  const currentDevice = GetDevice(width)
+  const SP = currentDevice === 'SP'
+  const TB = currentDevice === 'TB'
+  const PC = currentDevice === 'PC'
+  const device = {SP, TB, PC}
+  const useWindowSizeDeps = [width]
 
-// export default DeviceContextProvider
+  const bodyHeight = height - appbarHeight - headerMargin
+
+  if (!device || width === 0) {
+    return <Loader>Validating Device Data...</Loader>
+  }
+
+  const value = {
+    appbarHeight,
+    footerHeight,
+    bodyHeight,
+    headerMargin,
+    useWindowSizeDeps,
+    currentDevice,
+    width,
+    height,
+    device,
+    SP,
+    TB,
+    PC,
+  }
+
+  return <DeviceContext.Provider value={value}>{children}</DeviceContext.Provider>
+}
+
+export function useDeviceContext() {
+  const context = useContext(DeviceContext)
+  if (!context) {
+    throw new Error('useDeviceContext must be used within DeviceProvider')
+  }
+  return context
+}
+
+export default DeviceContextProvider

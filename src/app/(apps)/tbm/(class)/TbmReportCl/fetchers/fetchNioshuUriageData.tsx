@@ -2,9 +2,10 @@
 
 import {MEIAI_SUM_ORIGIN} from '@app/(apps)/tbm/(lib)/calculation'
 import {fetchUnkoMeisaiData} from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fetchUnkoMeisaiData'
-import {unkoMeisaiKey} from '@app/(apps)/tbm/(class)/DriveScheduleCl'
+
 import {tbmTableKeyValue} from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fetchUnkoMeisaiData'
 import {TbmCustomer} from '@prisma/client'
+import {unkoMeisaiKey} from '@app/(apps)/tbm/(class)/TbmReportCl/cols/createUnkoMeisaiRow'
 
 export type nioshuUriageRecordKey = `customerName` | `postalFee` | `generalFee` | `driverFee`
 
@@ -87,4 +88,3 @@ export const fetchNioshuUriageData = async ({whereQuery, tbmBaseId}) => {
     NioshuUriageRecords,
   }
 }
-

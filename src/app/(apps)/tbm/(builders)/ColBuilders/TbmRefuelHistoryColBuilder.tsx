@@ -1,8 +1,9 @@
-import {colType, columnGetterType} from '@cm/types/types'
+import {columnGetterType} from '@cm/types/types'
 import {Fields} from '@cm/class/Fields/Fields'
 import {getMidnight} from '@cm/class/Days/date-utils/calculations'
 import {defaultRegister} from '@cm/class/builders/ColBuilderVariables'
 import {getVehicleForSelectConfig} from '@app/(apps)/tbm/(builders)/ColBuilders/TbmVehicleColBuilder'
+import {colType} from '@cm/types/col-types'
 export const TbmRefuelHistoryColBuilder = (props: columnGetterType) => {
   const {session} = props.useGlobalProps
   const userId = session?.id

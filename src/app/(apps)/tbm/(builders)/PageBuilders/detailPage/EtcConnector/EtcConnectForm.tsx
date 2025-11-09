@@ -112,7 +112,6 @@ export default function EtcConnectForm({EtcConnectFormMD, tbmVehicleId}) {
         <strong>① スプレッドシートの設定</strong>
         <BasicForm
           {...{
-            // alignMode: `row`,
             latestFormData,
             onSubmit: async data => {
               const {tbmVehicleId, url, month} = data

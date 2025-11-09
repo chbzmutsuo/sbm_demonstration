@@ -1,6 +1,7 @@
 import {Fields} from 'src/cm/class/Fields/Fields'
 
-import {colType, columnGetterType} from '@cm/types/types'
+import {columnGetterType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {Absolute, Vr} from 'src/cm/components/styles/common-components/common-components'
 import {LabelValue} from '@cm/components/styles/common-components/ParameterCard'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'

@@ -1,4 +1,4 @@
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {dynamicMasterModel} from '@cm/class/builders/ColBuilderVariables'
 import {PrismaModelNames} from '@cm/types/prisma-types'
 

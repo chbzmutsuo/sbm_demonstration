@@ -22,11 +22,13 @@ export default function AppRootProvider({children}: {children: React.ReactNode})
   return (
     <SessionProvider>
       <SWRConfig value={config}>
+        {/* <DeviceContextProvider> */}
         <SessionContextProvider>
           <NavigationContextProvider>
             <LoaderContextProvider>{children}</LoaderContextProvider>
           </NavigationContextProvider>
         </SessionContextProvider>
+        {/* </DeviceContextProvider> */}
       </SWRConfig>
     </SessionProvider>
   )

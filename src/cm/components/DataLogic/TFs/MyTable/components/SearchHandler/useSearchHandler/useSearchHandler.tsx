@@ -1,5 +1,5 @@
 import React, {useMemo, useState} from 'react'
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobal'
 
 import {R_Stack} from 'src/cm/components/styles/common-components/common-components'

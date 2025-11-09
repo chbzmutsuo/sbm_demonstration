@@ -1,9 +1,10 @@
 'use client'
 import {C_Stack} from 'src/cm/components/styles/common-components/common-components'
-import {ChevronsDownIcon, ChevronsUpIcon} from 'lucide-react'
+
 import useElementRef from 'src/cm/hooks/useElementRef'
 import {cl} from 'src/cm/lib/methods/common'
 import {useState} from 'react'
+import {ChevronsDown, ChevronsUp} from 'lucide-react'
 
 const TextAccordion = ({children, minHeight = 0, maxHeight = 150}) => {
   const [open, setopen] = useState(false)
@@ -29,7 +30,7 @@ const TextAccordion = ({children, minHeight = 0, maxHeight = 150}) => {
     )
   }
 
-  const Chevron = open ? ChevronsDownIcon : ChevronsUpIcon
+  const Chevron = open ? ChevronsUp : ChevronsDown
   const letter = open ? '閉じる' : '続きを見る'
 
   const {TargetElementProps: btnProps, TargetElementRef: btnRef} = useElementRef()
@@ -47,9 +48,9 @@ const TextAccordion = ({children, minHeight = 0, maxHeight = 150}) => {
         {overflowing && !open && (
           <div className={` w-full justify-between text-center`}>
             {/* <small className={` flex  items-center  align-middle `}>
-              <ChevronsDownIcon className={`w-4`} />
-              <ChevronsDownIcon className={`w-4`} />
-              <ChevronsDownIcon className={`w-4`} />
+              <ChevronDoubleDownIcon className={`w-4`} />
+              <ChevronDoubleDownIcon className={`w-4`} />
+              <ChevronDoubleDownIcon className={`w-4`} />
             </small> */}
           </div>
         )}

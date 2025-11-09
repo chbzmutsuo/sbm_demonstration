@@ -6,7 +6,8 @@ import ContentPlayer from '@cm/components/utils/ContentPlayer'
 import {v4 as uuidv4} from 'uuid'
 import Image from 'next/image'
 
-import {colType, columnGetterType} from '@cm/types/types'
+import { columnGetterType} from '@cm/types/types'
+import { colType } from '@cm/types/col-types'
 
 import {T_LINK} from '@cm/components/styles/common-components/links'
 

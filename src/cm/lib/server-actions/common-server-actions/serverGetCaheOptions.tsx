@@ -2,7 +2,7 @@
 
 import {handlePrismaError} from '@cm/lib/prisma-helper'
 
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {anyObject} from '@cm/types/utility-types'
 import {getSelectId} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
 import {prismaMethodType, PrismaModelNames} from '@cm/types/prisma-types'

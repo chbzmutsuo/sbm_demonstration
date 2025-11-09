@@ -72,7 +72,13 @@ export type colFormProps = {
   send?: boolean
   descriptionNoteAfter?: dataFormatterType | string
   style?: CSSProperties
-  defaultValue?: any
+  defaultValue?:
+    | string
+    | number
+    | Date
+    | boolean
+    | null
+    | ((props: {alreadyRegisteredFormData: any; formData: any; col: colType}) => any)
   register?: registerType
   editFormat?: (props: ControlContextType) => any
   addFormat?: JSXReturnFunc | any

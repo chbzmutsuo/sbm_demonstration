@@ -1,7 +1,7 @@
 import {colorVariants} from '@cm/lib/methods/colorVariants'
 import {tv} from 'tailwind-variants'
 import React from 'react'
-import {htmlProps} from '@cm/components/styles/common-components/type'
+import {htmlProps} from '@cm/types/utility-types'
 import {TextProps} from '@cm/lib/methods/Coloring'
 import {iconBtnColorVariants} from '@cm/components/styles/common-components/IconBtn'
 import {cl} from '@cm/lib/methods/common'
@@ -80,6 +80,7 @@ export const Text = (props: htmlProps & TextProps) => {
   return <span {...elementProps} />
 }
 
+export const TextLink = (props: htmlProps) => <Text {...props} color={`blue`} className={`t-link`} />
 export const TextBlue = (props: htmlProps) => <Text {...props} color={`blue`} />
 export const TextRed = (props: htmlProps) => <Text {...props} color={`red`} />
 export const TextGreen = (props: htmlProps) => <Text {...props} color={`green`} />

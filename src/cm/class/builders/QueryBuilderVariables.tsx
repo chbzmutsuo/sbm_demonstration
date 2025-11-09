@@ -1,4 +1,3 @@
-import {AccordiongPropType} from '@cm/components/utils/Accordions/MyAccordion'
 import {getRelationalModels, getSchema} from 'src/cm/lib/methods/prisma-schema'
 
 import {PrismaModelNames} from '@cm/types/prisma-types'
@@ -6,6 +5,7 @@ import {anyObject} from '@cm/types/utility-types'
 import {CSSProperties} from 'react'
 import {Prisma, PrismaClient} from '@prisma/client'
 import {dataCountObject} from '@cm/components/DataLogic/TFs/Server/fetchers/EasySearchDataSwrFetcher'
+import {AccordiongPropType} from '@cm/components/utils/Accordions/Accordion'
 
 export const SORT_ARGS = {orderBy: [{sortOrder: 'asc'}, {id: 'asc'}]}
 

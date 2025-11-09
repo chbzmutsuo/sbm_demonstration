@@ -1,6 +1,7 @@
 import {FileHandler} from 'src/cm/class/FileHandler'
 import {FileData} from '@cm/types/file-types'
-import {colType, requestResultType} from '@cm/types/types'
+import {requestResultType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 
 export const updateWithImageAndAddUrlToLatestFormData = async ({latestFormData, extraFormState, columns}) => {
   if (extraFormState?.files) {

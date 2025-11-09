@@ -5,7 +5,7 @@ import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {getScopes} from 'src/non-common/scope-lib/getScopes'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {Days} from '@cm/class/Days/Days'
-import {getMonthlyTbmDriveData} from '@app/(apps)/tbm/(server-actions)/fetchUnkoMeisaiData'
+
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {Button} from '@cm/components/styles/common-components/Button'
 import {ChevronLeft, ChevronRight} from 'lucide-react'
@@ -16,6 +16,7 @@ import {C_Stack} from '@cm/components/styles/common-components/common-components
 import {TimeHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
 import {T_LINK} from '@cm/components/styles/common-components/links'
 import {HREF} from '@cm/lib/methods/urls'
+import {fetchUnkoMeisaiData} from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fetchUnkoMeisaiData'
 
 export default function MonthlySchedulePage() {
   const {query, session, addQuery} = useGlobal()
@@ -70,7 +71,7 @@ export default function MonthlySchedulePage() {
           }
 
           // 月間運行データを取得
-          const data = await getMonthlyTbmDriveData({
+          const data = await fetchUnkoMeisaiData({
             whereQuery,
             tbmBaseId,
             userId: selectedDriverId,

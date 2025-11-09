@@ -1,7 +1,7 @@
 'use client'
 import React, {JSX} from 'react'
 import {Alert, AlertTitle, AlertDescription} from '@shadcn/ui/alert'
-import {htmlProps} from '@shadcn/lib/variant-props'
+
 import {colorVariantStr} from '@shadcn/lib/variant-types'
 import {cn} from '@shadcn/lib/utils'
 
@@ -10,6 +10,7 @@ import {InfoIcon} from 'lucide-react'
 import useModal from '@cm/components/utils/modal/useModal'
 
 import {C_Stack} from '@cm/components/styles/common-components/common-components'
+import {htmlProps} from '@cm/types/utility-types'
 export const alertVariantClasses = {
   info: 'border-info bg-info/10 text-info',
   success: 'border-success bg-success/10 text-success',

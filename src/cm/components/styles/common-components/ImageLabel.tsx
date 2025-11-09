@@ -1,4 +1,4 @@
-import {htmlProps} from 'src/cm/components/styles/common-components/type'
+import {htmlProps} from '@cm/types/utility-types'
 import {CSSProperties} from 'react'
 
 export const ImageLabel = (props: htmlProps & {label?: any; src: string; imgClass?: string; style?: CSSProperties}) => {

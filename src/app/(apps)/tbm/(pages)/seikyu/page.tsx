@@ -12,6 +12,7 @@ import {BillingHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
 import {Days} from '@cm/class/Days/Days'
 import {toUtc} from '@cm/class/Days/date-utils/calculations'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {getDriveScheduleList} from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fetchUnkoMeisaiData'
 
 export default async function Page(props) {
   const query = await props.searchParams
@@ -49,7 +50,7 @@ export default async function Page(props) {
     if (!whereQuery?.gte || !whereQuery?.lte) return 0
 
     try {
-      const driveScheduleList = await DriveScheduleCl.getDriveScheduleList({
+      const driveScheduleList = await getDriveScheduleList({
         whereQuery: {
           ...whereQuery,
           gte: Days.day.subtract(whereQuery.gte, 1),

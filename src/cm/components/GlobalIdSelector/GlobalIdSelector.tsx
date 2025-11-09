@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {anyObject} from '@cm/types/utility-types'
 import {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobal'
 import useBasicFormProps from 'src/cm/hooks/useBasicForm/useBasicFormProps'

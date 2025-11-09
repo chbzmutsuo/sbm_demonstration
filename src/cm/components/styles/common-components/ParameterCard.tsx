@@ -2,8 +2,10 @@ import {cn} from '@shadcn/lib/utils'
 import {R_Stack} from '@cm/components/styles/common-components/common-components'
 import EmptyPlaceholder from '@cm/components/utils/loader/EmptyPlaceHolder'
 import {ReactNode} from 'react'
-import {htmlProps, styling} from 'src/cm/components/styles/common-components/type'
+import {styling} from 'src/cm/components/styles/common-components/type'
+
 import {cl} from 'src/cm/lib/methods/common'
+import {htmlProps} from '@cm/types/utility-types'
 
 const getStyles = styling => {
   const {wrapper, label, value} = styling?.styles ?? {}

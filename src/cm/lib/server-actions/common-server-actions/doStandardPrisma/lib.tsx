@@ -100,23 +100,6 @@ export async function initQueryObject({model, method, queryObject, prismaModel})
 
     delete queryObject?.create?.id
     delete queryObject?.update?.id
-
-    // モデルのスキーマに存在しないフィールドを削除
-    const modelRelations = getRelationalModels({schemaAsObj: getSchema(), parentName: model})
-    const modelFields = modelRelations?.singleAttributeObj
-
-    if (modelFields) {
-      targetKeys.forEach(key => {
-        if (queryObject[key]) {
-          Object.keys(queryObject[key]).forEach(fieldName => {
-            // スキーマに存在しないフィールドを削除
-            if (!modelFields[fieldName] && fieldName !== 'id') {
-              delete queryObject[key][fieldName]
-            }
-          })
-        }
-      })
-    }
   }
 }
 

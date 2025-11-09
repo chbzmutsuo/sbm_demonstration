@@ -20,11 +20,11 @@ export type ControlGroupPropType = BasicFormType & {
   latestFormData
 }
 export const ControlGroup = React.memo((props: ControlGroupPropType) => {
-  const {ReactHookForm, formData, useResetValue, latestFormData, formId, ControlOptions, col, columns} = props
+  const {ReactHookForm, formData, useResetValue, latestFormData, formId, ControlOptions, col, columns, alignMode} = props
   const messages = ReactHookForm?.formState?.errors
   const {Register} = col
 
-  const {PC} = useWindowSize()
+  const {PC, SP} = useWindowSize()
 
   if (!col?.id && col?.label) {
     return (
@@ -40,7 +40,11 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
         render={({field}) => {
           const errorMessage = messages?.[col.id]?.message?.toString()
 
-          const {id: wrapperId, ControlStyle, isBooleanType} = getStyleProps({ControlOptions, col, PC})
+          const {
+            id: wrapperId,
+            ControlStyle,
+            isBooleanType,
+          } = getStyleProps({ControlOptions, col, PC, alignMode: props.alignMode})
 
           const currentValue = props.ReactHookForm?.getValues(col.id)
 
@@ -74,7 +78,8 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
             pointerClass,
             type,
           }
-          const horizontal = props.alignMode === `row`
+
+          const horizontal = props.alignMode === `row` || (props.alignMode === 'console' && !SP)
 
           const showDescription = ControlOptions?.showDescription !== false && col.form?.descriptionNoteAfter
 
@@ -86,13 +91,35 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
 
               if (position === 'left' && !reverseLabelTitle) {
                 return (
-                  <section className={cn(horizontal ? 'mr-1' : `mb-2`, 'min-w-fit')}>
-                    <Label {...{ReactHookForm, col, ControlOptions, required}} />
-                  </section>
+                  <Label
+                    {...{
+                      className: cn(horizontal ? 'mr-0' : `mb-0`, 'min-w-fit '),
+                      horizontal,
+                      ReactHookForm,
+                      col,
+                      ControlOptions,
+                      required,
+                    }}
+                  />
                 )
               }
               if (position === 'right' && reverseLabelTitle) {
-                return <div>{<Label {...{ReactHookForm, col, ControlOptions, required}} />}</div>
+                return (
+                  <div>
+                    {
+                      <Label
+                        {...{
+                          className: '',
+                          horizontal,
+                          ReactHookForm,
+                          col,
+                          ControlOptions,
+                          required,
+                        }}
+                      />
+                    }
+                  </div>
+                )
               }
 
               return <></>
@@ -103,17 +130,26 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
           // const offset = 0
           // const style = !horizontal ? {} : undefined
 
-          return (
+          const PcForm = (
             <div
-              // style={style}
               id={wrapperId}
-              className={cn(` ${DH__switchColType({type: col.type}) === `boolean` ? ' cursor-pointer' : ''}  relative `)}
+              className={cn(
+                //
+                `relative `,
+                DH__switchColType({type: col.type}) === `boolean` ? ' cursor-pointer' : ''
+              )}
             >
               <div
                 className={cn(
                   //
                   `gap-0 w-full`,
-                  horizontal ? 'row-stack flex-nowrap　items-center ' : 'col-stack'
+                  horizontal
+                    ? cn(
+                        `row-stack flex-nowrap  `,
+                        'items-stretch'
+                        // props.alignMode === 'console' && props.col.type === 'textarea' ? 'items-start' : 'items-stretch'
+                      )
+                    : 'col-stack'
                 )}
               >
                 <LabelCallback position="left" />
@@ -122,7 +158,6 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
                     {...{
                       col,
                       controlContextValue,
-                      shownButDisabled: ControlOptions?.shownButDisabled ?? false,
                     }}
                   />
                 </div>
@@ -140,6 +175,12 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
 
                 <LabelCallback position="right" />
               </div>
+            </div>
+          )
+          return (
+            <div>
+              <div className="block sm:hidden">{PcForm}</div>
+              <div className="hidden sm:block">{PcForm}</div>
             </div>
           )
         }}

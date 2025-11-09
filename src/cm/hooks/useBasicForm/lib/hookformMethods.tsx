@@ -2,7 +2,7 @@ import {cl, funcOrVar, ObjectMap} from 'src/cm/lib/methods/common'
 import {isMultiItem, parseMultiId} from 'src/cm/lib/methods/multipleItemLib'
 import {useForm, UseFormReturn, useWatch} from 'react-hook-form'
 import {formPropType} from '@cm/types/form-control-type'
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {controlDefaultStyle} from '@cm/constants/defaults'
 import {DH__switchColType} from '@cm/class/DataHandler/type-converter'
 
@@ -56,7 +56,11 @@ export const makeDefaultValues = ({columns, formData}) => {
       } else {
         const alreadyRegisteredFormData = formData?.[key]
 
-        const defaultValue = funcOrVar(col?.form?.defaultValue, alreadyRegisteredFormData, formData, col)
+        const defaultValue = funcOrVar(col?.form?.defaultValue, {
+          alreadyRegisteredFormData,
+          formData,
+          col,
+        })
 
         const value = alreadyRegisteredFormData ?? defaultValue
 
@@ -90,7 +94,7 @@ export const useFormValues = () => {
 }
 
 export const controlOffset = 10
-export const getStyleProps = ({ControlOptions, col, PC}) => {
+export const getStyleProps = ({ControlOptions, col, PC, alignMode}) => {
   const isBooleanType = judgeBooleanType({col})
 
   const {controlWrapperClassBuilder} = ControlOptions ?? {}
@@ -110,11 +114,13 @@ export const getStyleProps = ({ControlOptions, col, PC}) => {
   const minWidthBase = [col?.form?.style?.minWidth, ControlStyle?.minWidth, controlDefaultStyle.minWidth].find(Boolean)
   const maxWidthBase = [col?.form?.style?.maxWidth, ControlStyle?.maxWidth, controlDefaultStyle.maxWidth].find(Boolean)
 
+  const applyOffsetWidth = PC && !['col', 'row', 'console'].some(mode => mode === alignMode)
+
   ControlStyle = {
     ...ControlStyle,
-    width: getOffsetWidth(withBase, controlOffset, PC, col),
-    minWidth: getOffsetWidth(minWidthBase, controlOffset, PC, col),
-    maxWidth: getOffsetWidth(maxWidthBase, controlOffset, PC, col),
+    width: getOffsetWidth(withBase, controlOffset, applyOffsetWidth, col),
+    minWidth: getOffsetWidth(minWidthBase, controlOffset, applyOffsetWidth, col),
+    maxWidth: getOffsetWidth(maxWidthBase, controlOffset, applyOffsetWidth, col),
   }
 
   return {id, flexDirection, wrapperClass, ControlStyle, isBooleanType}
@@ -145,7 +151,7 @@ export const getStyleProps = ({ControlOptions, col, PC}) => {
 }
 
 export const getFormProps = ({ControlOptions, isBooleanType, Register, col, errorMessage, currentValue}) => {
-  const defaultControlClassName = 'myFormControl   '
+  const defaultControlClassName = 'myFormControl'
   const {controllClassName} = ControlOptions ?? {}
 
   const normalInputClass = cl(controllClassName ? controllClassName : defaultControlClassName)
@@ -153,7 +159,7 @@ export const getFormProps = ({ControlOptions, isBooleanType, Register, col, erro
   const formProps: formPropType = {
     className: cl(
       isBooleanType ? '' : normalInputClass,
-      ControlOptions?.shownButDisabled ? ' disabled bg-gray-300' : '',
+      col.form?.disabled ? ' disabled bg-gray-300' : '',
       errorMessage ? `errorFormControl` : '',
       currentValue ? '' : 'empty'
     ),
@@ -169,16 +175,15 @@ export const showResetBtn = ({col, isBooleanType, Register, currentValue, Contro
     currentValue &&
       !isBooleanType &&
       col.type !== 'file' &&
-      Register?.disabled !== true &&
+      col.form?.disabled !== true &&
       col.type !== 'rating' &&
       col.type !== 'textarea' &&
-      !ControlOptions.shownButDisabled &&
       ControlOptions?.showResetBtn !== false &&
       col.form?.showResetBtn !== false
   )
 }
 
-export const getOffsetWidth = (width: string | number, offsetWidth = 0, PC?: boolean, col?: colType) => {
+export const getOffsetWidth = (width: string | number, offsetWidth = 0, applyOffsetWidth?: boolean, col?: colType) => {
   let result: string = ''
   const use2ColSpan = col ? getUse2ColSpan(col) : false
   const multiple = use2ColSpan ? 2 : 1
@@ -189,7 +194,7 @@ export const getOffsetWidth = (width: string | number, offsetWidth = 0, PC?: boo
 
   // ブレークポイントごとに幅を変えるinline styleの例
   if (typeof window !== 'undefined') {
-    if (use2ColSpan && PC) {
+    if (use2ColSpan && applyOffsetWidth) {
       // xl以上ならtextareaを2倍に
       result = `calc(${strWidth} * ${multiple} + ${offsetWidth}px) `
     } else {

@@ -1,7 +1,7 @@
 import {C_Stack, Center} from '@cm/components/styles/common-components/common-components'
 import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
 import React, {useMemo} from 'react'
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {cn} from '@shadcn/lib/utils'
 
 // 型定義を追加

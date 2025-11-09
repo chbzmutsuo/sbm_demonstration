@@ -11,8 +11,8 @@ import {
   doDeleteMany,
   initQueryObject,
 } from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/lib'
-import {prismaChain} from 'src/non-common/prismaChain'
-import prisma from 'src/lib/prisma'
+import {prismaChain} from '../../../../../non-common/prismaChain'
+import prisma from '../../../../../lib/prisma'
 
 export type doStandardPrismaType = <T extends PrismaModelNames, M extends prismaMethodType>(
   model: T,

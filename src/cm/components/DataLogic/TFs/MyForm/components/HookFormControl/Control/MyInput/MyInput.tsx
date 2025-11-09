@@ -36,19 +36,14 @@ const MyInput = React.forwardRef((props: {controlContextValue: ControlContextTyp
     <>
       <input
         {...col?.inputProps}
+        disabled={col?.form?.disabled}
         list={datalistId}
         step={step}
         control={ReactHookForm.control}
         type={convertedType}
         style={style}
         className={formProps.className}
-        {...{
-          ...Register,
-          onChange: e => {
-            liftUpNewValueOnChange({id: col.id, newValue: e.target.value, ReactHookForm})
-          },
-          onBlur: field?.onBlur,
-        }}
+        {...Register}
       />
       <DataList />
     </>

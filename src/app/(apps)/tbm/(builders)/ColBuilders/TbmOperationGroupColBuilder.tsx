@@ -112,11 +112,11 @@ export const goBackAdoptor = ({type, labelAffix}) => {
     ...col,
     form: {
       ...col.form,
-      defaultValue: (value, row, col) => {
-        let data = row?.TbmOperation?.find(op => op.type === type)?.[col.id.replace(`${type}_`, '')]
+      defaultValue: ({formData, col}) => {
+        let data = formData?.TbmOperation?.find(op => op.type === type)?.[col.id.replace(`${type}_`, '')]
 
         if (!data) {
-          data = row?.[col.id.replace(`${type}_`, '')]
+          data = formData?.[col.id.replace(`${type}_`, '')]
         }
 
         return data

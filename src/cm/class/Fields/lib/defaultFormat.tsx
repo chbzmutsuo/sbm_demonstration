@@ -17,7 +17,7 @@ import {
 import {isRelationalData} from 'src/cm/class/Fields/lib/methods'
 import {cl} from 'src/cm/lib/methods/common'
 import ContentPlayer from 'src/cm/components/utils/ContentPlayer'
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
 import {StrHandler} from '@cm/class/StrHandler'
 

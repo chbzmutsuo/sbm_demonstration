@@ -1,5 +1,5 @@
 import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 
 export function makeFormsByColumnObj(columns: any) {
   const validColumnsForEditForm: colType[] = columns.flat().filter(col => col.form && col?.form?.hidden !== true)

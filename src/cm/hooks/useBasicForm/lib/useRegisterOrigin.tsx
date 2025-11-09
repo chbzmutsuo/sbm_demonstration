@@ -7,14 +7,14 @@ import {funcOrVar} from '@cm/lib/methods/common'
 import {DH__convertDataType} from '@cm/class/DataHandler/type-converter'
 
 export const useRegisterOrigin = ({newestRecord, col, ReactHookForm, onFormItemBlur, formData, latestFormData}) => {
-  const shownButDisabled = funcOrVar(col?.form?.disabled, {record: newestRecord, col})
+  const disabled = funcOrVar(col?.form?.disabled, {record: newestRecord, col})
 
   const currentValue = ReactHookForm.watch(col?.id)
   const registerProps: RegisterOptions = funcOrVar(col?.form?.register, {latestFormData, col, ReactHookForm})
 
   return {
     currentValue: currentValue,
-    shownButDisabled,
+    form: col.form ? {...col.form, disabled} : undefined,
     Register: ReactHookForm.register(col?.id, {
       ...registerProps,
 

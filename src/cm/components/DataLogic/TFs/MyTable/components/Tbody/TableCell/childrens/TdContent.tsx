@@ -7,7 +7,7 @@ const EditableForm = dynamic(() => import(`@cm/components/DataLogic/TFs/MyTable/
 
 import {Fields} from '@cm/class/Fields/Fields'
 import {DH__switchColType} from '@cm/class/DataHandler/type-converter'
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {DisplayedState} from '@cm/components/DataLogic/TFs/MyTable/components/Tbody/TableCell/childrens/DisplayedState'
 
 const TdContent = React.memo((props: {dataModelName: string; col: colType; record: any; value: any; mutateRecords: any}) => {

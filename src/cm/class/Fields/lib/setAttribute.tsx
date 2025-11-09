@@ -1,6 +1,6 @@
 'use client'
 
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 
 export const setAttribute = (props: {
   cols: colType[]

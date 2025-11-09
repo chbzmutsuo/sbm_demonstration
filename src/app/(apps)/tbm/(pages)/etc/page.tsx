@@ -95,19 +95,6 @@ export default function EtcCsvImportPage() {
     EtcScheduleLinkModalReturn.handleOpen({etcMeisaiId, scheduleId, scheduleDate})
   }
 
-  // return <EtcImportForm isLoading={isLoading} onImport={importCsvData} onFormChange={loadEtcRawData} />
-
-  // <BasicForm
-  //             {...{
-  //               alignMode: 'col',
-  //               latestFormData,
-  //               onSubmit: importCsvData,
-  //             }}
-  //           >
-  //             <div className="mb-4">{/* CSVデータ入力フィールド */}</div>
-  //             <Button disabled={isLoading}>{isLoading ? 'インポート中...' : 'CSVデータをインポート'}</Button>
-  //           </BasicForm>
-
   return (
     <FitMargin className={`p-2`}>
       <C_Stack>

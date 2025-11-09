@@ -1,6 +1,6 @@
 import {PrismaModelNames} from '@cm/types/prisma-types'
 
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {UseRecordsReturn} from '@cm/components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
 
 import {useGlobalPropType} from '@cm/hooks/globalHooks/useGlobalOrigin'
@@ -82,7 +82,7 @@ export type atomTypes = {
   sateiConnectionGMF: {newCar: any; sateiNoList: any}
   crScheduleSwitcherModal: {theCar: any; lastHistory: any}
   waitingCarVisualizerOpen: boolean
-  checkPointModalGMF: {cp: any; newCar: any; UseRecordsReturn: any}
+  checkPointModalGMF: {cp: any; newCar: any; UseRecordsReturn: UseRecordsReturn}
   stuffSwitcherGMF: {newCar: any}
 
   //

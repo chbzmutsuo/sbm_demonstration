@@ -2,7 +2,7 @@ import {isMultiItem, updateMultiItemInTransaction} from '@cm/lib/methods/multipl
 import {PrismaModelNames} from '@cm/types/prisma-types'
 import {requestResultType} from '@cm/types/types'
 
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {doTransaction, transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {generalDoStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {StrHandler} from '@cm/class/StrHandler'

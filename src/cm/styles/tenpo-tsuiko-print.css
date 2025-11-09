@@ -1,0 +1,197 @@
+/* A4 Print Layout for Tenpo Tsuiko Shinsei */
+
+.a4-print-container {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 15mm;
+  margin: 0 auto;
+  background-color: white;
+  box-sizing: border-box;
+  font-family: sans-serif;
+  color: #333;
+}
+
+.print-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+
+.print-header h1 {
+  font-size: 24px;
+  margin: 0;
+}
+
+.application-date {
+  font-size: 14px;
+  color: #555;
+}
+
+.print-section {
+  margin-bottom: 15px;
+  width: 65%;
+}
+
+.print-section h2 {
+  font-size: 16px;
+  margin: 0 0 10px 0;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #eee;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.info-item {
+  margin-bottom: 8px;
+}
+
+.info-item label {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.info-item div {
+  font-size: 14px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  table-layout: fixed;
+}
+
+.data-table th,
+.data-table td {
+  border: 1px solid #ddd;
+  padding: 4px;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.data-table th {
+  background-color: #f5f5f5;
+  font-weight: normal;
+}
+
+.data-table th:nth-child(1) {
+  width: 15%;
+}
+
+.data-table th:nth-child(2) {
+  width: 40%;
+}
+
+.data-table th:nth-child(3) {
+  width: 15%;
+}
+
+.data-table th:nth-child(4) {
+  width: 15%;
+}
+
+.data-table th:nth-child(5) {
+  width: 15%;
+}
+
+.data-table .text-right {
+  text-align: right;
+}
+
+.total-row {
+  font-weight: bold;
+  background-color: #f9f9f9;
+}
+
+.no-data {
+  padding: 20px;
+  text-align: center;
+  color: #999;
+  border: 1px solid #eee;
+}
+
+.approval-section {
+  margin-top: 20px;
+  position: absolute;
+  right: 15mm;
+  top: 90mm;
+  width: 30%;
+}
+
+.approval-column {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.approval-box {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 5px;
+}
+
+.approval-title {
+  text-align: center;
+  font-size: 14px;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.approval-stamp {
+  height: 60px;
+  border: 1px dashed #ccc;
+  margin-bottom: 10px;
+}
+
+.approval-date {
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.approval-comment {
+  font-size: 12px;
+}
+
+/* Print-specific styles */
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+    background: white;
+  }
+
+  .a4-print-container {
+    width: 100%;
+    height: 100%;
+    padding: 10mm;
+    box-shadow: none;
+    position: relative;
+  }
+
+  .print-target {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .approval-section {
+    position: absolute;
+    right: 10mm;
+    top: 90mm;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}

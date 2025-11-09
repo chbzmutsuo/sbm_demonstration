@@ -27,8 +27,9 @@ import {carHistoryKey, fetchRuisekiKyoriKichoData} from '@app/(apps)/tbm/(server
 import {getMidnight} from '@cm/class/Days/date-utils/calculations'
 import prisma from 'src/lib/prisma'
 import {User} from '@prisma/client'
-import {unkoMeisaiKey} from '@app/(apps)/tbm/(class)/DriveScheduleCl'
+
 import {fetchUnkoMeisaiData, tbmTableKeyValue} from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fetchUnkoMeisaiData'
+import {unkoMeisaiKey} from '@app/(apps)/tbm/(class)/TbmReportCl/cols/createUnkoMeisaiRow'
 
 export type EigyoshoUriageRecord = {
   user: User

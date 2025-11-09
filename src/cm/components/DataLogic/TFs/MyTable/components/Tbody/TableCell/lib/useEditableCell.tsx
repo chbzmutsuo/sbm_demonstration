@@ -7,7 +7,7 @@ import React from 'react'
 import {toast} from 'react-toastify'
 import {CssString} from 'src/cm/components/styles/cssString'
 
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {Fields} from 'src/cm/class/Fields/Fields'
 import {UpsertMain} from '@cm/components/DataLogic/TFs/MyForm/helpers/UpsertMain'
 

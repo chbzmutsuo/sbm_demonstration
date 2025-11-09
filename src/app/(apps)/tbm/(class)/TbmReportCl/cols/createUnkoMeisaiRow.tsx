@@ -1,4 +1,4 @@
-import {fetchUnkoMeisaiDataReturn, tbmTableKeyValue} from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fetchUnkoMeisaiData'
+import {DriveScheduleData, tbmTableKeyValue} from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fetchUnkoMeisaiData'
 
 export type unkoMeisaiKey =
   | `date`
@@ -32,7 +32,7 @@ export type unkoMeisaiKeyValue = {
   [key in unkoMeisaiKey]: tbmTableKeyValue
 }
 
-export const createUnkoMeisaiRow = (schedule: fetchUnkoMeisaiDataReturn) => {
+export const createUnkoMeisaiRow = (schedule: DriveScheduleData) => {
   const jitsudoKaisu = 1
   const ConfigForRoute = schedule.TbmRouteGroup.TbmMonthlyConfigForRouteGroup.find(
     config => config.tbmRouteGroupId === schedule.TbmRouteGroup.id

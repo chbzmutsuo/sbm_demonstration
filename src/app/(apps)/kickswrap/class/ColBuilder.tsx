@@ -1,7 +1,8 @@
 'use client'
 
 import {Fields} from '@cm/class/Fields/Fields'
-import {colType, columnGetterType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
+import {columnGetterType} from '@cm/types/types'
 
 export class ColBuilder {
   static user = (props: columnGetterType) => {

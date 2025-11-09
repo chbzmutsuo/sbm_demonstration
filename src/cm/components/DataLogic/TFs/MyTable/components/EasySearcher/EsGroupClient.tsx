@@ -6,13 +6,12 @@ import {C_Stack, R_Stack} from 'src/cm/components/styles/common-components/commo
 
 import {EasySearchObject} from '@cm/class/builders/QueryBuilderVariables'
 
-import MyPopover from '@cm/components/utils/popover/MyPopover'
 import {EsButton} from '@cm/components/DataLogic/TFs/MyTable/components/EasySearcher/EsButton'
-import {Paper} from '@cm/components/styles/common-components/paper'
 import BasicModal from '@cm/components/utils/modal/BasicModal'
 import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 import {SquareArrowOutUpLeft, Trash2} from 'lucide-react'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import ShadPopover from '@cm/shadcn/ui/Organisms/ShadPopover'
 
 export default function EsGroupClient(props: {
   groupNameAlign?: string
@@ -36,25 +35,21 @@ export default function EsGroupClient(props: {
           const {count, isUrgend, isActive, dataSource, conditionMatched} = d
           const IsSingleItemGroup = searchBtnDataSources.length === 1
 
-          return (
-            <div key={j} className="transform transition-all duration-200 hover:scale-105">
-              <MyPopover
-                positionFree
-                mode="hover-absolute"
-                button={
-                  <div className="h-full">
-                    <EsButton {...{IsSingleItemGroup, createNextQuery, conditionMatched, isActive, dataSource, count}} />
-                  </div>
-                }
-              >
-                {dataSource.description && (
-                  <Paper className="p-2 max-w-[200px] text-start w-fit shadow-lg rounded-lg bg-white whitespace-normal break-words">
-                    {dataSource.description}
-                  </Paper>
-                )}
-              </MyPopover>
+          const Button = (
+            <div className="h-full">
+              <EsButton {...{IsSingleItemGroup, createNextQuery, conditionMatched, isActive, dataSource, count}} />
             </div>
           )
+
+          if (dataSource.description) {
+            return (
+              <ShadPopover PopoverTrigger={Button} key={j}>
+                <div>{dataSource.description && <div className={` max-w-[260px]`}>{dataSource.description}</div>}</div>
+              </ShadPopover>
+            )
+          } else {
+            return <div key={j}>{Button}</div>
+          }
         })}
       </>
     )

@@ -56,7 +56,11 @@ export type TimeFormatType =
   | 'M'
   | `YY/M/D(ddd)`
 
-export const formatDate = (dateObject?: DateInput, format?: TimeFormatType | TimeFormatType[], log = false) => {
+export const formatDate = (
+  dateObject?: Date | string | number | undefined | null,
+  format?: TimeFormatType | TimeFormatType[],
+  log = false
+) => {
   const originalValue = dateObject
   format = format ?? 'YYYY-MM-DD'
 

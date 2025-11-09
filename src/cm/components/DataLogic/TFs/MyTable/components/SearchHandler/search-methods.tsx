@@ -8,7 +8,7 @@ import {mapAdjustOptionValue} from '@cm/components/DataLogic/TFs/MyForm/componen
 
 import {getSchema} from 'src/cm/lib/methods/prisma-schema'
 
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {StrHandler} from '@cm/class/StrHandler'
 
 import {DH__convertDataType, DH__switchColType} from '@cm/class/DataHandler/type-converter'
@@ -107,7 +107,7 @@ export const Sub = {
       })
 
     const data = (() => {
-      let data: colType[] = []
+      const data: colType[] = []
 
       const mainCols = searchableCols.map((col: colType | any) => ({
         ...col,
@@ -133,20 +133,32 @@ export const Sub = {
             showResetBtn: false,
             disabled: noOption,
             defaultValue: defaultValue,
-            style: {width: 120, color: 'gray', fontSize: 13, background: ''},
+            style: {
+              width: 120,
+              color: 'gray',
+              fontSize: 13,
+              background: '',
+            },
           },
         }
         return newCol
       })
 
-      if (!SP) {
-        data = Fields.mod.addColIndexs([mainCols, searchTypeSelectorCols])
-      }
+      // if (!SP) {
+      //   // data = Fields.mod.addColIndexs([mainCols, searchTypeSelectorCols])
+      // }
+
       mainCols.forEach((col, i) => {
         const hasCol = data.find(d => d.id === col.id)
         if (hasCol) return
-        data.push(col)
-        data.push(searchTypeSelectorCols[i])
+        data.push({
+          ...col,
+          form: {...col.form, colIndex: '検索項目'},
+        })
+        data.push({
+          ...searchTypeSelectorCols[i],
+          form: {...searchTypeSelectorCols[i].form, colIndex: '種類'},
+        })
       })
 
       return data

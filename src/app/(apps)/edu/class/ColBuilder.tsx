@@ -2,7 +2,7 @@
 
 import {Grouping, ClassRoom} from '@app/(apps)/edu/class/Grouping'
 
-import {colType, columnGetterType} from '@cm/types/types'
+import {columnGetterType} from '@cm/types/types'
 
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import MemberViwer from '@cm/components/List/MemberViwer'
@@ -11,6 +11,7 @@ import {addQuerySentence} from '@cm/lib/methods/urls'
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 import {Button} from '@cm/components/styles/common-components/Button'
+import {colType} from '@cm/types/col-types'
 
 export class ColBuilder {
   static slide = (props: columnGetterType) => {

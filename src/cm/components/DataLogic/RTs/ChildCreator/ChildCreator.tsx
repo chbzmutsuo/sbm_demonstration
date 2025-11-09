@@ -41,8 +41,6 @@ export const ChildCreator = React.memo((props: ChildCreatorProps) => {
     [props.myTable?.drag, additional?.orderBy]
   )
 
-  console.log('orderBy', orderBy)
-
   const tunedAdditional: additionalPropsType = useMemo(
     () => ({
       ...additional,

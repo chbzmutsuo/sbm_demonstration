@@ -1,15 +1,20 @@
-import {badgeVariantStr} from '@shadcn/lib/variant-types'
+import {Prisma} from '@prisma/client'
 
 export type codeItemCore = {
   code?: string
   label: string
-  color?: badgeVariantStr
-  colorCode?: string
-  approved?: boolean
-  onCreate?: boolean
-  pending?: boolean
-  active?: boolean
+  color?: string
+  type?: string
+  list?: string[]
+  postHandler?: postHandlerProps
 }
+
+export type postHandlerProps = {
+  buildConfirmMsg?: () => string
+  main: (props: {tx: Prisma.TransactionClient; sateiID: string; session; processCode: string}) => Promise<void>
+  buildCompleteMessage?: () => string
+}
+
 export type codeItem = {dataKey: string; code: string} & codeItemCore
 export type codeObjectArgs = {[key: string]: codeItemCore}
 

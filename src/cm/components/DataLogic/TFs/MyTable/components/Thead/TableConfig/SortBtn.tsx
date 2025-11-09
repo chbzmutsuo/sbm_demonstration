@@ -1,4 +1,4 @@
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {TableConfigPropsType} from '@cm/components/DataLogic/TFs/MyTable/components/TableConfig'
 import React, {useMemo} from 'react'
 import SortHandler from '@cm/components/DataLogic/TFs/MyTable/components/SortHandler/SortHandler'

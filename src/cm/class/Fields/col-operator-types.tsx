@@ -1,4 +1,4 @@
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {anyObject} from '@cm/types/utility-types'
 
 export type transposeColumnsOptionProps = {

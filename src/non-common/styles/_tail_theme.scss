@@ -1,0 +1,107 @@
+:root {
+ color: oklch(0.32 0 0);
+
+ --color-border-gray: oklch(0.8 0.032 261.325);
+ --color-background: oklch(1 0 0);
+
+ --color-primary-main: #407eb9;
+ --color-primary-light: #ebf5fc;
+ --color-primary-text: white;
+
+ --color-primary: 222 100% 60%; /* fallback HSL */
+ --color-primary-foreground: 0 0% 100%;
+
+ --color-kaizen-cool-main: #175793;
+ --color-kaizen-cool-light: #ebf5fb;
+
+ --color-kaizen-warm-main: #c28f0e;
+ --color-kaizen-warm-light: #fffacf;
+
+ --color-white: oklch(1 0 0);
+
+ --color-blue-main: oklch(0.6 0.1117 249.3);
+ --color-blue-light: oklch(0.85 0.07 250);
+
+ --color-green-main: oklch(0.5 0.2 125);
+ --color-green-light: oklch(0.95 0.05 145);
+
+ --color-sub-main: oklch(0.39 0.01 100);
+ --color-sub-light: oklch(0.95 0.01 80);
+
+ --color-error-main: oklch(0.5 0.3 45);
+ --color-error-light: oklch(0.85 0.1 25);
+
+ --color-orange-main: oklch(0.65 0.2 60);
+ --color-orange-light: oklch(0.9 0.07 50);
+
+ --color-yellow-main: oklch(0.75 0.2 90);
+ --color-yellow-light: oklch(0.95 0.08 85);
+
+ --color-control-bg: oklch(0.94 0 0);
+
+ --animate-accordion-down: accordion-down 0.2s ease-out;
+ --animate-accordion-up: accordion-up 0.2s ease-out;
+}
+
+.dark {
+ --color-background: oklch(0.71 0 17.19);
+ --color-primary-text: black;
+}
+
+@theme {
+ --color-border-gray: var(--color-border-gray);
+ --color-background: var(--color-background);
+
+ --color-primary-main: var(--color-primary-main);
+ --color-primary-light: var(--color-primary-light);
+ --color-primary-text: var(--color-primary-text);
+
+ --color-primary: hsl(var(--primary));
+ --color-primary-foreground: hsl(var(--primary-foreground));
+
+ --color-kaizen-cool-main: var(--color-kaizen-cool-main);
+ --color-kaizen-cool-light: var(--color-kaizen-cool-light);
+
+ --color-kaizen-warm-main: var(--color-kaizen-warm-main);
+ --color-kaizen-warm-light: var(--color-kaizen-warm-light);
+
+ --color-white: var(--color-white);
+
+ --color-blue-main: var(--color-blue-main);
+ --color-blue-light: var(--color-blue-light);
+
+ --color-green-main: var(--color-green-main);
+ --color-green-light: var(--color-green-light);
+
+ --color-sub-main: var(--color-sub-main);
+ --color-sub-light: var(--color-sub-light);
+
+ --color-error-main: var(--color-error-main);
+ --color-error-light: var(--color-error-light);
+
+ --color-orange-main: var(--color-orange-main);
+ --color-orange-light: var(--color-orange-light);
+
+ --color-yellow-main: var(--color-yellow-main);
+ --color-yellow-light: var(--color-yellow-light);
+
+ --animate-accordion-down: accordion-down 0.2s ease-out;
+ --animate-accordion-up: accordion-up 0.2s ease-out;
+
+ @keyframes accordion-down {
+  from {
+   height: 0;
+  }
+  to {
+   height: var(--radix-accordion-content-height);
+  }
+ }
+ @keyframes accordion-up {
+  from {
+   height: var(--radix-accordion-content-height);
+  }
+  to {
+   height: 0;
+  }
+ }
+}

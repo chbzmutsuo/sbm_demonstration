@@ -8,6 +8,7 @@ import React from 'react'
 import {IconBtnForSelect} from '@cm/components/styles/common-components/IconBtn'
 import {twMerge} from 'tailwind-merge'
 import {ChevronDown} from 'lucide-react'
+import {cn} from '@cm/shadcn/lib/utils'
 
 const BaseDisplay = React.memo((props: {contexts: contextsType}) => {
   const {MySelectContextValue, controlContextValue} = props.contexts
@@ -43,12 +44,12 @@ const BaseDisplay = React.memo((props: {contexts: contextsType}) => {
         <ChevronDown className={`w-6 h-6`} />
       </div>
 
-      <R_Stack style={{...controlContextValue.ControlStyle}} className={twMerge(formProps.className, '')}>
+      <R_Stack style={{...controlContextValue.ControlStyle}} className={cn(formProps.className)}>
         <IconBtnForSelect
           color={COLOR}
           className={twMerge(
             //
-            `w-full truncate flex justify-start`,
+            `w-full truncate flex justify-start `,
             textAlignMent
           )}
         >

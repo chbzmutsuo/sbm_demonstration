@@ -1,5 +1,5 @@
 import {cn} from '@shadcn/lib/utils'
-import {htmlProps} from '@cm/components/styles/common-components/type'
+import {htmlProps} from '@cm/types/utility-types'
 import {colorVariants} from '@cm/lib/methods/colorVariants'
 
 import {tv} from 'tailwind-variants'
@@ -15,7 +15,7 @@ export const Button = (
 
   const buttonVariants = tv({
     base: cn(
-      `t-btn transition-all duration-300 ease-in-out transform shadow-md`,
+      `t-btn transition-all duration-300 ease-in-out transform shadow-md `,
       `ring-1 `,
       `focus:outline-none focus:ring-2  focus:ring-opacity-50`,
       `hover:scale-105 active:scale-95 `
@@ -23,10 +23,10 @@ export const Button = (
     variants: {
       color: btnColorVariants,
       size: {
-        xs: 'text-[12px] py-[1px] px-[4px] ',
-        sm: 'text-[14px] py-[4px] px-[6px] ',
-        md: 'text-[16px] py-[4px] px-[8px] ',
-        lg: 'text-[18px] py-[6px] px-[12px] ',
+        xs: 'text-[12px] py-[1px] px-[8px] ',
+        sm: 'text-[14px] py-[2px] px-[10px] ',
+        md: 'text-[16px] py-[4px] px-[14px] ',
+        lg: 'text-[18px] py-[6px] px-[18px] ',
       },
       active: {
         false: 'opacity-50 cursor-not-allowed',

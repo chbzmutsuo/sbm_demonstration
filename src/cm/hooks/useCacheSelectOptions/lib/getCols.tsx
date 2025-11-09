@@ -1,6 +1,6 @@
 'use client'
 
-import {colType} from '@cm/types/types'
+import {colType} from '@cm/types/col-types'
 import {generateUnivesalApiParamsForSelect} from 'src/cm/hooks/useCacheSelectOptions/lib/generateUnivesalApiParamsForSelect'
 
 export const getCols = (props: {columns; latestFormData}) => {

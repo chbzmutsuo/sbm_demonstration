@@ -2,9 +2,10 @@ import {handlePrismaError} from '@cm/lib/prisma-helper'
 import prisma from 'src/lib/prisma'
 
 import {NextRequest, NextResponse} from 'next/server'
-import {colType} from '@cm/types/types'
+
 import {getSelectId} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
 import {GetCaheOptionSWR_REQUEST_PARAMS} from '@cm/lib/server-actions/common-server-actions/serverGetCaheOptions'
+import {colType} from '@cm/types/col-types'
 
 export const POST = async (req: NextRequest) => {
   const isAllowed = true

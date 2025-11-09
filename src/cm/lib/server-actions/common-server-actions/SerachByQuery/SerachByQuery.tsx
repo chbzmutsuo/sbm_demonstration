@@ -1,8 +1,8 @@
 'use server'
 
-import prisma from 'src/lib/prisma'
 import {PrismaModelNames} from '@cm/types/prisma-types'
 import {prismaDataExtractionQueryType} from '@cm/components/DataLogic/TFs/Server/Conf'
+import prisma from 'src/lib/prisma'
 
 export const searchByQuery = async (props: {
   modelName: PrismaModelNames

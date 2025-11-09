@@ -7,9 +7,10 @@ import {Counter} from '@cm/components/styles/common-components/Table'
 import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
 import {cl} from '@cm/lib/methods/common'
 import {twMerge} from 'tailwind-merge'
-import {htmlProps} from '@cm/components/styles/common-components/type'
+
 import {Downloader} from './components/CsvDownloader'
 import {cn} from '@shadcn/lib/utils'
+import {htmlProps} from '@cm/types/utility-types'
 
 export type CsvTableVirtualizedProps = CsvTableProps & {
   virtualized?: VirtualizedOptions
