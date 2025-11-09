@@ -28,7 +28,6 @@ import {getMidnight} from '@cm/class/Days/date-utils/calculations'
 import prisma from 'src/lib/prisma'
 import {User} from '@prisma/client'
 import {unkoMeisaiKey} from '@app/(apps)/tbm/(class)/DriveScheduleCl'
-import {TbmReportCl} from '../../TbmReportCl'
 import {fetchUnkoMeisaiData, tbmTableKeyValue} from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fetchUnkoMeisaiData'
 
 export type EigyoshoUriageRecord = {

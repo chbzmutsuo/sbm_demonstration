@@ -8,6 +8,8 @@ const copyFunction = <T, R>(callBack: (props: T) => Promise<R>): ((props: T) => 
 export class TbmReportCl {
   constructor(private readonly tbmBaseId: string) {}
 
+  static allowNonApprovedSchedule = false
+
   static reportCols = {
     createUnkoMeisaiRow,
   }

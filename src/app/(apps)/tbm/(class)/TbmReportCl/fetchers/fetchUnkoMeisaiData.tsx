@@ -18,8 +18,8 @@ export type MonthlyTbmDriveData = getMonthlyTbmDriveDataReturn['monthlyTbmDriveL
 
 import prisma from 'src/lib/prisma'
 import {TbmVehicle, User} from '@prisma/client'
-import {DriveScheduleCl, unkoMeisaiKeyValue} from '@app/(apps)/tbm/(class)/DriveScheduleCl'
 import {TbmReportCl} from '@app/(apps)/tbm/(class)/TbmReportCl'
+import {unkoMeisaiKeyValue} from '@app/(apps)/tbm/(class)/TbmReportCl/cols/createUnkoMeisaiRow'
 
 export type fetchUnkoMeisaiDataReturn = Awaited<ReturnType<typeof _getData>>[number]
 const _getData = async (props: {
@@ -33,7 +33,7 @@ const _getData = async (props: {
   const {tbmBaseId, whereQuery, userId} = props
 
   const whereArgs = {
-    approved: DriveScheduleCl.allowNonApprovedSchedule ? undefined : true,
+    approved: TbmReportCl.allowNonApprovedSchedule ? undefined : true,
     date: whereQuery,
     tbmBaseId,
     userId,

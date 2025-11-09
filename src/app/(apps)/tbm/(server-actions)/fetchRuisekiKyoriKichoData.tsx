@@ -2,7 +2,7 @@
 import {getNenpiDataByCar} from '@app/(apps)/tbm/(server-actions)/getNenpiDataByCar'
 import prisma from 'src/lib/prisma'
 import {TbmVehicle, User} from '@prisma/client'
-import {DriveScheduleCl} from '@app/(apps)/tbm/(class)/DriveScheduleCl'
+import {TbmReportCl} from '@app/(apps)/tbm/(class)/TbmReportCl'
 
 export type carHistoryKey = `sokoKyoriInPeriod` | `heikinNempiInPeriod` | `sokyuyuRyoInPeriod` | `fuelCostInPeriod`
 
@@ -16,7 +16,7 @@ export const fetchRuisekiKyoriKichoData = async ({tbmBaseId, whereQuery, TbmBase
       TbmDriveSchedule: {
         where: {
           date: whereQuery,
-          approved: DriveScheduleCl.allowNonApprovedSchedule ? undefined : true,
+          approved: TbmReportCl.allowNonApprovedSchedule ? undefined : true,
         },
         include: {
           TbmVehicle: {

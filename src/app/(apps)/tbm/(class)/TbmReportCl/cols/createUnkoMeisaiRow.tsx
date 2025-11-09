@@ -1,4 +1,5 @@
-import {fetchUnkoMeisaiDataReturn, tbmTableKeyValue} from '@app/(apps)/tbm/(server-actions)/fetchUnkoMeisaiData'
+import {fetchUnkoMeisaiDataReturn, tbmTableKeyValue} from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fetchUnkoMeisaiData'
+
 export type unkoMeisaiKey =
   | `date`
   // | `routeCode`

@@ -2,11 +2,11 @@
 
 import {getTbmBase_MonthConfig} from '@app/(apps)/tbm/(server-actions)/getBasics'
 import {EIGYOSHO_URIAGE_SUMORIGIN} from '@app/(apps)/tbm/(lib)/calculation'
-import {eigyoshoRecordKey, getEigyoshoUriageData} from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fetchEigyoshoUriageData'
-import {tbmTableKeyValue} from '@app/(apps)/tbm/(server-actions)/fetchUnkoMeisaiData'
+import {eigyoshoRecordKey, fetchEigyoshoUriageData} from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fetchEigyoshoUriageData'
+import {tbmTableKeyValue} from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fetchUnkoMeisaiData'
 import {getMidnight} from '@cm/class/Days/date-utils/calculations'
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {User} from '@prisma/client'
+import {User, TbmVehicle} from '@prisma/client'
 
 export type KyuyoRecordKey =
   | 'B_Shukkin'
@@ -50,7 +50,7 @@ const width40 = 40
 const width80 = 80
 const widthBase = 100
 export const getKyuyoTableList = async ({whereQuery, tbmBaseId}) => {
-  const {userList, monthlyTbmDriveList, EigyoshoUriageRecords} = await getEigyoshoUriageData({whereQuery, tbmBaseId})
+  const {userList, monthlyTbmDriveList, EigyoshoUriageRecords} = await fetchEigyoshoUriageData({whereQuery, tbmBaseId})
 
   const yearMonth = whereQuery.gte ?? getMidnight()
 

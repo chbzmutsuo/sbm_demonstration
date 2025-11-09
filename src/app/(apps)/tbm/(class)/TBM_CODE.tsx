@@ -28,11 +28,39 @@ export class TBM_CODE {
   })
 
   static WORK_STATUS_KBN = new Code({
-    SHUKKIN: {code: '01', label: `出勤`},
-    KONKYU: {code: '02', label: `公休`},
-    KYUUSEN_SHUKKIN: {code: '03', label: `休日出勤`},
-    YOUKU_SHUKKIN: {code: '04', label: `有給休暇`},
-    KYUKEN_SHUKKIN: {code: '05', label: `欠勤`},
-    SHORITSU_SHUKKIN: {code: '06', label: `早退`},
+    SHUKKIN: {
+      code: '01',
+      label: `出勤`,
+      countAs: [`shukkin`],
+    },
+    KONKYU: {
+      code: '02',
+      label: `公休`,
+      countAs: [],
+    },
+
+    KYUJITSU_SHUKKIN: {
+      code: '03',
+      label: `休日出勤`,
+      countAs: [`shukkin`],
+    },
+
+    YUKYU: {
+      code: '04',
+      label: `有給休暇`,
+      countAs: [`yukyu`],
+    },
+
+    KEKKIN: {
+      code: '05',
+      label: `欠勤`,
+      countAs: [],
+    },
+
+    SOUTAI: {
+      code: '06',
+      label: `早退`,
+      countAs: [],
+    },
   })
 }

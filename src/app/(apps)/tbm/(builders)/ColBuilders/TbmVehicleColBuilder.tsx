@@ -12,9 +12,9 @@ export const TbmVehicleColBuilder = (props: columnGetterType) => {
     ...new Fields([
       ...new Fields([
         // {id: 'code', label: 'コード', form: {...defaultRegister}},
-        {id: 'frameNo', label: 'フレームNo', form: {...defaultRegister}},
+        {id: 'frameNo', label: 'フレームNo', form: {...defaultRegister}, search: {}},
         {id: 'tbmBaseId', label: '営業所', forSelect: {}, form: {...defaultRegister}},
-        {id: 'vehicleNumber', label: '車両番号', form: {...defaultRegister}},
+        {id: 'vehicleNumber', label: '車両番号', form: {...defaultRegister}, search: {}},
         {id: 'shodoTorokubi', label: '初度登録日', form: {}, type: `date`},
       ]).showSummaryInTd({
         wrapperWidthPx: 200,
@@ -22,8 +22,8 @@ export const TbmVehicleColBuilder = (props: columnGetterType) => {
     ]).buildFormGroup({groupName: '車両情報①'}).plain,
     ...new Fields([
       ...new Fields([
-        {id: 'type', label: '車種', form: {}},
-        {id: 'name', label: '車名', form: {}},
+        {id: 'type', label: '車種', form: {}, search: {}},
+        {id: 'name', label: '車名', form: {}, search: {}},
         {id: 'shape', label: '形状', form: {}},
         {id: 'airSuspension', label: 'エアサス有無', form: {}},
       ]).showSummaryInTd({wrapperWidthPx: 200}).plain,
