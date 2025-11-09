@@ -1,15 +1,17 @@
 'use client'
 
 import UnkomeisaiDetailModal from '@app/(apps)/tbm/(pages)/unkomeisai/[id]/UnkomeisaiDetailModal'
-import {MonthlyTbmDriveData} from '@app/(apps)/tbm/(server-actions)/getMonthlyTbmDriveData'
+import {MonthlyTbmDriveData} from '@app/(apps)/tbm/(server-actions)/fetchUnkoMeisaiData'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
 import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
 import useModal from '@cm/components/utils/modal/useModal'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
+import {HREF} from '@cm/lib/methods/urls'
+
 export default function UnkoMeisaiCC({monthlyTbmDriveList}: {monthlyTbmDriveList: MonthlyTbmDriveData[]}) {
-  const {toastIfFailed} = useGlobal()
+  const {toastIfFailed, router, query} = useGlobal()
 
   const UnkoMeisaiModalReturn = useModal<{id: number}>()
 
@@ -26,9 +28,31 @@ export default function UnkoMeisaiCC({monthlyTbmDriveList}: {monthlyTbmDriveList
 
             const cols = Object.entries(keyValue).filter(([dataKey, item]) => !String(item.label).includes(`CD`))
 
+            const routeGroupColIndex = cols.findIndex(([dataKey, item]) => String(item.label ?? '').includes(`便名`))
+
+            const convertedCols: any[][] = [...cols]
+            convertedCols[routeGroupColIndex] = [
+              String(routeGroupColIndex),
+              {
+                label: `便名`,
+                cellValue: schedule.TbmRouteGroup.name,
+                onClick: () => {
+                  const href = HREF(
+                    `/tbm/eigyoshoSettei`,
+                    {
+                      search: `TBMROUTEGROUP[contains:name=${schedule.TbmRouteGroup.name}]`,
+                    },
+                    query
+                  )
+                  window.open(href, '_blank')
+                },
+                style: {minWidth: 160},
+              },
+            ]
+
             return {
               csvTableRow: [
-                ...cols.map((props: any, colIdx) => {
+                ...convertedCols.map((props: any, colIdx) => {
                   const [dataKey, item] = props
 
                   let value
@@ -49,6 +73,7 @@ export default function UnkoMeisaiCC({monthlyTbmDriveList}: {monthlyTbmDriveList
                   }
 
                   return {
+                    ...item,
                     label: <div className="text-xs">{item.label}</div>,
                     style,
                     cellValue: value,

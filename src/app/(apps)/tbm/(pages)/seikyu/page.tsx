@@ -7,6 +7,11 @@ import Redirector from '@cm/components/utils/Redirector'
 import {dateSwitcherTemplate} from '@cm/lib/methods/redirect-method'
 import {initServerComopnent} from 'src/non-common/serverSideFunction'
 import prisma from 'src/lib/prisma'
+import {DriveScheduleCl} from '@app/(apps)/tbm/(class)/DriveScheduleCl'
+import {BillingHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
+import {Days} from '@cm/class/Days/Days'
+import {toUtc} from '@cm/class/Days/date-utils/calculations'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 export default async function Page(props) {
   const query = await props.searchParams
@@ -39,6 +44,44 @@ export default async function Page(props) {
     .filter(customer => customer.name) // nameが存在するもののみ
     .sort((a, b) => a.name.localeCompare(b.name))
 
+  // 取引件数を計算（選択中の月の承認済み運行スケジュール数）
+  const getTransactionCount = async (customerId: number): Promise<number> => {
+    if (!whereQuery?.gte || !whereQuery?.lte) return 0
+
+    try {
+      const driveScheduleList = await DriveScheduleCl.getDriveScheduleList({
+        whereQuery: {
+          ...whereQuery,
+          gte: Days.day.subtract(whereQuery.gte, 1),
+        },
+        tbmBaseId: undefined,
+        userId: undefined,
+      })
+
+      const targetMonth = toUtc(new Date(whereQuery.gte.getFullYear(), whereQuery.gte.getMonth() + 1, 1))
+
+      const filteredSchedules = driveScheduleList.filter(schedule => {
+        const matchesCustomer = schedule.TbmRouteGroup.Mid_TbmRouteGroup_TbmCustomer?.TbmCustomer?.id === customerId
+        if (!matchesCustomer) return false
+
+        const billingMonth = BillingHandler.getBillingMonth(schedule.date, schedule.TbmRouteGroup.departureTime)
+        return formatDate(billingMonth, 'YYYYMM') === formatDate(targetMonth, 'YYYYMM')
+      })
+
+      return filteredSchedules.length
+    } catch {
+      return 0
+    }
+  }
+
+  // 各顧客の取引件数を取得
+  const customersWithCount = await Promise.all(
+    customers.map(async customer => ({
+      ...customer,
+      transactionCount: await getTransactionCount(customer.id),
+    }))
+  )
+
   // 顧客データが存在しない場合の処理
   if (customers.length === 0) {
     return (
@@ -63,7 +106,7 @@ export default async function Page(props) {
         <div className="mb-4">
           <NewDateSwitcher monthOnly={true} />
         </div>
-        <CustomerSelector customers={customers} currentCustomerId={customerId} />
+        <CustomerSelector customers={customersWithCount} currentCustomerId={customerId} />
         <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <h3 className="text-blue-800 font-semibold">顧客を選択してください</h3>
           <p className="text-blue-600 mt-2">請求書を作成する顧客を上記のドロップダウンから選択してください。</p>
@@ -80,7 +123,6 @@ export default async function Page(props) {
   try {
     const invoiceData = await getInvoiceData({
       whereQuery: {gte: whereQuery.gte, lte: whereQuery.lte},
-      tbmBaseId,
       customerId,
     })
 
@@ -90,9 +132,9 @@ export default async function Page(props) {
           <NewDateSwitcher monthOnly={true} />
         </div>
 
-        <CustomerSelector customers={customers} currentCustomerId={customerId} />
+        <CustomerSelector customers={customersWithCount} currentCustomerId={customerId} />
 
-        <InvoiceViewer invoiceData={invoiceData} />
+        <InvoiceViewer invoiceData={invoiceData} customerId={customerId} />
       </FitMargin>
     )
   } catch (error) {
@@ -102,7 +144,7 @@ export default async function Page(props) {
         <div className="mb-4">
           <NewDateSwitcher monthOnly={true} />
         </div>
-        <CustomerSelector customers={customers} currentCustomerId={customerId} />
+        <CustomerSelector customers={customersWithCount} currentCustomerId={customerId} />
         <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
           <h3 className="text-red-800 font-semibold">エラーが発生しました</h3>
           <p className="text-red-600 mt-2">

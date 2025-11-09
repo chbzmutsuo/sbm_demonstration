@@ -65,7 +65,7 @@ export default function KyuyoCC(props) {
           }
         }),
       }).WithWrapper({
-        className: `text-sm max-w-[95vw] max-h-[80vh] t-paper`,
+        className: `text-sm max-w-[95vw] max-h-[80vh]`,
       })}
     </FitMargin>
   )

@@ -9,7 +9,7 @@ interface AutoGridContainerProps {
     md?: number
     lg?: number
     xl?: number
-    xl2?: number
+    '2xl'?: number
   }
 }
 

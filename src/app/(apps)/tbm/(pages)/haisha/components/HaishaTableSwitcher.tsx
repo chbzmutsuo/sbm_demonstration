@@ -4,9 +4,12 @@ import {R_Stack} from '@cm/components/styles/common-components/common-components
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
 import React from 'react'
+import {getScopes} from 'src/non-common/scope-lib/getScopes'
 
 export default function HaishaTableSwitcher() {
-  const {query, addQuery, shallowAddQuery} = useGlobal()
+  const {query, addQuery, shallowAddQuery, session} = useGlobal()
+  const scopes = getScopes(session, {query})
+  const {tbmBaseId} = scopes.getTbmScopes()
   const {BasicForm, latestFormData} = useBasicFormProps({
     columns: new Fields([
       //
@@ -31,11 +34,23 @@ export default function HaishaTableSwitcher() {
           ],
         },
       },
+      {
+        id: `tbmCustomerId`,
+        label: `荷主`,
+        forSelect: {
+          config: {
+            modelName: 'tbmCustomer',
+            where: {},
+            orderBy: [{code: 'asc'}, {name: 'asc'}],
+          },
+        },
+      },
     ]).transposeColumns(),
 
     formData: {
       mode: query.mode ?? 'DRIVER',
       sortBy: query.sortBy ?? 'departureTime',
+      tbmCustomerId: query.tbmCustomerId ? parseInt(query.tbmCustomerId) : undefined,
     },
   })
 

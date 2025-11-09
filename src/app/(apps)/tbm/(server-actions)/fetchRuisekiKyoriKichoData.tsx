@@ -2,11 +2,13 @@
 import {getNenpiDataByCar} from '@app/(apps)/tbm/(server-actions)/getNenpiDataByCar'
 import prisma from 'src/lib/prisma'
 import {TbmVehicle, User} from '@prisma/client'
+import {DriveScheduleCl} from '@app/(apps)/tbm/(class)/DriveScheduleCl'
 
-export type carHistoryKey = `soukouKyori` | `heikinNenpi` | `nenryoiShiyoryo` | `fuelCost`
+export type carHistoryKey = `sokoKyoriInPeriod` | `heikinNempiInPeriod` | `sokyuyuRyoInPeriod` | `fuelCostInPeriod`
 
-export const getUserListWithCarHistory = async ({tbmBaseId, whereQuery, TbmBase_MonthConfig}) => {
+export const fetchRuisekiKyoriKichoData = async ({tbmBaseId, whereQuery, TbmBase_MonthConfig}) => {
   const {nenpiKanriDataListByCar} = await getNenpiDataByCar({tbmBaseId, whereQuery, TbmBase_MonthConfig})
+
   const userList = await prisma.user.findMany({
     where: {tbmBaseId},
     include: {
@@ -14,7 +16,7 @@ export const getUserListWithCarHistory = async ({tbmBaseId, whereQuery, TbmBase_
       TbmDriveSchedule: {
         where: {
           date: whereQuery,
-          // finished: true,
+          approved: DriveScheduleCl.allowNonApprovedSchedule ? undefined : true,
         },
         include: {
           TbmVehicle: {
@@ -30,6 +32,7 @@ export const getUserListWithCarHistory = async ({tbmBaseId, whereQuery, TbmBase_
 
     let allCars = TbmDriveSchedule.reduce((acc, cur, i) => {
       const {TbmVehicle} = cur
+
       if (!acc.find(v => v.id === TbmVehicle?.id)) {
         acc.push(TbmVehicle)
       }
@@ -37,26 +40,12 @@ export const getUserListWithCarHistory = async ({tbmBaseId, whereQuery, TbmBase_
     }, [] as any).sort((a, b) => (a.code ?? '')?.localeCompare(b.code ?? ''))
 
     allCars = allCars.map(car => {
-      const fuelData = nenpiKanriDataListByCar.find(v => v?.vehicle?.id === car.id)
-
-      const OdometerInput = car.OdometerInput
-      const myOdometerInput = OdometerInput.filter(v => {
-        return v.userId === userId && !!v.odometerStart && !!v.odometerEnd
+      const fuelData = nenpiKanriDataListByCar.find(v => {
+        return v?.vehicle?.id === car.id
       })
-
-      const soukouKyori = myOdometerInput.reduce((acc, cur, i) => {
-        const diff = (cur.odometerEnd ?? 0) - (cur.odometerStart ?? 0)
-        return acc + diff
-      }, 0)
-      const heikinNenpi = fuelData?.avgNempi ?? 0
-
-      const nenryoiShiyoryo = soukouKyori && heikinNenpi ? soukouKyori / heikinNenpi : 0
 
       return {
         car,
-        soukouKyori,
-        heikinNenpi,
-        nenryoiShiyoryo,
         ...fuelData,
       }
     })
@@ -66,10 +55,10 @@ export const getUserListWithCarHistory = async ({tbmBaseId, whereQuery, TbmBase_
     user: User & {TbmVehicle: TbmVehicle}
     allCars: {
       car: TbmVehicle
-      soukouKyori: number
-      heikinNenpi: number
-      nenryoiShiyoryo: number
-      fuelCost: number
+      sokoKyoriInPeriod: number
+      heikinNempiInPeriod: number
+      sokyuyuRyoInPeriod: number
+      fuelCostInPeriod: number
     }[]
   }
 

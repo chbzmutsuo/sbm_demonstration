@@ -1,4 +1,5 @@
-import {getEigyoshoUriageData} from '@app/(apps)/tbm/(server-actions)/getEigyoshoUriageData'
+import {fetchEigyoshoUriageData} from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fetchEigyoshoUriageData'
+
 import {FitMargin} from '@cm/components/styles/common-components/common-components'
 import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
 import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
@@ -15,7 +16,7 @@ export default async function Page(props) {
 
   if (redirectPath) return <Redirector {...{redirectPath}} />
 
-  const {EigyoshoUriageRecords} = await getEigyoshoUriageData({whereQuery, tbmBaseId})
+  const {EigyoshoUriageRecords} = await fetchEigyoshoUriageData({whereQuery, tbmBaseId})
 
   return (
     <FitMargin className={`pt-4`}>
@@ -26,7 +27,7 @@ export default async function Page(props) {
           return {csvTableRow: Object.keys(keyValue).map(key => item.keyValue[key])}
         }),
       }).WithWrapper({
-        className: `text-sm max-w-[95vw] max-h-[80vh] t-paper`,
+        className: `text-sm max-w-[95vw] max-h-[80vh]`,
       })}
     </FitMargin>
   )

@@ -7,6 +7,56 @@ import {BillingHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
 import {toUtc} from '@cm/class/Days/date-utils/calculations'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {Days} from '@cm/class/Days/Days'
+import {getInvoiceManualEdit} from './invoiceManualEdit'
+
+// 単価のバリエーションを計算する関数
+function calculatePriceVariations(
+  feeInfos: Array<{schedule: DriveScheduleData; driverFee: number; futaiFee: number; tollFee: number}>,
+  feeType: 'driverFee' | 'futaiFee' | 'tollFee',
+  monthEnd: Date
+): PriceVariation[] {
+  // 同じ単価が適用される期間をグループ化
+  const variations: PriceVariation[] = []
+  let currentPrice: number | null = null
+  let currentStartDate: Date | null = null
+  let currentEndDate: Date | null = null
+
+  for (let i = 0; i < feeInfos.length; i++) {
+    const info = feeInfos[i]
+    const price = info[feeType]
+
+    if (currentPrice === null) {
+      // 最初の料金設定
+      currentPrice = price
+      currentStartDate = info.schedule.date
+      currentEndDate = info.schedule.date
+    } else if (currentPrice === price) {
+      // 同じ単価が続いている場合、最終日を更新
+      currentEndDate = info.schedule.date
+    } else {
+      // 単価が変わった場合、前の期間を保存して新しい期間を開始
+      variations.push({
+        price: currentPrice,
+        startDate: currentStartDate!,
+        endDate: currentEndDate,
+      })
+      currentPrice = price
+      currentStartDate = info.schedule.date
+      currentEndDate = info.schedule.date
+    }
+  }
+
+  // 最後の期間を追加
+  if (currentPrice !== null) {
+    variations.push({
+      price: currentPrice,
+      startDate: currentStartDate!,
+      endDate: monthEnd, // 最後の期間は月末まで
+    })
+  }
+
+  return variations
+}
 
 export type InvoiceData = {
   companyInfo: {
@@ -37,32 +87,47 @@ export type CategorySummary = {
   totalAmount: number
 }
 
+export type PriceVariation = {
+  price: number // 単価
+  startDate: Date // この単価が適用される開始日
+  endDate: Date | null // この単価が適用される最終日（nullの場合は月末まで）
+}
+
 export type CategoryDetail = {
   category: string
   categoryCode: string
   routeName: string
   name: string
+  vehicleType?: string // 車種
+  routeDirection?: string // 方向（関東~東海など）
   trips: number
-  unitPrice: number
-  amount: number
-  tollFee: number
+  // 運賃
+  driverFeeVariations?: PriceVariation[] // 運賃単価のバリエーション
+  driverFeeUnitPrice?: number // 運賃単価（単一の場合、後方互換性のため）
+  amount: number // 運賃合計
+  // 付帯料金
+  futaiFeeVariations?: PriceVariation[] // 付帯料金単価のバリエーション
+  futaiFeeUnitPrice?: number // 付帯料金単価（単一の場合、後方互換性のため）
+  futaiFee: number // 付帯料金合計
+  // 通行料
+  tollFeeVariations?: PriceVariation[] // 通行料単価のバリエーション（通常は変動しないが、念のため）
+  tollFeeUnitPrice?: number // 通行料単価（単一の場合）
+  tollFee: number // 通行料合計
   specialAddition?: number
+  isManualEdit?: boolean // 手動編集された行かどうか
+  isManualAdded?: boolean // 手動追加された行かどうか
+  // 後方互換性のため残す
+  unitPrice?: number // 運賃単価（非推奨）
 }
 
 export const getInvoiceData = async ({
   whereQuery,
-  tbmBaseId,
   customerId,
 }: {
   whereQuery: {gte: Date; lte: Date}
-  tbmBaseId: number
+
   customerId: number // 必須に変更
 }) => {
-  // 営業所情報取得
-  const tbmBase = await prisma.tbmBase.findFirst({
-    where: {id: tbmBaseId},
-  })
-
   // 顧客情報取得（必須）
   const customer = await prisma.tbmCustomer.findFirst({
     where: {id: customerId},
@@ -78,7 +143,7 @@ export const getInvoiceData = async ({
       ...whereQuery,
       gte: Days.day.subtract(whereQuery.gte, 1),
     },
-    tbmBaseId,
+    tbmBaseId: undefined,
     userId: undefined,
   })
 
@@ -98,10 +163,6 @@ export const getInvoiceData = async ({
 
     return formatDate(billingMonth, 'YYYYMM') === formatDate(targetMonth, 'YYYYMM')
   })
-
-  if (filteredSchedules.length === 0) {
-    throw new Error('指定された顧客の運行データが見つかりません')
-  }
 
   // 便区分ごとにグループ化
   const schedulesByCategory = filteredSchedules.reduce(
@@ -124,11 +185,13 @@ export const getInvoiceData = async ({
 
     // 各スケジュールの料金計算
     const totalAmount = schedules.reduce((sum, schedule) => {
-      const routeGroupConfig = schedule.TbmRouteGroup.TbmMonthlyConfigForRouteGroup[0]
-      const routeGroupFee = schedule.TbmRouteGroup.TbmRouteGroupFee[0]
+      // 運行日に対して適切な料金設定を取得（startDate <= schedule.date のうち最新のもの）
+      const feeOnDate = schedule.TbmRouteGroup.TbmRouteGroupFee.sort(
+        (a, b) => b.startDate.getTime() - a.startDate.getTime()
+      ).find(fee => fee.startDate <= schedule.date)
 
-      // 基本料金（運賃）
-      const baseFee = routeGroupFee?.driverFee || 0
+      // 基本料金（運賃 + 付帯料金）
+      const baseFee = (feeOnDate?.driverFee || 0) + (feeOnDate?.futaiFee || 0)
       // 通行料
       const tollFee = (schedule.M_postalHighwayFee || 0) + (schedule.O_generalHighwayFee || 0)
 
@@ -166,38 +229,99 @@ export const getInvoiceData = async ({
         const [routeName, routeSchedules] = props
         const trips = routeSchedules.length
 
-        // 月次設定から基本料金を取得
-        const monthlyConfig = routeSchedules[0]?.TbmRouteGroup.TbmMonthlyConfigForRouteGroup[0]
-        const routeGroupFee = routeSchedules[0]?.TbmRouteGroup.TbmRouteGroupFee[0]
+        // 運行日でソート
+        const sortedSchedules = [...routeSchedules].sort((a, b) => a.date.getTime() - b.date.getTime())
 
-        // 基本運賃（ドライバー料金または設定値）
-        const unitPrice = routeGroupFee?.driverFee || monthlyConfig?.generalFee || 0
-        const amount = unitPrice * trips
+        // 各運行スケジュールに対して適切な料金設定を取得
+        type FeeInfo = {
+          schedule: DriveScheduleData
+          driverFee: number
+          futaiFee: number
+          tollFee: number
+        }
 
-        // 通行料の合計（郵便高速 + 一般高速）
-        const tollFee = routeSchedules.reduce(
-          (sum, schedule) => sum + (schedule.M_postalHighwayFee || 0) + (schedule.O_generalHighwayFee || 0),
-          0
-        )
+        const feeInfos: FeeInfo[] = sortedSchedules.map(schedule => {
+          const feeSorted = schedule.TbmRouteGroup.TbmRouteGroupFee.sort((a, b) => b.startDate.getTime() - a.startDate.getTime())
+          const feeOnDate = feeSorted.find(fee => schedule.date.getTime() >= fee.startDate.getTime())
+
+          return {
+            schedule,
+            driverFee: feeOnDate?.driverFee || 0,
+            futaiFee: feeOnDate?.futaiFee || 0,
+            tollFee: (schedule.M_postalHighwayFee || 0) + (schedule.O_generalHighwayFee || 0),
+          }
+        })
+
+        // 運賃・付帯料金・通行料の合計を計算
+        const totalDriverFee = feeInfos.reduce((sum, info) => sum + info.driverFee, 0)
+        const totalFutaiFee = feeInfos.reduce((sum, info) => sum + info.futaiFee, 0)
+        const totalTollFee = feeInfos.reduce((sum, info) => sum + info.tollFee, 0)
+
+        // 運賃単価のバリエーションを計算
+        const driverFeeVariations = calculatePriceVariations(feeInfos, 'driverFee', whereQuery.lte)
+        // 付帯料金単価のバリエーションを計算
+        const futaiFeeVariations = calculatePriceVariations(feeInfos, 'futaiFee', whereQuery.lte)
+        // 通行料単価のバリエーションを計算
+        const tollFeeVariations = calculatePriceVariations(feeInfos, 'tollFee', whereQuery.lte)
+
+        // 単一の単価がある場合は後方互換性のため設定
+        const driverFeeUnitPrice = driverFeeVariations.length === 1 ? driverFeeVariations[0].price : undefined
+        const futaiFeeUnitPrice = futaiFeeVariations.length === 1 ? futaiFeeVariations[0].price : undefined
+        const tollFeeUnitPrice = tollFeeVariations.length === 1 ? tollFeeVariations[0].price : undefined
 
         return {
           category,
           categoryCode,
           routeName,
           name: routeSchedules[0]?.TbmRouteGroup.name || '',
+          vehicleType: routeSchedules[0]?.TbmRouteGroup.vehicleType || '',
+          routeDirection: '', // 方向は後で実装可能
           trips,
-          unitPrice,
-          amount,
-          tollFee,
+          driverFeeVariations: driverFeeVariations.length > 1 ? driverFeeVariations : undefined,
+          driverFeeUnitPrice,
+          amount: totalDriverFee,
+          futaiFeeVariations: futaiFeeVariations.length > 1 ? futaiFeeVariations : undefined,
+          futaiFeeUnitPrice,
+          futaiFee: totalFutaiFee,
+          tollFeeVariations: tollFeeVariations.length > 1 ? tollFeeVariations : undefined,
+          tollFeeUnitPrice,
+          tollFee: totalTollFee,
+          // 後方互換性のため
+          unitPrice: driverFeeUnitPrice,
         }
       })
     }
   )
 
   // 合計金額計算
-  const totalAmount = summaryByCategory.reduce((sum, item) => sum + item.totalAmount, 0)
-  const taxAmount = Math.floor(totalAmount * 0.1) // 10%消費税
-  const grandTotal = totalAmount + taxAmount
+  let totalAmount = summaryByCategory.reduce((sum, item) => sum + item.totalAmount, 0)
+  let taxAmount = Math.floor(totalAmount * 0.1) // 10%消費税
+  let grandTotal = totalAmount + taxAmount
+
+  // 手動編集データを取得
+  const manualEditData = await getInvoiceManualEdit({
+    tbmCustomerId: customerId,
+    yearMonth: whereQuery.gte,
+  })
+
+  // 手動編集データがある場合は、配車連動データを上書き
+  let finalSummaryByCategory = summaryByCategory
+  let finalDetailsByCategory = detailsByCategory
+
+  if (manualEditData.summaryByCategory) {
+    finalSummaryByCategory = manualEditData.summaryByCategory
+    // 手動編集されたサマリーから合計金額を再計算
+    const manualTotalAmount = finalSummaryByCategory.reduce((sum, item) => sum + item.totalAmount, 0)
+    const manualTaxAmount = Math.floor(manualTotalAmount * 0.1)
+    const manualGrandTotal = manualTotalAmount + manualTaxAmount
+    totalAmount = manualTotalAmount
+    taxAmount = manualTaxAmount
+    grandTotal = manualGrandTotal
+  }
+
+  if (manualEditData.detailsByCategory) {
+    finalDetailsByCategory = manualEditData.detailsByCategory
+  }
 
   const invoiceData: InvoiceData = {
     companyInfo: {
@@ -216,8 +340,8 @@ export const getInvoiceData = async ({
       totalAmount,
       taxAmount,
       grandTotal,
-      summaryByCategory,
-      detailsByCategory,
+      summaryByCategory: finalSummaryByCategory,
+      detailsByCategory: finalDetailsByCategory,
     },
   }
 

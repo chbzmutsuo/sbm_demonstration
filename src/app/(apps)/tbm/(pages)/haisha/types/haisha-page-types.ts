@@ -93,6 +93,7 @@ export interface GetListDataParams {
   mode: HaishaTableMode
   takeSkip: PaginationConfig
   sortBy?: HaishaSortBy
+  tbmCustomerId?: number
 }
 
 // ============================================================================

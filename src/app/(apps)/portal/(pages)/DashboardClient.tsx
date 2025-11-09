@@ -307,7 +307,7 @@ const DailyModal = ({
   return (
     <>
       {selectedDay?.plans && (
-        <AutoGridContainer {...{maxCols: {xl: 2, xl2: 3}, className: 'gap-8'}}>
+        <AutoGridContainer {...{maxCols: {xl: 2, '2xl': 3}, className: 'gap-8'}}>
           {selectedDay.plans.map(plan => (
             <div key={plan.productId} className="border rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">

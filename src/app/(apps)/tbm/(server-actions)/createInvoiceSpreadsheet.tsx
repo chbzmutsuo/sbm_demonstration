@@ -190,7 +190,7 @@ async function createCategorySheets(spreadsheetId: string, invoiceData: InvoiceD
     const detailRows = details.map(detail => [
       detail.routeName, // A列: 路線名
       detail.trips.toString(), // B列: 回数
-      detail.unitPrice.toString(), // C列: 単価
+      detail.unitPrice?.toString() || '0', // C列: 単価
       detail.amount.toString(), // D列: 運賃
       detail.tollFee.toString(), // E列: 通行料
       (detail.amount + detail.tollFee).toString(), // F列: 合計

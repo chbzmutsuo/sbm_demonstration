@@ -1,5 +1,5 @@
 import {getTbmBase_MonthConfig} from '@app/(apps)/tbm/(server-actions)/getBasics'
-import {getUserListWithCarHistory} from '@app/(apps)/tbm/(server-actions)/getUserListWithCarHistory'
+import {fetchRuisekiKyoriKichoData} from '@app/(apps)/tbm/(server-actions)/fetchRuisekiKyoriKichoData'
 import {getMidnight} from '@cm/class/Days/date-utils/calculations'
 import {NumHandler} from '@cm/class/NumHandler'
 import {FitMargin, R_Stack} from '@cm/components/styles/common-components/common-components'
@@ -22,7 +22,7 @@ export default async function Page(props) {
 
   const {TbmBase_MonthConfig} = await getTbmBase_MonthConfig({yearMonth, tbmBaseId})
 
-  const userListWithCarHistory = await getUserListWithCarHistory({
+  const userListWithCarHistory = await fetchRuisekiKyoriKichoData({
     tbmBaseId,
     whereQuery,
     TbmBase_MonthConfig,
@@ -40,12 +40,13 @@ export default async function Page(props) {
             <div key={userId} className={`t-paper w-[500px] p-2`}>
               <R_Stack className={` w-full justify-between`}>
                 {/* <span>{user.code}</span> */}
-                <h2 className={` `}>{user.name}</h2>
+                <h2>{user.name}</h2>
+                <span className="text-sm text-gray-500">{user.code}</span>
               </R_Stack>
               {allCars.length > 0 ? (
                 CsvTable({
                   records: allCars.map(data => {
-                    const {car, soukouKyori, heikinNenpi, nenryoiShiyoryo, fuelCost} = data
+                    const {car, sokoKyoriInPeriod, heikinNempiInPeriod, sokyuyuRyoInPeriod, fuelCostInPeriod} = data
 
                     return {
                       csvTableRow: [
@@ -55,22 +56,23 @@ export default async function Page(props) {
                         },
                         {
                           label: `走行距離計`,
-                          cellValue: NumHandler.WithUnit(soukouKyori, 'km', 1),
+                          cellValue: NumHandler.WithUnit(sokoKyoriInPeriod, 'km', 2),
                           style: {textAlign: `right`},
                         },
                         {
                           label: `平均燃費`,
-                          cellValue: NumHandler.WithUnit(heikinNenpi, 'km/L', 1),
+                          cellValue: NumHandler.WithUnit(heikinNempiInPeriod, 'km/L', 2),
                           style: {textAlign: `right`},
                         },
                         {
-                          label: `燃費使用量`,
-                          cellValue: NumHandler.WithUnit(nenryoiShiyoryo, 't', 1),
+                          label: `総給油量`,
+                          cellValue: NumHandler.WithUnit(sokyuyuRyoInPeriod, 'L', 2),
                           style: {textAlign: `right`},
                         },
+
                         {
                           label: `使用金額`,
-                          cellValue: NumHandler.WithUnit(fuelCost, '円', 0),
+                          cellValue: NumHandler.WithUnit(fuelCostInPeriod, '円', 1),
                         },
                       ],
                     }

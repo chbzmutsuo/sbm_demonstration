@@ -1431,15 +1431,16 @@ model TbmBase {
   code String? @unique
   name String  @unique
 
-  User                User[]
-  TbmVehicle          TbmVehicle[]
-  TbmRouteGroup       TbmRouteGroup[]
-  TbmDriveSchedule    TbmDriveSchedule[]
+  User                 User[]
+  TbmVehicle           TbmVehicle[]
+  TbmRouteGroup        TbmRouteGroup[]
+  TbmDriveSchedule     TbmDriveSchedule[]
   // TbmProduct          TbmProduct[]
-  TbmCustomer         TbmCustomer[]
-  TbmBase_MonthConfig TbmBase_MonthConfig[]
-  TbmKeihi            TbmKeihi[]
-  TbmRouteGroupShare  TbmRouteGroupShare[]
+  TbmCustomer          TbmCustomer[]
+  TbmBase_MonthConfig  TbmBase_MonthConfig[]
+  TbmKeihi             TbmKeihi[]
+  TbmRouteGroupShare   TbmRouteGroupShare[]
+  TbmInvoiceManualEdit TbmInvoiceManualEdit[]
 }
 
 model TbmRouteGroupCalendar {
@@ -1750,11 +1751,32 @@ model TbmCustomer {
   faxNumber                     String?
   bankInformation               String?
   Mid_TbmRouteGroup_TbmCustomer Mid_TbmRouteGroup_TbmCustomer[]
+  TbmInvoiceManualEdit          TbmInvoiceManualEdit[]
 
   TbmBase   TbmBase? @relation(fields: [tbmBaseId], references: [id], onDelete: Cascade)
   tbmBaseId Int?
 
   @@unique([tbmBaseId, name], name: "unique_tbmBaseId_name")
+}
+
+model TbmInvoiceManualEdit {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @default(now()) @updatedAt()
+  sortOrder Float     @default(0)
+
+  yearMonth DateTime // 請求対象月
+
+  summary Json? // 手動編集されたサマリー (CategorySummary[])
+  details Json? // 手動編集された明細 (CategoryDetail[])
+
+  TbmBase   TbmBase? @relation(fields: [tbmBaseId], references: [id], onDelete: Cascade)
+  tbmBaseId Int?
+
+  TbmCustomer   TbmCustomer @relation(fields: [tbmCustomerId], references: [id], onDelete: Cascade)
+  tbmCustomerId Int
+
+  @@unique([tbmCustomerId, yearMonth], name: "unique_tbmCustomerId_yearMonth")
 }
 
 model TbmRefuelHistory {
@@ -2008,6 +2030,8 @@ model TeamSynapseAnalysis {
   @@index([userId])
   @@index([createdAt])
 }
+
+
 
 
 
@@ -17704,6 +17728,23 @@ export const prismaDMMF = {
           "relationToFields": [],
           "isGenerated": false,
           "isUpdatedAt": false
+        },
+        {
+          "name": "TbmInvoiceManualEdit",
+          "kind": "object",
+          "isList": true,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "TbmInvoiceManualEdit",
+          "nativeType": null,
+          "relationName": "TbmBaseToTbmInvoiceManualEdit",
+          "relationFromFields": [],
+          "relationToFields": [],
+          "isGenerated": false,
+          "isUpdatedAt": false
         }
       ],
       "primaryKey": null,
@@ -20695,6 +20736,23 @@ export const prismaDMMF = {
           "isUpdatedAt": false
         },
         {
+          "name": "TbmInvoiceManualEdit",
+          "kind": "object",
+          "isList": true,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "TbmInvoiceManualEdit",
+          "nativeType": null,
+          "relationName": "TbmCustomerToTbmInvoiceManualEdit",
+          "relationFromFields": [],
+          "relationToFields": [],
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
           "name": "TbmBase",
           "kind": "object",
           "isList": false,
@@ -20744,6 +20802,213 @@ export const prismaDMMF = {
           "fields": [
             "tbmBaseId",
             "name"
+          ]
+        }
+      ],
+      "isGenerated": false
+    },
+    {
+      "name": "TbmInvoiceManualEdit",
+      "dbName": null,
+      "schema": null,
+      "fields": [
+        {
+          "name": "id",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": true,
+          "isReadOnly": false,
+          "hasDefaultValue": true,
+          "type": "Int",
+          "nativeType": null,
+          "default": {
+            "name": "autoincrement",
+            "args": []
+          },
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "createdAt",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": true,
+          "type": "DateTime",
+          "nativeType": null,
+          "default": {
+            "name": "now",
+            "args": []
+          },
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "updatedAt",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": false,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": true,
+          "type": "DateTime",
+          "nativeType": null,
+          "default": {
+            "name": "now",
+            "args": []
+          },
+          "isGenerated": false,
+          "isUpdatedAt": true
+        },
+        {
+          "name": "sortOrder",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": true,
+          "type": "Float",
+          "nativeType": null,
+          "default": 0,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "yearMonth",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "DateTime",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "summary",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": false,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Json",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "details",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": false,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Json",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "TbmBase",
+          "kind": "object",
+          "isList": false,
+          "isRequired": false,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "TbmBase",
+          "nativeType": null,
+          "relationName": "TbmBaseToTbmInvoiceManualEdit",
+          "relationFromFields": [
+            "tbmBaseId"
+          ],
+          "relationToFields": [
+            "id"
+          ],
+          "relationOnDelete": "Cascade",
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "tbmBaseId",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": false,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": true,
+          "hasDefaultValue": false,
+          "type": "Int",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "TbmCustomer",
+          "kind": "object",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "TbmCustomer",
+          "nativeType": null,
+          "relationName": "TbmCustomerToTbmInvoiceManualEdit",
+          "relationFromFields": [
+            "tbmCustomerId"
+          ],
+          "relationToFields": [
+            "id"
+          ],
+          "relationOnDelete": "Cascade",
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "tbmCustomerId",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": true,
+          "hasDefaultValue": false,
+          "type": "Int",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        }
+      ],
+      "primaryKey": null,
+      "uniqueFields": [
+        [
+          "tbmCustomerId",
+          "yearMonth"
+        ]
+      ],
+      "uniqueIndexes": [
+        {
+          "name": "unique_tbmCustomerId_yearMonth",
+          "fields": [
+            "tbmCustomerId",
+            "yearMonth"
           ]
         }
       ],
@@ -24969,6 +25234,30 @@ export const prismaDMMF = {
         },
         {
           "name": "name"
+        }
+      ]
+    },
+    {
+      "model": "TbmInvoiceManualEdit",
+      "type": "id",
+      "isDefinedOnField": true,
+      "fields": [
+        {
+          "name": "id"
+        }
+      ]
+    },
+    {
+      "model": "TbmInvoiceManualEdit",
+      "type": "unique",
+      "isDefinedOnField": false,
+      "name": "unique_tbmCustomerId_yearMonth",
+      "fields": [
+        {
+          "name": "tbmCustomerId"
+        },
+        {
+          "name": "yearMonth"
         }
       ]
     },

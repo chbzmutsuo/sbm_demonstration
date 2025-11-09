@@ -1,9 +1,10 @@
-import {eigyoshoRecordKey, getEigyoshoUriageData} from '@app/(apps)/tbm/(server-actions)/getEigyoshoUriageData'
-import {getMonthlyTbmDriveData} from '@app/(apps)/tbm/(server-actions)/getMonthlyTbmDriveData'
-import {unkoMeisaiKey} from '@app/(apps)/tbm/(class)/DriveScheduleCl'
-import {carHistoryKey, getUserListWithCarHistory} from '@app/(apps)/tbm/(server-actions)/getUserListWithCarHistory'
+import {eigyoshoRecordKey, fetchEigyoshoUriageData} from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fetchEigyoshoUriageData'
 
-type userSchedule = Awaited<ReturnType<typeof getMonthlyTbmDriveData>>['monthlyTbmDriveList']
+import {unkoMeisaiKey} from '@app/(apps)/tbm/(class)/DriveScheduleCl'
+import {carHistoryKey, fetchRuisekiKyoriKichoData} from '@app/(apps)/tbm/(server-actions)/fetchRuisekiKyoriKichoData'
+
+import {TbmReportCl} from '@app/(apps)/tbm/(class)/TbmReportCl'
+type userSchedule = Awaited<ReturnType<typeof TbmReportCl.fetcher.fetchUnkoMeisaiData>>['monthlyTbmDriveList']
 
 export const MEIAI_SUM_ORIGIN = (userSchedule: userSchedule, dataKey: unkoMeisaiKey) => {
   return userSchedule.reduce((acc, cur) => {
@@ -13,11 +14,11 @@ export const MEIAI_SUM_ORIGIN = (userSchedule: userSchedule, dataKey: unkoMeisai
 }
 //
 
-type userWithCarHistory = Awaited<ReturnType<typeof getUserListWithCarHistory>>
+type userWithCarHistory = Awaited<ReturnType<typeof fetchRuisekiKyoriKichoData>>
 
 export const RUISEKI_SUM_ORIGIN = (userWithCarHistory: userWithCarHistory, dataKey: carHistoryKey) => {
-  return userWithCarHistory.reduce((acc, cur) => {
-    const value = cur.allCars.reduce((acc, cur) => {
+  return userWithCarHistory.reduce((acc, obj) => {
+    const value = obj.allCars.reduce((acc, cur) => {
       return acc + (cur[dataKey] ?? 0)
     }, 0)
 
@@ -25,7 +26,7 @@ export const RUISEKI_SUM_ORIGIN = (userWithCarHistory: userWithCarHistory, dataK
   }, 0)
 }
 
-type MyEigyoshoUriageRecord = Awaited<ReturnType<typeof getEigyoshoUriageData>>['EigyoshoUriageRecords']
+type MyEigyoshoUriageRecord = Awaited<ReturnType<typeof TbmReportCl.fetcher.fetchEigyoshoUriageData>>['EigyoshoUriageRecords']
 export const EIGYOSHO_URIAGE_SUMORIGIN = (MyEigyoshoUriageRecord: MyEigyoshoUriageRecord, dataKey: eigyoshoRecordKey) => {
   return MyEigyoshoUriageRecord.reduce((acc, cur) => {
     const sum = Object.keys(cur.keyValue).reduce((acc, key) => {

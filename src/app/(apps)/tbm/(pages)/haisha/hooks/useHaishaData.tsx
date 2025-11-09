@@ -30,12 +30,13 @@ export function useHaishaData({
       await showSpendTime(async () => {
         const takeSkip = {take: itemsPerPage, skip: (currentPage - 1) * itemsPerPage}
         const sortBy = (query.sortBy as HaishaSortBy) ?? 'departureTime'
-        const data = await getListData({tbmBaseId, whereQuery, mode, takeSkip, sortBy})
+        const tbmCustomerId = query.tbmCustomerId ? parseInt(query.tbmCustomerId) : undefined
+        const data = await getListData({tbmBaseId, whereQuery, mode, takeSkip, sortBy, tbmCustomerId})
         setMaxRecord(data.maxCount)
         setListDataState(data)
       })
     })
-  }, [tbmBaseId, whereQuery, mode, currentPage, itemsPerPage, query.sortBy])
+  }, [tbmBaseId, whereQuery, mode, currentPage, itemsPerPage, query.sortBy, query.tbmCustomerId])
 
   useEffect(() => {
     fetchData()

@@ -5,6 +5,7 @@ import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 interface Customer {
   id: number
   name: string
+  transactionCount?: number
 }
 
 interface CustomerSelectorProps {
@@ -37,6 +38,7 @@ export default function CustomerSelector({customers, currentCustomerId}: Custome
           {customers.map(customer => (
             <option key={customer.id} value={customer.id}>
               {customer.name}
+              {customer.transactionCount !== undefined && customer.transactionCount > 0 ? ` (${customer.transactionCount})` : ''}
             </option>
           ))}
         </select>

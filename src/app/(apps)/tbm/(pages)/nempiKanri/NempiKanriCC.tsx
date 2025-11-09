@@ -7,10 +7,11 @@ import {R_Stack} from '@cm/components/styles/common-components/common-components
 import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
 import {KeyValue} from '@cm/components/styles/common-components/ParameterCard'
 import EmptyPlaceholder from '@cm/components/utils/loader/EmptyPlaceHolder'
+import AutoGridContainer from '@cm/components/utils/AutoGridContainer'
 
 export default function NempiKanriCC({vehicleList, nenpiKanriDataListByCar, lastRefuelHistoryByCar}) {
   return (
-    <R_Stack className={`w-full items-start gap-8`}>
+    <AutoGridContainer maxCols={{lg: 2, '2xl': 3}} className={`mx-auto w-fit gap-8`}>
       {vehicleList.map((vehicle, idx) => {
         const nenpiKanriData = nenpiKanriDataListByCar.find(data => data?.vehicle?.id === vehicle.id)
 
@@ -31,16 +32,18 @@ export default function NempiKanriCC({vehicleList, nenpiKanriDataListByCar, last
           return sortByodometer
         })
 
+        const hasHistory = vehicle.TbmRefuelHistory.length > 0
         return (
-          <div key={idx} className={`t-paper w-[450px]  p-2`}>
+          <div key={idx} className={`t-paper w-[450px]  p-2 `}>
             <div>
               <section>
-                <R_Stack className={` text-lg font-bold`}>
+                <R_Stack className={` text-lg font-bold justify-between`}>
                   <span>{vehicle?.vehicleNumber}</span>
+                  <span className="text-sm text-gray-500">{vehicle?.frameNo}</span>
                 </R_Stack>
               </section>
 
-              <section>
+              <section className={`${hasHistory ? 'opacity-100' : 'opacity-20'}`}>
                 <R_Stack className={`gap-0 text-lg`}>
                   <div className={flexChild}>
                     <KeyValue label="総走行距離">
@@ -66,7 +69,7 @@ export default function NempiKanriCC({vehicleList, nenpiKanriDataListByCar, last
               </section>
 
               <section>
-                {vehicle.TbmRefuelHistory.length > 0 ? (
+                {hasHistory ? (
                   <>
                     {CsvTable({
                       records: (vehicle.TbmRefuelHistory ?? []).map((current, i) => {
@@ -98,6 +101,6 @@ export default function NempiKanriCC({vehicleList, nenpiKanriDataListByCar, last
           </div>
         )
       })}
-    </R_Stack>
+    </AutoGridContainer>
   )
 }

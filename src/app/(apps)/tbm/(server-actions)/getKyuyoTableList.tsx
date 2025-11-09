@@ -2,8 +2,8 @@
 
 import {getTbmBase_MonthConfig} from '@app/(apps)/tbm/(server-actions)/getBasics'
 import {EIGYOSHO_URIAGE_SUMORIGIN} from '@app/(apps)/tbm/(lib)/calculation'
-import {eigyoshoRecordKey, getEigyoshoUriageData} from '@app/(apps)/tbm/(server-actions)/getEigyoshoUriageData'
-import {tbmTableKeyValue} from '@app/(apps)/tbm/(server-actions)/getMonthlyTbmDriveData'
+import {eigyoshoRecordKey, getEigyoshoUriageData} from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fetchEigyoshoUriageData'
+import {tbmTableKeyValue} from '@app/(apps)/tbm/(server-actions)/fetchUnkoMeisaiData'
 import {getMidnight} from '@cm/class/Days/date-utils/calculations'
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {User} from '@prisma/client'

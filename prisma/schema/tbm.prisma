@@ -7,15 +7,16 @@ model TbmBase {
   code String? @unique
   name String  @unique
 
-  User                User[]
-  TbmVehicle          TbmVehicle[]
-  TbmRouteGroup       TbmRouteGroup[]
-  TbmDriveSchedule    TbmDriveSchedule[]
+  User                 User[]
+  TbmVehicle           TbmVehicle[]
+  TbmRouteGroup        TbmRouteGroup[]
+  TbmDriveSchedule     TbmDriveSchedule[]
   // TbmProduct          TbmProduct[]
-  TbmCustomer         TbmCustomer[]
-  TbmBase_MonthConfig TbmBase_MonthConfig[]
-  TbmKeihi            TbmKeihi[]
-  TbmRouteGroupShare  TbmRouteGroupShare[]
+  TbmCustomer          TbmCustomer[]
+  TbmBase_MonthConfig  TbmBase_MonthConfig[]
+  TbmKeihi             TbmKeihi[]
+  TbmRouteGroupShare   TbmRouteGroupShare[]
+  TbmInvoiceManualEdit TbmInvoiceManualEdit[]
 }
 
 model TbmRouteGroupCalendar {
@@ -326,11 +327,32 @@ model TbmCustomer {
   faxNumber                     String?
   bankInformation               String?
   Mid_TbmRouteGroup_TbmCustomer Mid_TbmRouteGroup_TbmCustomer[]
+  TbmInvoiceManualEdit          TbmInvoiceManualEdit[]
 
   TbmBase   TbmBase? @relation(fields: [tbmBaseId], references: [id], onDelete: Cascade)
   tbmBaseId Int?
 
   @@unique([tbmBaseId, name], name: "unique_tbmBaseId_name")
+}
+
+model TbmInvoiceManualEdit {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @default(now()) @updatedAt()
+  sortOrder Float     @default(0)
+
+  yearMonth DateTime // 請求対象月
+
+  summary Json? // 手動編集されたサマリー (CategorySummary[])
+  details Json? // 手動編集された明細 (CategoryDetail[])
+
+  TbmBase   TbmBase? @relation(fields: [tbmBaseId], references: [id], onDelete: Cascade)
+  tbmBaseId Int?
+
+  TbmCustomer   TbmCustomer @relation(fields: [tbmCustomerId], references: [id], onDelete: Cascade)
+  tbmCustomerId Int
+
+  @@unique([tbmCustomerId, yearMonth], name: "unique_tbmCustomerId_yearMonth")
 }
 
 model TbmRefuelHistory {

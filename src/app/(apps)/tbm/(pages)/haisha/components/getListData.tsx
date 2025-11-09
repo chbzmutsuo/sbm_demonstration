@@ -5,21 +5,33 @@ import {TimeHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
 import {GetListDataParams, HaishaListData} from '../types/haisha-page-types'
 
 export const getListData = async (props: GetListDataParams): Promise<HaishaListData> => {
-  const {tbmBaseId, whereQuery, mode, takeSkip, sortBy = 'departureTime'} = props
+  const {tbmBaseId, whereQuery, mode, takeSkip, sortBy = 'departureTime', tbmCustomerId} = props
+
+  const commonWhere = {tbmBaseId}
+  const tbmBase = await prisma.tbmBase.findUnique({select: {id: true, name: true}, where: {id: tbmBaseId}})
+
   const getMaxRecord = async () => {
     if (mode === 'ROUTE') {
-      const maxRecord = await prisma.tbmRouteGroup.count({where: {tbmBaseId}})
+      const maxRecord = await prisma.tbmRouteGroup.count({
+        where: {
+          ...commonWhere,
+          ...(tbmCustomerId
+            ? {
+                Mid_TbmRouteGroup_TbmCustomer: {
+                  tbmCustomerId,
+                },
+              }
+            : {}),
+        },
+      })
 
       return maxRecord
     } else {
-      const maxRecord = await prisma.user.count({where: {tbmBaseId}})
+      const maxRecord = await prisma.user.count({where: commonWhere})
 
       return maxRecord
     }
   }
-
-  const commonWhere = {tbmBaseId}
-  const tbmBase = await prisma.tbmBase.findUnique({select: {id: true, name: true}, where: {id: tbmBaseId}})
 
   // ソート条件を動的に生成
   const getOrderBy = () => {
@@ -85,7 +97,18 @@ export const getListData = async (props: GetListDataParams): Promise<HaishaListD
         },
       },
     },
-    where: {date: {gte: whereQuery.gte, lte: whereQuery.lt}},
+    where: {
+      date: {gte: whereQuery.gte, lte: whereQuery.lt},
+      ...(tbmCustomerId
+        ? {
+            TbmRouteGroup: {
+              Mid_TbmRouteGroup_TbmCustomer: {
+                tbmCustomerId,
+              },
+            },
+          }
+        : {}),
+    },
     orderBy: getOrderBy(),
   })
 
@@ -204,7 +227,16 @@ export const getListData = async (props: GetListDataParams): Promise<HaishaListD
         where: {date: whereQuery},
       },
     },
-    where: commonWhere,
+    where: {
+      ...commonWhere,
+      ...(tbmCustomerId
+        ? {
+            Mid_TbmRouteGroup_TbmCustomer: {
+              tbmCustomerId,
+            },
+          }
+        : {}),
+    },
     orderBy: getRouteGroupOrderBy(),
     ...(mode === 'ROUTE' ? {...takeSkip} : {}),
   })

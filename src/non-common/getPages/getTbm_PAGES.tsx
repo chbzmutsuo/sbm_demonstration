@@ -106,12 +106,38 @@ export const tbm_PAGES = (props: PageGetterType) => {
     return {...item, exclusiveTo: isSystemAdmin, ROOT: [rootPath]}
   })
 
+  const kaizenManiaPath = [
+    {
+      tabId: '',
+      label: <IconLetter {...{Icon: ListIcon}}>開発者メニュー</IconLetter>,
+      children: [
+        //
+
+        {
+          tabId: `odometerInput`,
+          label: <IconLetter {...{Icon: Settings}}>OdometerInput</IconLetter>,
+        },
+        {
+          tabId: `tbmRefuelHistory`,
+          label: <IconLetter {...{Icon: Settings}}>TbmRefuelHistory</IconLetter>,
+        },
+        {
+          tabId: `tbmCarWashHistory`,
+          label: <IconLetter {...{Icon: Settings}}>tbmCarWashHistory</IconLetter>,
+        },
+      ],
+    },
+  ].map(item => {
+    return {...item, exclusiveTo: admin, ROOT: [rootPath]}
+  })
+
   const pathSource = [
     {tabId: 'top', label: 'トップ', hide: true, ROOT: [rootPath]},
     ...loginPath,
     ...publicPaths,
     ...shochoPath,
     ...systemAdminPath,
+    ...kaizenManiaPath,
   ]
 
   const {cleansedPathSource, navItems, breads, allPathsPattenrs} = CleansePathSource({

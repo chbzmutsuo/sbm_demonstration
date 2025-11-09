@@ -9,6 +9,7 @@ import {CssString} from 'src/cm/components/styles/cssString'
 import JsonFormatter from 'react-json-formatter'
 import {formatDate, TimeFormatType} from '@cm/class/Days/date-utils/formatters'
 import {Days} from '@cm/class/Days/Days'
+import {NumHandler} from '@cm/class/NumHandler'
 
 export const getValue = ({col, record, dataModelName, mutateRecords, tdStyle}) => {
   /**基本的な変換 */
@@ -47,6 +48,8 @@ export const getValue = ({col, record, dataModelName, mutateRecords, tdStyle}) =
     } else if (col.type === 'json') {
       return String(JSON.stringify(value))
       return <JsonFormatter json={value} />
+    } else if (col.type === 'float' || col.type === 'number') {
+      value = Number(value).toLocaleString()
     }
 
     if (typeof value === `function`) {
