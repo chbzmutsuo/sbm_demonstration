@@ -71,34 +71,49 @@ export async function exportPdfWithItems(
     // すべてのページを取得
     const pages = pdfDoc.getPages()
 
-    // 配置済みアイテムを描画（現在は最初のページのみ）
-    // 将来的に複数ページ対応が必要な場合は、itemにpageIndexを追加する必要がある
-    if (pages.length > 0) {
-      const firstPage = pages[0]
-      const {width: pageWidthPt, height: pageHeightPt} = firstPage.getSize()
+    // 使用するフォント（日本語フォントがあればそれを使用、なければ標準フォント）
+    const font = japaneseFont || standardFont
+
+    // 配置済みアイテムを描画（各ページごと）
+    console.log('PDFエクスポート開始:', {
+      itemsCount: items.length,
+      totalPages: pages.length,
+      hasJapaneseFont: !!japaneseFont,
+    })
+
+    // ページごとにアイテムをグループ化
+    const itemsByPage: {[pageIndex: number]: PlacedItem[]} = {}
+    for (const item of items) {
+      const pageIndex = item.pageIndex || 0
+      if (!itemsByPage[pageIndex]) {
+        itemsByPage[pageIndex] = []
+      }
+      itemsByPage[pageIndex].push(item)
+    }
+
+    // 各ページにアイテムを描画
+    for (let pageIndex = 0; pageIndex < pages.length; pageIndex++) {
+      const page = pages[pageIndex]
+      const pageItems = itemsByPage[pageIndex] || []
+
+      if (pageItems.length === 0) {
+        continue
+      }
+
+      const {width: pageWidthPt, height: pageHeightPt} = page.getSize()
 
       // PDFの実際のサイズをmm単位に変換（ポイントからmm）
       // 1ポイント = 0.352778mm
       const pageWidthMm = pageWidthPt * 0.352778
       const pageHeightMm = pageHeightPt * 0.352778
 
-      // フォントサイズ（ポイント単位）
-      // Tailwind CSSのtext-smは14px = 約10.5ポイント（96dpi基準）
-      // より正確には、ブラウザのデフォルト16px基準でtext-smは14px = 10.5ポイント
-      const fontSize = 10.5
-
-      // 使用するフォント（日本語フォントがあればそれを使用、なければ標準フォント）
-      const font = japaneseFont || standardFont
-
-      // 配置済みアイテムを描画
-      console.log('PDFエクスポート開始:', {
-        itemsCount: items.length,
+      console.log(`ページ ${pageIndex + 1}:`, {
+        itemsCount: pageItems.length,
         pageSizePt: {width: pageWidthPt, height: pageHeightPt},
         pageSizeMm: {width: pageWidthMm, height: pageHeightMm},
-        hasJapaneseFont: !!japaneseFont,
       })
 
-      for (const item of items) {
+      for (const item of pageItems) {
         // DocumentEditor.tsxのonItemMoveで調整されている座標（x: mmX - 12, y: mmY - 1）を考慮
         // 画面表示用の調整を元に戻す
         // PlacedItem.tsxからpadding/marginを削除したので、調整は不要
@@ -130,14 +145,16 @@ export async function exportPdfWithItems(
 
             // テキストを描画
             // フォントサイズを考慮してベースラインを調整
-            firstPage.drawText(String(value), {
+            page.drawText(String(value), {
               x: xPoint,
               y: yPoint - itemFontSize, // ベースラインを考慮
               size: itemFontSize,
               color: rgb(0, 0, 0), // 黒色
               font: font, // フォントを指定
             })
-            console.log(`✓ 描画成功: ${item.componentId} at (${xPoint}, ${yPoint - itemFontSize}), fontSize: ${itemFontSize}`)
+            console.log(
+              `✓ 描画成功 [ページ ${pageIndex + 1}]: ${item.componentId} at (${xPoint}, ${yPoint - itemFontSize}), fontSize: ${itemFontSize}`
+            )
           } catch (textError) {
             // テキスト描画エラー（例: フォントが対応していない文字）はスキップ
             console.warn(`テキスト描画エラー (${item.componentId}):`, textError)

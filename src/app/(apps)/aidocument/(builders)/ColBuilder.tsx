@@ -12,7 +12,7 @@ export class ColBuilder {
       {id: 'password', label: 'パスワード', type: `password`, form: {...defaultRegister}},
       {
         id: 'aidocumentCompanyId',
-        label: '自社',
+        label: '所属',
         forSelect: {
           config: {
             modelName: 'aidocumentCompany',

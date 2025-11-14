@@ -5,7 +5,6 @@ import {Loader2, AlertCircle, Save} from 'lucide-react'
 import {AidocumentCompany} from '@prisma/client'
 import {updateSelfCompany} from '../../actions/company-actions'
 import CompanyForm from '../../components/company/CompanyForm'
-import {Button} from '@cm/components/styles/common-components/Button'
 
 interface CompanyClientProps {
   initialCompany: AidocumentCompany

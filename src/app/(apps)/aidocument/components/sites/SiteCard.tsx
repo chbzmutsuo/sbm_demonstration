@@ -1,9 +1,8 @@
 'use client'
 
-import {MoreVertical, Edit2, Trash2, Wallet, Calendar, Users, Truck, ChevronRight} from 'lucide-react'
+import { Edit2, Trash2, Wallet, Calendar, Users, Truck, ChevronRight} from 'lucide-react'
 import {SiteWithRelations} from '../../types'
 import {Button} from '@cm/components/styles/common-components/Button'
-import {useState} from 'react'
 
 interface SiteCardProps {
   site: SiteWithRelations

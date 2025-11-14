@@ -404,8 +404,8 @@ export const PAGES: any = {
         label: '管理者',
         ROOT: [rootPath],
         children: [
-          {tabId: 'user', label: 'ユーザー管理', ROOT: [rootPath]},
-          {tabId: 'aidocumentCompany', label: '取引先マスタ管理', ROOT: [rootPath]},
+          {tabId: 'aidocumentCompany', label: '企業一覧', ROOT: [rootPath]},
+          {tabId: 'user', label: 'ユーザー一覧', ROOT: [rootPath]},
         ],
         exclusiveTo: !!admin,
       },

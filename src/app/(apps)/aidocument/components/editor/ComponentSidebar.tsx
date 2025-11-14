@@ -3,6 +3,7 @@
 import {GripVertical} from 'lucide-react'
 import {useDraggable} from '@dnd-kit/core'
 import {SiteWithRelations, Component} from '../../types'
+import useSWR from 'swr'
 
 interface ComponentSidebarProps {
   site: SiteWithRelations
@@ -40,7 +41,7 @@ function DraggableComponent({component}: {component: Component}) {
 }
 
 export default function ComponentSidebar({site}: ComponentSidebarProps) {
-  const components = generateComponentsFromSite(site)
+  const {data: components = []} = useSWR(JSON.stringify(site), async () => await generateComponentsFromSite(site))
 
   const componentGroups = components.reduce((acc: Record<string, Component[]>, comp) => {
     const group = comp.group || 'その他'
@@ -95,16 +96,82 @@ function generateComponentsFromSite(site: SiteWithRelations | null | undefined):
     },
   ]
 
-  ;(site.Staff || []).forEach(s => {
-    components.push({id: `${s.id}_name`, label: `[ス] ${s.name} (氏名)`, value: s.name, group: '担当スタッフ'})
-    components.push({id: `${s.id}_age`, label: `[ス] ${s.name} (年齢)`, value: s.age?.toString() || '', group: '担当スタッフ'})
+  // 自社情報を追加
+  if (site.Company) {
+    const company = site.Company
+    components.push({id: 'c_name', label: '自社名', value: company.name, group: '自社情報'})
     components.push({
-      id: `${s.id}_gender`,
+      id: 'c_representativeName',
+      label: '代表者名',
+      value: company.representativeName || '',
+      group: '自社情報',
+    })
+    components.push({id: 'c_address', label: '自社住所', value: company.address || '', group: '自社情報'})
+    components.push({id: 'c_phone', label: '電話番号', value: company.phone || '', group: '自社情報'})
+
+    // 建設業許可情報
+    if (company.constructionLicense && Array.isArray(company.constructionLicense)) {
+      const licenses = company.constructionLicense as Array<{type: string; number: string; date: string}>
+      licenses.forEach((license, index) => {
+        components.push({
+          id: `c_license_${index}_type`,
+          label: `建設業許可種別${index + 1}`,
+          value: license.type || '',
+          group: '自社情報',
+        })
+        components.push({
+          id: `c_license_${index}_number`,
+          label: `建設業許可番号${index + 1}`,
+          value: license.number || '',
+          group: '自社情報',
+        })
+        components.push({
+          id: `c_license_${index}_date`,
+          label: `建設業許可日${index + 1}`,
+          value: license.date || '',
+          group: '自社情報',
+        })
+      })
+    }
+
+    // 社会保険情報
+    if (company.socialInsurance && typeof company.socialInsurance === 'object') {
+      const socialInsurance = company.socialInsurance as {
+        health?: string
+        pension?: string
+        employment?: string
+        officeName?: string
+        officeCode?: string
+      }
+      if (socialInsurance.officeName) {
+        components.push({
+          id: 'c_social_officeName',
+          label: '社会保険事務所名',
+          value: socialInsurance.officeName,
+          group: '自社情報',
+        })
+      }
+      if (socialInsurance.officeCode) {
+        components.push({
+          id: 'c_social_officeCode',
+          label: '社会保険事務所コード',
+          value: socialInsurance.officeCode,
+          group: '自社情報',
+        })
+      }
+    }
+  }
+
+  ;(site.Staff || []).forEach(s => {
+    components.push({id: `s_${s.id}_name`, label: `[ス] ${s.name} (氏名)`, value: s.name, group: '担当スタッフ'})
+    components.push({id: `s_${s.id}_age`, label: `[ス] ${s.name} (年齢)`, value: s.age?.toString() || '', group: '担当スタッフ'})
+    components.push({
+      id: `s_${s.id}_gender`,
       label: `[ス] ${s.name} (性別)`,
       value: s.gender || '',
       group: '担当スタッフ',
     })
-    components.push({id: `${s.id}_term`, label: `[ス] ${s.name} (期間)`, value: s.term || '', group: '担当スタッフ'})
+    components.push({id: `s_${s.id}_term`, label: `[ス] ${s.name} (期間)`, value: s.term || '', group: '担当スタッフ'})
   })
   ;(site.aidocumentVehicles || []).forEach(v => {
     components.push({id: `v_${v.id}_plate`, label: `[車] ${v.plate} (番号)`, value: v.plate, group: '利用車両'})

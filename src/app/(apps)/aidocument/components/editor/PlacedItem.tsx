@@ -4,6 +4,8 @@ import {X, GripVertical} from 'lucide-react'
 import {useDraggable} from '@dnd-kit/core'
 import {PlacedItem as PlacedItemType} from '../../types'
 import {cn} from '@cm/shadcn/lib/utils'
+import {Days} from '@cm/class/Days/Days'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 interface PlacedItemProps {
   item: PlacedItemType
@@ -48,6 +50,13 @@ export default function PlacedItemComponent({
     top: transform ? `${y + transform.y}px` : `${y}px`,
     zIndex: isDragging ? 1000 : isSelected ? 100 : 1,
   }
+  let displayValue: string | number = String(value || `${item.componentId}には値がありません`)
+
+  if (!isNaN(Number(displayValue))) {
+    displayValue = Number(displayValue).toLocaleString()
+  } else if (Days.validate.isDate(displayValue)) {
+    displayValue = formatDate(displayValue)
+  }
 
   return (
     <div
@@ -56,10 +65,10 @@ export default function PlacedItemComponent({
       {...attributes}
       className={cn(
         //
-        'absolute hover:z-10 group',
+        'absolute hover:z-10 group ',
         isSelected && 'border-blue-600 border z-100',
         isDragging && 'opacity-50 z-20',
-        value ? '' : 'text-red-500 '
+        value ? 'text-blue-500' : 'text-red-500 '
       )}
       onClick={e => {
         e.stopPropagation()
@@ -77,7 +86,7 @@ export default function PlacedItemComponent({
       </div>
 
       <span className="bg-transparent bg-opacity-80 whitespace-nowrap block" style={{fontSize: `${fontSizePx}px`}}>
-        {value || `${item.componentId}には値がありません`}
+        {displayValue}
       </span>
       <button
         onClick={e => {

@@ -1,6 +1,6 @@
 'use client'
 
-import {useState, useEffect} from 'react'
+import {useState} from 'react'
 import {Plus, Trash2} from 'lucide-react'
 import {AidocumentCompany} from '@prisma/client'
 import {ConstructionLicense, SocialInsurance} from '../../types'

@@ -3,13 +3,14 @@
 import {useState, useEffect} from 'react'
 import {useRouter} from 'next/navigation'
 import {ChevronRight, CheckCircle, Loader2, AlertCircle, Bot, Download} from 'lucide-react'
-import {DocumentWithRelations, PlacedItem} from '@app/(apps)/aidocument/types'
+import {DocumentWithRelations, PlacedItem, AIProvider} from '@app/(apps)/aidocument/types'
 import {updateDocument} from '@app/(apps)/aidocument/actions/document-actions'
 import {analyzePdfAndAutoPlace} from '@app/(apps)/aidocument/actions/ai-analyze-actions'
 import DocumentEditorComponent from '@app/(apps)/aidocument/components/editor/DocumentEditor'
 import {Button} from '@cm/components/styles/common-components/Button'
 import {FileHandler, S3FormData} from '@cm/class/FileHandler'
 import {exportPdfWithItems} from '@app/(apps)/aidocument/utils/pdfExport'
+import {convertPdfToImagesClient} from '@app/(apps)/aidocument/utils/pdfToImageClient'
 
 interface EditorClientProps {
   document: DocumentWithRelations
@@ -25,7 +26,14 @@ export default function EditorClient({document}: EditorClientProps) {
   const [isExporting, setIsExporting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
-
+  const [analysisResult, setAnalysisResult] = useState<{
+    confidence: number
+    model: string
+    processingTime: number
+  } | null>(null)
+  const [loadingStage, setLoadingStage] = useState<string>('')
+  const [aiProvider, setAiProvider] = useState<AIProvider>('openai')
+  console.log(items) //logs
   useEffect(() => {
     // JSONからitemsを読み込む
     if (document.items && typeof document.items === 'object') {
@@ -107,27 +115,60 @@ export default function EditorClient({document}: EditorClientProps) {
 
     setIsLoading(true)
     setError(null)
+    setAnalysisResult(null)
+    setLoadingStage('PDFを画像に変換中...')
 
     try {
+      // クライアント側でPDFを画像に変換（解像度を上げて精度向上）
+      const pdfImages = await convertPdfToImagesClient(pdfUrl, {scale: 1.0})
+
+      if (pdfImages.length === 0) {
+        setError('PDFの画像変換に失敗しました')
+        setLoadingStage('')
+        setIsLoading(false)
+        return
+      }
+
+      setLoadingStage('AIで解析中...')
+
+      // サーバーに画像を送信して解析
       const result = await analyzePdfAndAutoPlace({
-        pdfUrl,
+        pdfImages,
         siteId: document.Site.id,
         documentId: document.id,
+        provider: aiProvider,
       })
 
       if (result.success && result.result) {
+        setLoadingStage('解析結果を適用中...')
+
+        // 信頼度の平均を計算
+        const avgConfidence = result.result.items.reduce((sum, item) => sum + item.confidence, 0) / result.result.items.length
+
         const aiItems: PlacedItem[] = result.result.items.map(item => ({
           componentId: item.componentId,
           x: item.x,
           y: item.y,
+          pageIndex: (item as any).pageIndex || 0,
         }))
         setItems(aiItems)
-        alert('AI自動配置が完了しました')
+
+        // 解析結果を保存
+        setAnalysisResult({
+          confidence: avgConfidence,
+          model: result.result.analysisMetadata.model,
+          processingTime: result.result.analysisMetadata.processingTime,
+        })
+
+        setLoadingStage('')
+        alert(`AI自動配置が完了しました（信頼度: ${(avgConfidence * 100).toFixed(1)}%）`)
       } else {
         setError(result.error || 'AI解析に失敗しました')
+        setLoadingStage('')
       }
     } catch (err) {
-      setError('AI解析に失敗しました')
+      setError(err instanceof Error ? err.message : 'AI解析に失敗しました')
+      setLoadingStage('')
       console.error('AI analyze error:', err)
     } finally {
       setIsLoading(false)
@@ -149,6 +190,16 @@ export default function EditorClient({document}: EditorClientProps) {
     setError(null)
 
     try {
+      // PDFエクスポート前に自動保存
+      const saveResult = await updateDocument(document.id, {
+        items: items,
+      })
+
+      if (!saveResult.success) {
+        console.warn('自動保存に失敗しましたが、エクスポートを続行します:', saveResult.message)
+        // 保存に失敗してもエクスポートは続行（現在のメモリ上のデータでエクスポート）
+      }
+
       await exportPdfWithItems(pdfUrl, items, document.Site, document.name)
       alert('PDFをエクスポートしました')
     } catch (err) {
@@ -200,12 +251,25 @@ export default function EditorClient({document}: EditorClientProps) {
             <h1 className="text-lg font-bold text-gray-800 truncate">{document.name}</h1>
           </div>
 
-          <div className="flex gap-2 self-end sm:self-center">
+          <div className="flex gap-2 self-end sm:self-center items-center">
+            {/* AIプロバイダー選択 */}
+            <div className="flex items-center gap-2 px-2 py-1 bg-gray-50 rounded border border-gray-200">
+              <label className="text-xs text-gray-600">AI:</label>
+              <select
+                value={aiProvider}
+                onChange={e => setAiProvider(e.target.value as AIProvider)}
+                disabled={isLoading}
+                className="text-xs border border-gray-300 rounded px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <option value="gemini">Gemini</option>
+                <option value="openai">OpenAI</option>
+              </select>
+            </div>
             <Button color="gray" onClick={handleAiAnalyze} disabled={!pdfUrl || isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  AI解析中...
+                  {loadingStage || 'AI解析中...'}
                 </>
               ) : (
                 <>
@@ -214,6 +278,13 @@ export default function EditorClient({document}: EditorClientProps) {
                 </>
               )}
             </Button>
+            {analysisResult && !isLoading && (
+              <div className="flex items-center gap-2 text-xs text-gray-600 px-2 py-1 bg-gray-50 rounded border border-gray-200">
+                <span>信頼度: {(analysisResult.confidence * 100).toFixed(1)}%</span>
+                <span className="text-gray-400">|</span>
+                <span>{analysisResult.processingTime}ms</span>
+              </div>
+            )}
             <Button color="gray" type="button" onClick={handleExportPdf} disabled={!pdfUrl || items.length === 0 || isExporting}>
               {isExporting ? (
                 <>

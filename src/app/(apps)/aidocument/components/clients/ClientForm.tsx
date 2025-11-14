@@ -1,7 +1,6 @@
 'use client'
 
 import {useState, useEffect} from 'react'
-import {X} from 'lucide-react'
 import {ClientWithSites} from '../../types'
 import BasicModal from '@cm/components/utils/modal/BasicModal'
 import {Button} from '@cm/components/styles/common-components/Button'

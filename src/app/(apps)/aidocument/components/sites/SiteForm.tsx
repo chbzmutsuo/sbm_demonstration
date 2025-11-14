@@ -59,7 +59,7 @@ export default function SiteForm({isOpen, onClose, onSave, initialData, clientId
             term: s.term || '',
           })) || [],
         vehicles:
-          initialData.Vehicle?.map(v => ({
+          initialData.aidocumentVehicles?.map(v => ({
             id: v.id,
             plate: v.plate,
             term: v.term || '',
@@ -284,7 +284,7 @@ export default function SiteForm({isOpen, onClose, onSave, initialData, clientId
                   <Button
                     type="button"
                     color="red"
-                    className="absolute top-0 right-0 w-6 h-6 text-red-500"
+                    className="absolute top-0 right-0 rounded-full p-1 "
                     onClick={() => removeNestedItem('vehicles', index)}
                   >
                     <Trash2 className="w-3 h-3" />

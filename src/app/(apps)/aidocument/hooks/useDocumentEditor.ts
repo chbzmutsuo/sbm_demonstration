@@ -81,20 +81,20 @@ function generateComponentsFromSite(siteData: SiteWithRelations | undefined): Co
   ]
 
   ;(siteData.Staff || []).forEach(s => {
-    components.push({id: `${s.id}_name`, label: `[ス] ${s.name} (氏名)`, value: s.name, group: '担当スタッフ'})
+    components.push({id: `s_${s.id}_name`, label: `[ス] ${s.name} (氏名)`, value: s.name, group: '担当スタッフ'})
     components.push({
-      id: `${s.id}_age`,
+      id: `s_${s.id}_age`,
       label: `[ス] ${s.name} (年齢)`,
       value: s.age?.toString() || '',
       group: '担当スタッフ',
     })
     components.push({
-      id: `${s.id}_gender`,
+      id: `s_${s.id}_gender`,
       label: `[ス] ${s.name} (性別)`,
       value: s.gender || '',
       group: '担当スタッフ',
     })
-    components.push({id: `${s.id}_term`, label: `[ス] ${s.name} (期間)`, value: s.term || '', group: '担当スタッフ'})
+    components.push({id: `s_${s.id}_term`, label: `[ス] ${s.name} (期間)`, value: s.term || '', group: '担当スタッフ'})
   })
   ;(siteData.aidocumentVehicles || []).forEach(v => {
     components.push({id: `v_${v.id}_plate`, label: `[車] ${v.plate} (番号)`, value: v.plate, group: '利用車両'})
@@ -120,15 +120,58 @@ export const getComponentValue = (componentId: string, siteData: SiteWithRelatio
       if (rest.length === 1) {
         return (siteData as any)[id] || ''
       }
-      // スタッフ (s1_name)
-      const staff = siteData.Staff?.find(s => s.id.toString() === id)
+      // スタッフ (s_1_name)
+      const staffId = rest[0] // s_1_name の場合 '1'
+      const staff = siteData.Staff?.find(s => s.id.toString() === staffId)
       return staff ? (staff as any)[field] || '' : ''
     }
+
     case 'v': {
       // 車両 (v_1_plate)
       const vehicleId = rest[0] // v_1_plate の場合 '1'
       const vehicle = siteData.aidocumentVehicles?.find(v => v.id.toString() === vehicleId)
       return vehicle ? (vehicle as any)[field] || '' : ''
+    }
+
+    case 'c': {
+      // 自社情報 (c_name, c_address, etc.)
+      if (!siteData.Company) return ''
+      const company = siteData.Company
+
+      // 基本情報
+      if (id === 'name') return company.name || ''
+      if (id === 'representativeName') return company.representativeName || ''
+      if (id === 'address') return company.address || ''
+      if (id === 'phone') return company.phone || ''
+
+      // 建設業許可情報 (c_license_0_type, c_license_0_number, c_license_0_date)
+      if (id === 'license' && rest.length >= 3) {
+        const licenseIndex = parseInt(rest[1])
+        const licenseField = rest[2] // type, number, date
+        if (company.constructionLicense && Array.isArray(company.constructionLicense)) {
+          const licenses = company.constructionLicense as Array<{type: string; number: string; date: string}>
+          const license = licenses[licenseIndex]
+          if (license) {
+            return (license as any)[licenseField] || ''
+          }
+        }
+        return ''
+      }
+
+      // 社会保険情報 (c_social_officeName, c_social_officeCode)
+      if (id === 'social' && rest.length >= 2) {
+        const socialField = rest[1] // officeName, officeCode
+        if (company.socialInsurance && typeof company.socialInsurance === 'object') {
+          const socialInsurance = company.socialInsurance as {
+            officeName?: string
+            officeCode?: string
+          }
+          return (socialInsurance as any)[socialField] || ''
+        }
+        return ''
+      }
+
+      return ''
     }
     default:
       return ''

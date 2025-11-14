@@ -114,7 +114,7 @@ export default function SitesClient({client, initialSites}: SitesClientProps) {
         // 3. 車両のCRUD処理
         if (data.vehicles) {
           const currentSite = sites.find(s => s.id === siteId)
-          const existingVehicles = currentSite?.Vehicle || []
+          const existingVehicles = currentSite?.aidocumentVehicles || []
           const existingVehicleIds = existingVehicles.map(v => v.id)
           const newVehicleIds = data.vehicles.filter(v => v.id !== undefined).map(v => v.id!)
 

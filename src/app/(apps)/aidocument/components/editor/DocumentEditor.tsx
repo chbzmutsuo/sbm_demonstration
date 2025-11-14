@@ -29,6 +29,7 @@ export default function DocumentEditor({
   const [draggedComponentId, setDraggedComponentId] = useState<string | null>(null)
   const [mousePosition, setMousePosition] = useState<{x: number; y: number} | null>(null)
   const [internalSelectedIndex, setInternalSelectedIndex] = useState<number | null>(null)
+  const [currentPage, setCurrentPage] = useState<number>(1)
 
   // 外部から選択状態を制御できるようにする
   const selectedIndex = externalSelectedIndex !== undefined ? externalSelectedIndex : internalSelectedIndex
@@ -143,7 +144,9 @@ export default function DocumentEditor({
     // 既存のアイテムを移動する場合
     if (active.id.toString().startsWith('placed-item-')) {
       const activeData = active.data.current as {item: PlacedItem; index: number; initialX: number; initialY: number}
-      if (activeData && activeData.index !== undefined && over.id === 'pdf-drop-zone') {
+      if (activeData && activeData.index !== undefined && over.id.toString().startsWith('pdf-drop-zone-page-')) {
+        // ページ番号を取得
+        const pageIndex = parseInt(over.id.toString().replace('pdf-drop-zone-page-', '')) - 1
         const currentItem = items[activeData.index]
         if (currentItem) {
           // マウス座標を取得（グローバルなマウス位置を優先）
@@ -171,15 +174,17 @@ export default function DocumentEditor({
           const mmX = (x / pdfWidth) * 210
           const mmY = (y / pdfHeight) * 297
 
-          onItemMove(activeData.index, mmX, mmY)
+          onItemMove(activeData.index, mmX, mmY, pageIndex)
         }
       }
       return
     }
 
     // 新しいアイテムを追加する場合
-    if (over.id === 'pdf-drop-zone') {
+    if (over.id.toString().startsWith('pdf-drop-zone-page-')) {
       const componentId = active.id as string
+      // ページ番号を取得（pdf-drop-zone-page-1 → 0）
+      const pageIndex = parseInt(over.id.toString().replace('pdf-drop-zone-page-', '')) - 1
 
       // マウス座標を取得（グローバルなマウス位置を優先）
       let mouseX = 0
@@ -220,16 +225,21 @@ export default function DocumentEditor({
         componentId: componentId as string,
         x: mmX,
         y: mmY,
+        pageIndex: pageIndex,
       }
 
       onItemsChange([...items, newItem])
     }
   }
 
-  const onItemMove = (index: number, mmX: number, mmY: number) => {
+  const onItemMove = (index: number, mmX: number, mmY: number, pageIndex?: number) => {
     // PdfViewerからmm単位で渡されるのでそのまま使用
     const newItems = [...items]
-    newItems[index] = {...newItems[index], x: mmX - 13, y: mmY}
+    const updatedItem = {...newItems[index], x: mmX - 13, y: mmY}
+    if (pageIndex !== undefined) {
+      updatedItem.pageIndex = pageIndex
+    }
+    newItems[index] = updatedItem
     onItemsChange(newItems)
   }
 
@@ -281,6 +291,8 @@ export default function DocumentEditor({
               onItemRemove={handleItemRemove}
               onItemSelect={handleItemSelect}
               selectedIndex={selectedIndex}
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
               onPdfUpload={onPdfUpload}
               isUploading={isUploading}
               site={document.Site}
@@ -342,7 +354,7 @@ export default function DocumentEditor({
               {/* 位置情報（読み取り専用） */}
               <div>
                 <label className="text-xs font-medium text-gray-600 block mb-2">位置</label>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2 mb-2">
                   <div>
                     <span className="text-xs text-gray-500">X座標</span>
                     <div className="text-sm font-mono">{selectedItem.x.toFixed(2)} mm</div>
@@ -350,6 +362,12 @@ export default function DocumentEditor({
                   <div>
                     <span className="text-xs text-gray-500">Y座標</span>
                     <div className="text-sm font-mono">{selectedItem.y.toFixed(2)} mm</div>
+                  </div>
+                </div>
+                <div>
+                  <span className="text-xs text-gray-500">ページ</span>
+                  <div className="text-sm font-mono">
+                    {(selectedItem.pageIndex || 0) + 1} / {currentPage}
                   </div>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">矢印キーで微調整可能</p>

@@ -33,8 +33,14 @@ const parameters = async (props: {params; query; session; scopes: ReturnType<typ
         setParams: async () => {
           return {
             additional: {
-              payload: [],
-              where: {apps: {has: ``}},
+              payload: {
+                apps: [`aidocument`],
+              },
+              where: {
+                apps: {
+                  has: `aidocument`,
+                },
+              },
             },
           }
         },

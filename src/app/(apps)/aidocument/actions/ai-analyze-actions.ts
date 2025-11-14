@@ -1,12 +1,16 @@
 'use server'
 
 import {getSiteById} from './site-actions'
-import {PlacedItem} from '../types'
+import {AIProvider, PdfImageData} from '../types'
+import {analyzePdfWithGemini} from '../utils/geminiApi'
+import {analyzePdfWithOpenAI} from '../utils/openaiApi'
+import {generateComponentsFromSite} from '../utils/componentUtils'
 
 interface AnalyzePdfRequest {
-  pdfUrl: string
+  pdfImages: PdfImageData[] // 画像データとサイズ情報の配列（クライアント側で変換済み）
   siteId: number
   documentId: number
+  provider?: AIProvider // AIプロバイダー（デフォルト: 'gemini'）
 }
 
 interface AnalyzePdfResponse {
@@ -18,6 +22,7 @@ interface AnalyzePdfResponse {
       y: number
       confidence: number
       fieldType: string
+      pageIndex?: number
     }>
     analysisMetadata: {
       analyzedAt: Date
@@ -29,10 +34,10 @@ interface AnalyzePdfResponse {
 }
 
 /**
- * PDFを解析して自動配置（モック実装）
- * 将来的にOpenAI Vision APIと連携
+ * PDFを解析して自動配置（Gemini API / OpenAI API使用）
  */
 export const analyzePdfAndAutoPlace = async (request: AnalyzePdfRequest): Promise<AnalyzePdfResponse> => {
+  const provider = request.provider || 'gemini' // デフォルトはGemini
   try {
     const startTime = Date.now()
 
@@ -47,76 +52,92 @@ export const analyzePdfAndAutoPlace = async (request: AnalyzePdfRequest): Promis
 
     const site = siteResult.result
 
-    // モック実装: 固定パターンでの配置
-    // 将来的にOpenAI Vision APIを使用してPDFを解析
-    const mockItems: PlacedItem[] = [
-      {componentId: 's_name', x: 50, y: 30, value: site.name},
-      {componentId: 's_address', x: 50, y: 45, value: site.address || ''},
-      {
-        componentId: 's_amount',
-        x: 150,
-        y: 60,
-        value: site.amount ? `${site.amount.toLocaleString()} 円` : '',
-      },
-      {
-        componentId: 's_startDate',
-        x: 50,
-        y: 75,
-        value: site.startDate ? new Date(site.startDate).toLocaleDateString('ja-JP') : '',
-      },
-      {
-        componentId: 's_endDate',
-        x: 120,
-        y: 75,
-        value: site.endDate ? new Date(site.endDate).toLocaleDateString('ja-JP') : '',
-      },
-    ]
+    // クライアント側で変換済みの画像を使用
+    const pdfImages = request.pdfImages
 
-    // スタッフ情報を追加
-    site.Staff?.forEach((staff, index) => {
-      const baseY = 100 + index * 20
-      mockItems.push({componentId: `${staff.id}_name`, x: 50, y: baseY, value: staff.name})
-      mockItems.push({
-        componentId: `${staff.id}_age`,
-        x: 120,
-        y: baseY,
-        value: staff.age?.toString() || '',
-      })
-      mockItems.push({
-        componentId: `${staff.id}_gender`,
-        x: 150,
-        y: baseY,
-        value: staff.gender || '',
-      })
-    })
+    if (pdfImages.length === 0) {
+      return {
+        success: false,
+        error: 'PDF画像が提供されていません',
+      }
+    }
 
-    // 車両情報を追加
-    site.Vehicle?.forEach((vehicle, index) => {
-      const baseY = 100 + (site.Staff?.length || 0) * 20 + index * 20
-      mockItems.push({componentId: `${vehicle.id}_plate`, x: 50, y: baseY, value: vehicle.plate})
-      mockItems.push({
-        componentId: `${vehicle.id}_term`,
-        x: 150,
-        y: baseY,
-        value: vehicle.term || '',
-      })
-    })
+    // コンポーネント情報を生成（プロンプト生成用）
+    const components = await generateComponentsFromSite(site)
+
+    // AI APIで解析（プロバイダーに応じて切り替え）
+    const apiRequest = {
+      pdfImages,
+      components, // コンポーネント情報を追加
+      siteData: {
+        name: site.name,
+        address: site.address || undefined,
+        amount: site.amount || undefined,
+        startDate: site.startDate || undefined,
+        endDate: site.endDate || undefined,
+        staff: site.Staff?.map(s => ({
+          id: s.id,
+          name: s.name,
+          age: s.age || undefined,
+          gender: s.gender || undefined,
+          term: s.term || undefined,
+        })),
+        vehicles: site.aidocumentVehicles?.map(v => ({
+          id: v.id,
+          plate: v.plate,
+          term: v.term || undefined,
+        })),
+      },
+      companyData: site.Company
+        ? {
+            name: site.Company.name,
+            representativeName: site.Company.representativeName || undefined,
+            address: site.Company.address || undefined,
+            phone: site.Company.phone || undefined,
+            constructionLicense:
+              site.Company.constructionLicense && Array.isArray(site.Company.constructionLicense)
+                ? (site.Company.constructionLicense as Array<{type: string; number: string; date: string}>).map(l => ({
+                    type: l.type,
+                    number: l.number,
+                    date: l.date,
+                  }))
+                : undefined,
+            socialInsurance:
+              site.Company.socialInsurance && typeof site.Company.socialInsurance === 'object'
+                ? {
+                    health: (site.Company.socialInsurance as any).health,
+                    pension: (site.Company.socialInsurance as any).pension,
+                    employment: (site.Company.socialInsurance as any).employment,
+                    officeName: (site.Company.socialInsurance as any).officeName,
+                    officeCode: (site.Company.socialInsurance as any).officeCode,
+                  }
+                : undefined,
+          }
+        : undefined,
+    }
+
+    const analysisResult = provider === 'openai' ? await analyzePdfWithOpenAI(apiRequest) : await analyzePdfWithGemini(apiRequest)
+
+    console.log(analysisResult) //logs
 
     const processingTime = Date.now() - startTime
 
     return {
       success: true,
       result: {
-        items: mockItems.map(item => ({
-          componentId: item.componentId,
-          x: item.x,
-          y: item.y,
-          confidence: 0.8, // モックなので固定値
-          fieldType: 'auto-detected',
-        })),
+        items: analysisResult.items.map(item => {
+          return {
+            componentId: item.componentId,
+            x: item.x,
+            y: item.y,
+            confidence: item.confidence,
+            fieldType: item.fieldType,
+            pageIndex: item.pageIndex,
+          }
+        }),
         analysisMetadata: {
-          analyzedAt: new Date(),
-          model: 'mock-v1',
+          analyzedAt: analysisResult.analysisMetadata.analyzedAt,
+          model: analysisResult.analysisMetadata.model,
           processingTime,
         },
       },
