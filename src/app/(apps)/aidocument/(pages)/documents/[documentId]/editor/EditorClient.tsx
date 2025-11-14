@@ -1,16 +1,15 @@
 'use client'
 
-import {useState, useEffect, useRef} from 'react'
+import {useState, useEffect} from 'react'
 import {useRouter} from 'next/navigation'
-import {ChevronRight, CheckCircle, Loader2, AlertCircle, Bot, Printer} from 'lucide-react'
+import {ChevronRight, CheckCircle, Loader2, AlertCircle, Bot, Download} from 'lucide-react'
 import {DocumentWithRelations, PlacedItem} from '@app/(apps)/aidocument/types'
 import {updateDocument} from '@app/(apps)/aidocument/actions/document-actions'
 import {analyzePdfAndAutoPlace} from '@app/(apps)/aidocument/actions/ai-analyze-actions'
 import DocumentEditorComponent from '@app/(apps)/aidocument/components/editor/DocumentEditor'
-
 import {Button} from '@cm/components/styles/common-components/Button'
 import {FileHandler, S3FormData} from '@cm/class/FileHandler'
-import {useReactToPrint} from 'react-to-print'
+import {exportPdfWithItems} from '@app/(apps)/aidocument/utils/pdfExport'
 
 interface EditorClientProps {
   document: DocumentWithRelations
@@ -23,7 +22,9 @@ export default function EditorClient({document}: EditorClientProps) {
   const [isSaving, setIsSaving] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isExporting, setIsExporting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
 
   useEffect(() => {
     // JSONからitemsを読み込む
@@ -37,18 +38,6 @@ export default function EditorClient({document}: EditorClientProps) {
     }
   }, [document])
 
-  const documentEditorRef = useRef<HTMLDivElement>(null)
-  const printFunc = useReactToPrint({
-    contentRef: documentEditorRef,
-    documentTitle: document.name,
-    pageStyle: `
-      @page {
-        size: A4;
-        margin: 0;
-      }
-
-    `,
-  })
   const handleSave = async () => {
     setIsSaving(true)
     setError(null)
@@ -145,6 +134,31 @@ export default function EditorClient({document}: EditorClientProps) {
     }
   }
 
+  const handleExportPdf = async () => {
+    if (!pdfUrl) {
+      alert('PDFをアップロードしてください')
+      return
+    }
+
+    if (items.length === 0) {
+      alert('配置済みアイテムがありません')
+      return
+    }
+
+    setIsExporting(true)
+    setError(null)
+
+    try {
+      await exportPdfWithItems(pdfUrl, items, document.Site, document.name)
+      alert('PDFをエクスポートしました')
+    } catch (err) {
+      setError('PDFのエクスポートに失敗しました')
+      console.error('PDF export error:', err)
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
   const site = document.Site
   const client = site ? (site as any).Client : null
 
@@ -200,15 +214,18 @@ export default function EditorClient({document}: EditorClientProps) {
                 </>
               )}
             </Button>
-            <Button
-              color="gray"
-              type="button"
-              onClick={() => {
-                printFunc()
-              }}
-            >
-              <Printer className="w-4 h-4 mr-2 inline-block" />
-              印刷プレビュー
+            <Button color="gray" type="button" onClick={handleExportPdf} disabled={!pdfUrl || items.length === 0 || isExporting}>
+              {isExporting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  エクスポート中...
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4 mr-2 inline-block" />
+                  PDFエクスポート
+                </>
+              )}
             </Button>
             <Button color="blue" type="button" onClick={handleSave} disabled={isSaving}>
               {isSaving ? (
@@ -234,16 +251,15 @@ export default function EditorClient({document}: EditorClientProps) {
       </header>
 
       {/* Main Content */}
-      <>
-        <DocumentEditorComponent
-          ref={documentEditorRef}
-          document={{...document, pdfTemplateUrl: pdfUrl}}
-          items={items}
-          onItemsChange={setItems}
-          onPdfUpload={handlePdfUpload}
-          isUploading={isUploading}
-        />
-      </>
+      <DocumentEditorComponent
+        document={{...document, pdfTemplateUrl: pdfUrl}}
+        items={items}
+        onItemsChange={setItems}
+        onPdfUpload={handlePdfUpload}
+        isUploading={isUploading}
+        selectedIndex={selectedIndex}
+        onSelectedIndexChange={setSelectedIndex}
+      />
     </div>
   )
 }

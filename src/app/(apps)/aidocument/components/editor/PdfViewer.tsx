@@ -15,36 +15,26 @@ interface PdfViewerProps {
   items: PlacedItem[]
   onItemMove: (index: number, x: number, y: number) => void
   onItemRemove: (index: number) => void
+  onItemSelect?: (index: number) => void
+  selectedIndex?: number | null
   onPdfUpload?: (file: File) => void
   isUploading?: boolean
   site?: SiteWithRelations | null
 }
 
 const PdfViewer = forwardRef<HTMLDivElement, PdfViewerProps>(
-  ({pdfUrl, items, onItemMove, onItemRemove, onPdfUpload, isUploading = false, site}, ref) => {
+  (
+    {pdfUrl, items, onItemMove, onItemRemove, onItemSelect, selectedIndex = null, onPdfUpload, isUploading = false, site},
+    ref
+  ) => {
     const [numPages, setNumPages] = useState<number>(0)
     const [pageWidth, setPageWidth] = useState<number>(0)
     const [pageHeight, setPageHeight] = useState<number>(0)
     const containerRef = useRef<HTMLDivElement>(null)
-    const [isPrinting, setIsPrinting] = useState(false)
 
     // PDF.js worker設定 - unpkg.comを使用
     useEffect(() => {
       pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`
-    }, [])
-
-    // 印刷モード検出
-    useEffect(() => {
-      const handleBeforePrint = () => setIsPrinting(true)
-      const handleAfterPrint = () => setIsPrinting(false)
-
-      window.addEventListener('beforeprint', handleBeforePrint)
-      window.addEventListener('afterprint', handleAfterPrint)
-
-      return () => {
-        window.removeEventListener('beforeprint', handleBeforePrint)
-        window.removeEventListener('afterprint', handleAfterPrint)
-      }
     }, [])
 
     const {setNodeRef, isOver} = useDroppable({
@@ -62,22 +52,18 @@ const PdfViewer = forwardRef<HTMLDivElement, PdfViewerProps>(
     }
 
     // 固定サイズ（DocumentEditorと同じ値）
-    // 印刷時は高解像度でレンダリング（devicePixelRatioを考慮）
     const FIXED_WIDTH = 800
-    const PRINT_SCALE = typeof window !== 'undefined' ? window.devicePixelRatio || 2 : 2
-    const PRINT_WIDTH = isPrinting ? FIXED_WIDTH * PRINT_SCALE : FIXED_WIDTH
     const FIXED_HEIGHT = (FIXED_WIDTH / 210) * 297
     const MAX_HEIGHT = (FIXED_WIDTH / 297) * 210
     const ACTUAL_HEIGHT = Math.max(FIXED_HEIGHT, MAX_HEIGHT)
-    const PRINT_HEIGHT = isPrinting ? ACTUAL_HEIGHT * PRINT_SCALE : ACTUAL_HEIGHT
 
     // mmからピクセルに変換（A4: 210mm × 297mm）
-    // 印刷時は高解像度で計算
+    // 固定サイズを使用
     const mmToPx = (mm: number, dimension: 'x' | 'y') => {
       if (dimension === 'x') {
-        return (mm / 210) * PRINT_WIDTH
+        return (mm / 210) * FIXED_WIDTH
       } else {
-        return (mm / 297) * PRINT_HEIGHT
+        return (mm / 297) * ACTUAL_HEIGHT
       }
     }
 
@@ -98,21 +84,12 @@ const PdfViewer = forwardRef<HTMLDivElement, PdfViewerProps>(
       <div ref={ref} className="relative flex justify-center items-start">
         <div
           ref={setNodeRef}
-          className={`relative bg-white shadow-lg border-2 print:shadow-none print:border-0 ${
-            isOver ? 'border-blue-500 border-dashed' : 'border-gray-400'
-          }`}
+          className={`relative bg-white shadow-lg border-2 ${isOver ? 'border-blue-500 border-dashed' : 'border-gray-400'}`}
           style={{
             width: `${FIXED_WIDTH}px`,
             height: `${ACTUAL_HEIGHT}px`,
             minWidth: `${FIXED_WIDTH}px`,
             minHeight: `${ACTUAL_HEIGHT}px`,
-            // 印刷時は高解像度でレンダリング
-            ...(isPrinting && {
-              width: `${PRINT_WIDTH}px`,
-              height: `${PRINT_HEIGHT}px`,
-              minWidth: `${PRINT_WIDTH}px`,
-              minHeight: `${PRINT_HEIGHT}px`,
-            }),
           }}
         >
           <Document
@@ -126,11 +103,9 @@ const PdfViewer = forwardRef<HTMLDivElement, PdfViewerProps>(
               <Page
                 pageNumber={1}
                 onLoadSuccess={onPageLoadSuccess}
-                width={PRINT_WIDTH}
-                scale={isPrinting ? PRINT_SCALE : 1}
+                width={FIXED_WIDTH}
                 renderTextLayer={false}
                 renderAnnotationLayer={false}
-                devicePixelRatio={isPrinting ? PRINT_SCALE : undefined}
               />
             )}
           </Document>
@@ -139,7 +114,10 @@ const PdfViewer = forwardRef<HTMLDivElement, PdfViewerProps>(
           {items.map((item, index) => {
             const pxX = mmToPx(item.x, 'x')
             const pxY = mmToPx(item.y, 'y')
-            const value = getComponentValue(item.componentId, site || undefined) || `${item.componentId}には値がありません`
+
+            const value = getComponentValue(item.componentId, site || undefined)
+            const noValue = value ? false : true
+            const isSelected = selectedIndex === index
 
             return (
               <div key={index}>
@@ -149,14 +127,16 @@ const PdfViewer = forwardRef<HTMLDivElement, PdfViewerProps>(
                   x={pxX}
                   y={pxY}
                   value={value}
+                  isSelected={isSelected}
                   onMove={(newX, newY) => {
                     // ピクセルからmmに変換して親に通知
-                    // 表示サイズを使用（印刷時は高解像度）
-                    const mmX = (newX / PRINT_WIDTH) * 210
-                    const mmY = (newY / PRINT_HEIGHT) * 297
+                    // 固定サイズを使用
+                    const mmX = (newX / FIXED_WIDTH) * 210
+                    const mmY = (newY / ACTUAL_HEIGHT) * 297
                     onItemMove(index, mmX, mmY)
                   }}
                   onRemove={() => onItemRemove(index)}
+                  onSelect={() => onItemSelect?.(index)}
                 />
               </div>
             )

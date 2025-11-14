@@ -46,6 +46,7 @@ export interface PlacedItem {
   x: number
   y: number
   value?: string
+  fontSize?: number // フォントサイズ（ポイント単位、デフォルト: 10.5）
 }
 
 // 建設業許可情報の型
