@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 'use client'
 
 /*
@@ -1202,7 +1200,7 @@ const SiteListPage: React.FC<SiteListPageProps> = ({onNavigate, params, managers
                   onClick={() => onNavigate('documentList', {clientId: client.id, siteId: site.id})}
                 >
                   <span>書類一覧・作成</span>
-                  <IconChevronRight className="w-4 h-4" />
+                  <IconChevronRight className="w-4 h-4 inline-block" />
                 </Button>
               </CardFooter>
             </Card>

@@ -7,8 +7,8 @@ export default async function AppLayout(props) {
   return (
     <Admin
       {...{
-        AppName: 'テストアプリ',
-        PagesMethod: 'Advantage_PAGES',
+        AppName: '書類管理システム',
+        PagesMethod: 'aidocument_PAGES',
         PageBuilderGetter: {class: PageBuilder, getter: 'getGlobalIdSelector'},
       }}
     >

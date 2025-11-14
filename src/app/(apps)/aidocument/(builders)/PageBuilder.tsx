@@ -6,6 +6,9 @@ import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator
 import MyForm from '@cm/components/DataLogic/TFs/MyForm/MyForm'
 import {R_Stack} from '@cm/components/styles/common-components/common-components'
 import MyAccordion from '@cm/components/utils/Accordions/Accordion'
+import {useGlobalPropType} from '@cm/hooks/globalHooks/useGlobal'
+import {Fields} from '@cm/class/Fields/Fields'
+import GlobalIdSelector from '@cm/components/GlobalIdSelector/GlobalIdSelector'
 
 export class PageBuilder {
   static masterKeyClient = {
@@ -36,5 +39,42 @@ export class PageBuilder {
         </R_Stack>
       )
     },
+  }
+
+  static getGlobalIdSelector = (props: {useGlobalProps: useGlobalPropType}) => {
+    const {useGlobalProps} = props
+    const {admin, getAidocumentScopes} = useGlobalProps.accessScopes()
+    const {userId, companyId, fakable} = getAidocumentScopes()
+
+    if (!admin) {
+      return undefined
+    }
+
+    const columns = new Fields([
+      {
+        id: 'g_aidocumentCompanyId',
+        label: '自社',
+        forSelect: {
+          config: {
+            modelName: 'aidocumentCompany',
+            where: {type: 'self'},
+          },
+        },
+        form: {style: {width: 200}},
+      },
+      {
+        id: 'g_userId',
+        label: 'ユーザー',
+        forSelect: {
+          config: {
+            modelName: 'user',
+            where: companyId ? {aidocumentCompanyId: companyId} : {},
+          },
+        },
+        form: {style: {width: 200}},
+      },
+    ]).transposeColumns()
+
+    return () => <GlobalIdSelector {...{useGlobalProps, columns}} />
   }
 }

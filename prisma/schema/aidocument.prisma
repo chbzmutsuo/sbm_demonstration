@@ -1,0 +1,178 @@
+// 書類管理システム用Prismaスキーマ
+// ai-agent-direction.mdの規約に従って設計
+
+// 企業マスタ（自社・取引先・下請け）
+model AidocumentCompany {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt()
+  sortOrder Float     @default(0)
+
+  name                String // 企業名
+  type                String // 'self' | 'client' | 'subcontractor'
+  representativeName  String? // 代表者名
+  address             String? // 住所
+  phone               String? // 電話番号
+  constructionLicense Json? // 建設業許可情報（配列）
+  // constructionLicense: [{ type: string, number: string, date: string }]
+  socialInsurance     Json? // 社会保険情報（オブジェクト）
+  // socialInsurance: { health: string, pension: string, employment: string, officeName: string, officeCode: string }
+
+  // リレーション
+  SitesAsClient  AidocumentSite[]          @relation("SiteClient")
+  SitesAsCompany AidocumentSite[]          @relation("SiteCompany")
+  Subcontractors AidocumentSubcontractor[]
+  Users          User[]
+}
+
+// 現場
+model AidocumentSite {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt()
+  sortOrder Float     @default(0)
+
+  clientId     Int // 発注者ID (→ Company.id)
+  companyId    Int // 元請け会社ID (→ Company.id)
+  name         String // 工事名称（件名）
+  address      String? // 現場住所
+  contractDate DateTime? // 契約日
+  startDate    DateTime? // 履行期間（開始日）
+  endDate      DateTime? // 履行期間（終了日）
+
+  // 金額情報
+  amount        Int? // 請負代金額（合計）
+  costBreakdown Json? // 請負代金内訳
+  // costBreakdown: { directCost: number, commonTemporaryCost: number, siteManagementCost: number, generalManagementCost: number, subtotal: number, tax: number }
+
+  // 現場の役割（人物）
+  siteAgent      Json? // 現場代理人
+  // siteAgent: { name: string, qualification: string, authority: string }
+  chiefEngineer  Json? // 主任技術者（または監理技術者）
+  // chiefEngineer: { name: string, type: string, qualification: string, qNumber: string, qDate: string }
+  safetyManager  String? // 安全衛生責任者（氏名）
+  safetyPromoter String? // 安全衛生推進者（氏名）
+
+  // リレーション
+  Client             AidocumentCompany         @relation("SiteClient", fields: [clientId], references: [id], onDelete: Cascade)
+  Company            AidocumentCompany         @relation("SiteCompany", fields: [companyId], references: [id], onDelete: Cascade)
+  Staff              AidocumentStaff[]
+  Subcontractors     AidocumentSubcontractor[]
+  Document           AidocumentDocument[]
+  AnalysisCache      AidocumentAnalysisCache[]
+  aidocumentVehicles AidocumentVehicle[]
+}
+
+// 担当スタッフ（元請けの技術者・作業員）
+model AidocumentStaff {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt()
+  sortOrder Float     @default(0)
+
+  siteId        Int
+  name          String // 氏名
+  role          String? // 役割（例: "専門技術者"）
+  qualification String? // 資格内容
+  workContent   String? // 担当工事内容
+  age           Int? // 年齢
+  gender        String? // 性別
+  term          String? // 担当期間（例: "2024-04-01~2025-03-31"）
+  isForeigner   Boolean @default(false) // 外国人建設就労者
+  isTrainee     Boolean @default(false) // 外国人技能実習生
+
+  // リレーション
+  Site AidocumentSite @relation(fields: [siteId], references: [id], onDelete: Cascade)
+}
+
+// 下請負人
+model AidocumentSubcontractor {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt()
+  sortOrder Float     @default(0)
+
+  siteId            Int
+  companyId         Int // 下請け会社ID (→ Company.id)
+  workType          String? // 担当工種
+  chiefEngineerName String? // （下請けの）主任技術者名
+  safetyManagerName String? // （下請けの）安全衛生責任者名
+  staff             Json? // （下請けの）作業員・技術者（配列）
+  // staff: [{ name: string, role: string, qualification: string, workContent: string, age: number, gender: string, isForeigner: boolean, isTrainee: boolean }]
+
+  // リレーション
+  Site    AidocumentSite    @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  Company AidocumentCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+// 利用車両（既存モデルを保持）
+model AidocumentVehicle {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt()
+  sortOrder Float     @default(0)
+
+  siteId Int
+  plate  String // プレート番号
+  term   String? // 利用期間（例: "2024-04-01~"）
+
+  // リレーション
+  Site AidocumentSite @relation(fields: [siteId], references: [id], onDelete: Cascade)
+}
+
+// 書類
+model AidocumentDocument {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt()
+  sortOrder Float     @default(0)
+
+  siteId         Int
+  name           String // 書類名称
+  pdfTemplateUrl String? // PDFテンプレートURL（S3）
+  items          Json? // 配置済みアイテム（DocumentItem[]のJSON）
+  // items: [{ componentId: string, x: number, y: number, value?: string }]
+
+  // リレーション
+  Site          AidocumentSite            @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  DocumentItem  AidocumentDocumentItem[]
+  AnalysisCache AidocumentAnalysisCache[]
+}
+
+// 書類の配置項目
+model AidocumentDocumentItem {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt()
+  sortOrder Float     @default(0)
+
+  documentId  Int
+  componentId String // 部品ID（例: 'site.name', 'site.agent.name', 'company.name'）
+  x           Float // X座標（PDF座標系、mm単位）
+  y           Float // Y座標（PDF座標系、mm単位）
+  value       String? // 値（オプション、マスタから取得可能な場合はnull）
+
+  // リレーション
+  Document AidocumentDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+}
+
+// AI解析キャッシュ
+model AidocumentAnalysisCache {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt()
+
+  documentId     Int
+  pdfUrl         String
+  pdfHash        String // PDFのハッシュ値（重複検出用）
+  siteId         Int
+  analysisResult Json // 解析結果（JSON）
+  confidence     Float? // 全体の信頼度
+
+  // リレーション
+  Document AidocumentDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  Site     AidocumentSite     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@unique([pdfHash, siteId], name: "pdfHash_siteId_unique")
+  @@index([documentId])
+}

@@ -96,6 +96,10 @@ model User {
   CounselingStore             CounselingStore?              @relation(fields: [counselingStoreId], references: [id])
   counselingStoreId           Int?
   CounselingSlot              CounselingSlot[]
+
+  // aidocument
+  aidocumentCompanyId         Int?
+  AidocumentCompany           AidocumentCompany?           @relation(fields: [aidocumentCompanyId], references: [id], onDelete: SetNull)
 }
 
 model ReleaseNotes {

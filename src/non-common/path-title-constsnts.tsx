@@ -377,6 +377,56 @@ export const PAGES: any = {
       breads,
     }
   },
+
+  aidocument_PAGES: (props: PageGetterType) => {
+    const {roles, query, session, rootPath, pathname} = props
+
+    const {login, admin} = getScopes(session, {query, roles})
+
+    const loginPaths = [
+      {
+        tabId: 'company',
+        label: '自社情報管理',
+        ROOT: [rootPath],
+        exclusiveTo: !!login,
+      },
+      {
+        tabId: 'clients',
+        label: '取引先マスタ管理',
+        ROOT: [rootPath],
+        exclusiveTo: !!login,
+      },
+    ]
+
+    const adminPaths = [
+      {
+        tabId: '',
+        label: '管理者',
+        ROOT: [rootPath],
+        children: [
+          {tabId: 'user', label: 'ユーザー管理', ROOT: [rootPath]},
+          {tabId: 'aidocumentCompany', label: '取引先マスタ管理', ROOT: [rootPath]},
+        ],
+        exclusiveTo: !!admin,
+      },
+    ]
+
+    const pathSource: pathItemType[] = [...loginPaths, ...adminPaths]
+
+    const {cleansedPathSource, navItems, breads, allPathsPattenrs} = CleansePathSource({
+      rootPath,
+      pathSource,
+      pathname,
+      session,
+    })
+
+    return {
+      allPathsPattenrs,
+      pathSource: cleansedPathSource,
+      navItems,
+      breads,
+    }
+  },
 }
 
 export const CleansePathSource = (props: anyObject) => {

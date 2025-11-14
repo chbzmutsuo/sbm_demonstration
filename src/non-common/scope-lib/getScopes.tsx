@@ -56,6 +56,19 @@ export const getScopes = (session: anyObject, options: getScopeOptionsProps) => 
 
       return {userId, tbmBaseId, isSystemAdmin, isShocho, eigyoshoKirikae}
     },
+
+    getAidocumentScopes: () => {
+      const fakable = admin
+
+      const userId = !fakable ? session?.id : Number(query?.g_userId ?? session?.id ?? 0)
+      const companyId = !fakable
+        ? session?.aidocumentCompanyId
+        : Number(query?.g_aidocumentCompanyId ?? session?.aidocumentCompanyId ?? 0)
+
+      const isSystemAdmin = !!arr__findCommonValues([`管理者`], roleNames) || admin
+
+      return {userId, companyId, isSystemAdmin, fakable}
+    },
   }
 
   return result
