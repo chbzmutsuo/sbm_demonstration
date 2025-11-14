@@ -5,11 +5,14 @@ import {DH__switchColType} from '@cm/class/DataHandler/type-converter'
 const MyInput = React.forwardRef((props: {controlContextValue: ControlContextType}, ref) => {
   const {latestFormData, col, ReactHookForm, formProps, Register, currentValue, liftUpNewValueOnChange, field, ControlStyle} =
     props.controlContextValue as ControlContextType
+
   useEffect(() => {
     if (currentValue) {
       ReactHookForm.setValue(col.id, currentValue)
     }
   }, [])
+
+
 
   const convertedType = DH__switchColType({type: col.type})
 
@@ -36,7 +39,7 @@ const MyInput = React.forwardRef((props: {controlContextValue: ControlContextTyp
     <>
       <input
         {...col?.inputProps}
-        disabled={col?.form?.disabled}
+        disabled={!!col?.form?.disabled}
         list={datalistId}
         step={step}
         control={ReactHookForm.control}
@@ -44,6 +47,7 @@ const MyInput = React.forwardRef((props: {controlContextValue: ControlContextTyp
         style={style}
         className={formProps.className}
         {...Register}
+        value={currentValue ?? ''}
       />
       <DataList />
     </>

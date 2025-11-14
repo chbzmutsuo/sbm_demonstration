@@ -18,7 +18,6 @@ import React from 'react'
 
 import {TableInfo, TableInfoWrapper} from '@cm/class/builders/ColBuilderVariables'
 import {DH__convertDataType} from '@cm/class/DataHandler/type-converter'
-import {cn} from '@shadcn/lib/utils'
 import {defaultFormat} from '@cm/class/Fields/lib/defaultFormat'
 import {NumHandler} from '../NumHandler'
 
@@ -101,13 +100,18 @@ export class Fields {
           {existingValues.map((d, i) => (
             <div key={i}>
               <div
-                className={cn(
-                  //
-                  i !== existingValues.length - 1 ? 'border-b border-dashed border-gray-300 py-1' : '',
-                  'py-1'
-                )}
+                style={{
+                  border: '1px dashed transparent',
+                  borderBottomColor: '#e0e0e0',
+                }}
               >
-                <TableInfo {...{...d, wrapperWidthPx, labelWidthPx}} />
+                <TableInfo
+                  {...{
+                    ...d,
+                    wrapperWidthPx,
+                    labelWidthPx,
+                  }}
+                />
               </div>
             </div>
           ))}
@@ -118,6 +122,7 @@ export class Fields {
                   {...{
                     label: 'データ無',
                     value: <div className="text-xs opacity-50">{undefinedLabels.map(d => d.label).join(', ')}</div>,
+
                     wrapperWidthPx,
                     labelWidthPx,
                   }}

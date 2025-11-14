@@ -2,16 +2,8 @@
 
 import {Popover, PopoverContent, PopoverTrigger} from '@shadcn/ui/popover'
 
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-  DrawerTrigger,
-  DrawerFooter,
-  DrawerPortal,
-} from '@shadcn/ui/drawer'
+
+
 
 import {PopoverPortal} from '@radix-ui/react-popover'
 
@@ -20,7 +12,7 @@ import {JSX} from 'react'
 import {useIsMobile} from '@shadcn/hooks/use-mobile'
 
 type ShadPopoverProps = {
-  PopoverTrigger?: JSX.Element | string
+  Trigger?: JSX.Element | string
   open?: boolean
   setopen?: any
 
@@ -40,7 +32,7 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
     open,
     setopen,
 
-    PopoverTrigger: Trigger,
+    Trigger: Trigger,
     children,
     onOpenAutoFocus = e => e.preventDefault(),
     title,
@@ -118,35 +110,6 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
     [closeOnOutsideClick]
   )
 
-  if (mobile) {
-    return (
-      <div>
-        <Drawer open={openState} onOpenChange={handleOpenChange}>
-          <DrawerTrigger asChild className={`PopoverTrigger`}>
-            <div onClick={handleTriggerClick}>{Trigger}</div>
-          </DrawerTrigger>
-          <DrawerPortal>
-            <DrawerContent
-              onOpenAutoFocus={onOpenAutoFocus}
-              className="PopoverContent  rounded-lg  bg-white  shadow-md border border-gray-200 "
-            >
-              <div className="mx-auto w-full max-w-sm">
-                <DrawerHeader className={headerClass}>
-                  <DrawerTitle>{title}</DrawerTitle>
-                  <DrawerDescription>{description}</DrawerDescription>
-                </DrawerHeader>
-
-                <div className={`w-fit mx-auto`}>{children}</div>
-
-                <DrawerFooter className={footerClass}></DrawerFooter>
-              </div>
-            </DrawerContent>
-          </DrawerPortal>
-        </Drawer>
-      </div>
-    )
-  }
-
   return (
     <div>
       <Popover open={openState} onOpenChange={handleOpenChange}>
@@ -164,6 +127,7 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
         )}
 
         <PopoverPortal>
+          <div onClick={handleMouseLeave} className={`fixed inset-0 bg-red-500/20 z-200`} style={{}}></div>
           <PopoverContent
             onOpenAutoFocus={onOpenAutoFocus}
             className="PopoverContent  p-3 w-fit  mx-auto  shadow-lg shadow-gray-500 border border-gray-200 bg-white"

@@ -60,6 +60,7 @@ export const EsButton = (props: EsButtonProps) => {
       {/* } */}
       <IconBtn
         {...{
+          size: 'sm',
           className: cn('!px-[1px] !py-[0px] ', notZero ? '' : 'opacity-50'),
           color: iconBtnColor,
 

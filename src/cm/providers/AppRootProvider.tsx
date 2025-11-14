@@ -9,6 +9,7 @@ import SessionContextProvider from '@cm/providers/SessionContextProvider'
 // import {fetcher} from '@cm/lib/swr'
 import {SWRConfig} from 'swr'
 import {SessionProvider} from 'next-auth/react'
+import DeviceContextProvider from '@cm/providers/DeviceContextProvider'
 const config = {
   // fetcher,
   revalidateOnFocus: false, // フォーカス時の再検証を無効化（必要に応じて）
@@ -22,13 +23,13 @@ export default function AppRootProvider({children}: {children: React.ReactNode})
   return (
     <SessionProvider>
       <SWRConfig value={config}>
-        {/* <DeviceContextProvider> */}
-        <SessionContextProvider>
-          <NavigationContextProvider>
-            <LoaderContextProvider>{children}</LoaderContextProvider>
-          </NavigationContextProvider>
-        </SessionContextProvider>
-        {/* </DeviceContextProvider> */}
+        <DeviceContextProvider>
+          <SessionContextProvider>
+            <NavigationContextProvider>
+              <LoaderContextProvider>{children}</LoaderContextProvider>
+            </NavigationContextProvider>
+          </SessionContextProvider>
+        </DeviceContextProvider>
       </SWRConfig>
     </SessionProvider>
   )

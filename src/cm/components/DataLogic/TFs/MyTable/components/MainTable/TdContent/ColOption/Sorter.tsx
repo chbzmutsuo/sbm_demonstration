@@ -1,24 +1,23 @@
-import {Button} from 'src/cm/components/styles/common-components/Button'
 import {C_Stack, R_Stack} from 'src/cm/components/styles/common-components/common-components'
 
 import {ChevronDownIcon, ChevronUpIcon} from 'lucide-react'
+import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 
 export const Sorter = ({col, addQuery, query}) => {
   const set = key => {
     addQuery({orderBy: key ? col.id : undefined, orderDirection: key})
   }
-  const btnClass = `row-stack onHover gap-0.5 t-btn px-4  `
 
   const btns = [
     {
       label: `昇順`,
       key: `asc`,
-      icon: <ChevronUpIcon className={`w-6`} />,
+      icon: '↑',
     },
     {
       label: `降順`,
       key: `desc`,
-      icon: <ChevronDownIcon className={`w-6`} />,
+      icon: '↓',
     },
     {
       label: `解除`,
@@ -41,10 +40,19 @@ export const Sorter = ({col, addQuery, query}) => {
             const active = query.orderDirection && activeByKey && activeByColId
             return (
               <div key={i}>
-                <Button color={active ? `blue` : `gray`} className={btnClass} onClick={() => set(b.key)}>
-                  {b.icon}
-                  {b.label}
-                </Button>
+                <IconBtn
+                  {...{
+                    size: `sm`,
+                    className: ` cursor-pointer`,
+                    color: active ? `blue` : `gray`,
+                    onClick: () => set(b.key),
+                  }}
+                >
+                  <div className={` flex flex-nowrap`}>
+                    {b.icon}
+                    {b.label}
+                  </div>
+                </IconBtn>
               </div>
             )
           })}

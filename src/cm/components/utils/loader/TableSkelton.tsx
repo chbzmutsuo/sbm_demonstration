@@ -6,7 +6,7 @@ export const TableSkelton = ({colCount = 3}) => {
   // ローディング中のスケルトン表示
 
   return (
-    <div className="w-full overflow-hidden max-w-[70vw] mx-auto ">
+    <div className="hidden md:block w-full overflow-hidden max-w-[70vw] mx-auto ">
       <div className="bg-white p-4">
         <div className="animate-pulse flex space-x-4 mb-4">
           <div className="h-6 bg-gray-200 rounded-sm w-[80%] mx-auto"></div>

@@ -70,7 +70,7 @@ export const dividerCol = ({label, color}) => {
 export const TableInfoWrapper = (props: {showShadow?: boolean; label?: any; children: any}) => {
   const {showShadow, label, children} = props
   return (
-    <div className={showShadow ? `shadow-xs px-1.5` : ``}>
+    <div className={showShadow ? `px-1 ` : ``}>
       {label && <small className={`text-sm font-bold  text-gray-900`}>{label}</small>}
       <div>{children}</div>
     </div>
@@ -78,7 +78,7 @@ export const TableInfoWrapper = (props: {showShadow?: boolean; label?: any; chil
 }
 
 export const TableInfo = (props: {label; children?: any; value?: any; labelWidthPx?: number; wrapperWidthPx?: number}) => {
-  const {label, children, value, labelWidthPx = 60, wrapperWidthPx = 200} = props
+  const {label, children, value, labelWidthPx = 50, wrapperWidthPx = 200} = props
 
   const valueWidth = wrapperWidthPx - labelWidthPx
 
@@ -91,7 +91,7 @@ export const TableInfo = (props: {label; children?: any; value?: any; labelWidth
             wrapper: {width: wrapperWidthPx},
             label: {minWidth: labelWidthPx},
           },
-          classes: {wrapper: `text-sm`},
+          classes: {wrapper: `!text-sm min-h-[25px] `},
         },
       }}
     >
@@ -100,7 +100,7 @@ export const TableInfo = (props: {label; children?: any; value?: any; labelWidth
           maxWidth: valueWidth,
           overflow: 'hidden',
           textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
+          whiteSpace:  'nowrap',
         }}
       >
         <>{children ?? value}</>

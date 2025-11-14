@@ -11,6 +11,7 @@ const checkValidAccess = (props: CheckValidAccessProps) => {
   if (matchedPathItem?.exclusiveTo === false) {
     const rootPath = matchedPathItem?.href?.split('/')[1]
     const path = `${origin}/not-found?rootPath=${rootPath}`
+
     return {valid: false, path}
   } else {
     return {valid: true, path: ''}

@@ -2,7 +2,7 @@
 
 import {BasicFormType} from '@cm/hooks/useBasicForm/BaiscForm'
 import {getFormProps, getStyleProps} from '@cm/hooks/useBasicForm/lib/hookformMethods'
-import React, {Fragment, useCallback} from 'react'
+import React, {Fragment, useCallback, useMemo} from 'react'
 import {Controller} from 'react-hook-form'
 import {ControlContextType} from '@cm/types/form-control-type'
 import {liftUpNewValueOnChange} from '@cm/components/DataLogic/TFs/MyForm/MyForm'
@@ -93,7 +93,7 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
                 return (
                   <Label
                     {...{
-                      className: cn(horizontal ? 'mr-0' : `mb-0`, 'min-w-fit '),
+                      className: cn(horizontal ? 'mr-0' : `mb-0.5`, 'min-w-fit '),
                       horizontal,
                       ReactHookForm,
                       col,
@@ -130,57 +130,59 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
           // const offset = 0
           // const style = !horizontal ? {} : undefined
 
-          const PcForm = (
-            <div
-              id={wrapperId}
-              className={cn(
-                //
-                `relative `,
-                DH__switchColType({type: col.type}) === `boolean` ? ' cursor-pointer' : ''
-              )}
-            >
+          const PcFormMemo = useMemo(() => {
+            return (
               <div
+                id={wrapperId}
                 className={cn(
                   //
-                  `gap-0 w-full`,
-                  horizontal
-                    ? cn(
-                        `row-stack flex-nowrap  `,
-                        'items-stretch'
-                        // props.alignMode === 'console' && props.col.type === 'textarea' ? 'items-start' : 'items-stretch'
-                      )
-                    : 'col-stack'
+                  `relative `,
+                  DH__switchColType({type: col.type}) === `boolean` ? ' cursor-pointer' : ''
                 )}
               >
-                <LabelCallback position="left" />
-                <div>
-                  <LeftControlRight
-                    {...{
-                      col,
-                      controlContextValue,
-                    }}
-                  />
-                </div>
-                {showDescription && (
-                  <Description
-                    {...{
-                      col,
-                      ControlStyle,
-                      currentValue,
-                      formData,
-                      latestFormData,
-                    }}
-                  />
-                )}
+                <div
+                  className={cn(
+                    //
+                    `gap-0 w-full`,
+                    horizontal
+                      ? cn(
+                          `row-stack flex-nowrap  `,
+                          'items-stretch'
+                          // props.alignMode === 'console' && props.col.type === 'textarea' ? 'items-start' : 'items-stretch'
+                        )
+                      : 'col-stack'
+                  )}
+                >
+                  <LabelCallback position="left" />
+                  <div>
+                    <LeftControlRight
+                      {...{
+                        col,
+                        controlContextValue,
+                      }}
+                    />
+                  </div>
+                  {showDescription && (
+                    <Description
+                      {...{
+                        col,
+                        ControlStyle,
+                        currentValue,
+                        formData,
+                        latestFormData,
+                      }}
+                    />
+                  )}
 
-                <LabelCallback position="right" />
+                  <LabelCallback position="right" />
+                </div>
               </div>
-            </div>
-          )
+            )
+          }, [wrapperId, horizontal, col, ControlStyle, showDescription, formData, latestFormData])
+
           return (
             <div>
-              <div className="block sm:hidden">{PcForm}</div>
-              <div className="hidden sm:block">{PcForm}</div>
+              <div>{PcFormMemo}</div>
             </div>
           )
         }}

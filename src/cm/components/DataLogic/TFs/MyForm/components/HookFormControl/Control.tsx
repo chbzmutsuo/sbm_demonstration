@@ -1,18 +1,29 @@
 import React from 'react'
+import dynamic from 'next/dynamic'
 import MyInput from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyInput/MyInput'
-
-import MyFileControl from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyFileControl/MyFileControl'
 
 import {ControlContextType, ControlOptionType, formPropType} from '@cm/types/form-control-type'
 
 import {colType} from '@cm/types/col-types'
-import MyMdEditor from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyMdEditor'
 import MyTextarea from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyTextarea'
 import MyCheckBox from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyCheckBox/MyCheckBox'
-import MyDatepicker from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyDatePIcker/MyDatepicker'
-import MyMultipleChoice from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MyMultipleChoice'
-import MySelect from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MySelect'
 import ErrorMessage from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/util-components/ErrorMessage'
+import MyDatepicker from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyDatePIcker/MyDatepicker'
+import MySelect from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MySelect'
+
+const Loader = () => <div className="animate-pulse bg-gray-200 h-10 rounded" />
+const MyMdEditor = dynamic(() => import('@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyMdEditor'), {
+  loading: Loader,
+})
+const MyFileControl = dynamic(
+  () => import('@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyFileControl/MyFileControl'),
+  {loading: Loader}
+)
+
+const MyMultipleChoice = dynamic(
+  () => import('@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MyMultipleChoice'),
+  {loading: Loader}
+)
 
 export type ControlProps = {
   field: string

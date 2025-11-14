@@ -31,8 +31,8 @@ export class PageBuilder {
 
     const columns = admin
       ? new Fields([
-          {id: 'g_tbmBaseId', label: '営', forSelect: {}},
-          {id: 'g_userId', label: 'ド', forSelect: {}},
+          {id: 'g_tbmBaseId', label: '営', forSelect: {}, form: {style: {width: 85}}},
+          {id: 'g_userId', label: 'ド', forSelect: {}, form: {style: {width: 85}}},
         ]).transposeColumns()
       : new Fields([{id: 'g_tbmBaseId', label: '営', forSelect: {}}]).transposeColumns()
 

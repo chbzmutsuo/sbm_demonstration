@@ -5,7 +5,7 @@ import {R_Stack} from 'src/cm/components/styles/common-components/common-compone
 import React from 'react'
 import {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobalOrigin'
 
-const cevronClass = `h-6 w-6 t-link onHover !t-link`
+const cevronClass = `h-5 w-5 t-link onHover !t-link`
 const partClasses = {
   inputGroupClass: 'row-stack gap-0   ',
   labelClass: ' text-responsive ',
@@ -47,16 +47,16 @@ const MyPagination = React.memo((props: PaginationPropType) => {
   const isInLastPage = page === pageCount
 
   return (
-    <div className={` items-end   gap-0.5  `}>
-      <R_Stack className={` justify-center  gap-x-1 gap-y-0 rounded-sm  px-1 `}>
+    <div className={` items-end  gap-0.5  `}>
+      <R_Stack className={` justify-center  gap-x-1 gap-y-0 rounded-sm  px-1  `}>
         {/* カウント
          */}
         <section className={` w-fit   p-0.5 font-normal`}>
-          <R_Stack className={`text-responsive gap-0.5 text-sm`}>
-            <span>
+          <R_Stack className={`text-responsive gap-0 text-sm flex-nowrap`}>
+            <span className={`font-bold`}>
               {from} 〜 {to}
             </span>
-            <span> / </span>
+            <span>/</span>
             <span>{totalCount}</span>
             <span>件</span>
           </R_Stack>
@@ -65,9 +65,9 @@ const MyPagination = React.memo((props: PaginationPropType) => {
         {/* 矢印 */}
         {totalCount > take && (
           <section className={`w-fit p-0.5  font-normal`}>
-            <R_Stack className={`gap-0`}>
+            <R_Stack className={`gap-0 flex-nowrap`}>
               <div className={partClasses.inputGroupClass}>
-                <R_Stack className={`gap-1`}>
+                <R_Stack className={`gap-0`}>
                   <ChevronsLeft
                     className={cn(cevronClass, isInFirstPage && ` pointer-events-none opacity-30`)}
                     onClick={() => changePage(page - 1)}
@@ -92,7 +92,7 @@ const MyPagination = React.memo((props: PaginationPropType) => {
                 </R_Stack>
               </div>
               <small>/</small>
-              <small className={`ml-0.5`}>{pageCount}</small>
+              <small className={`ml-0.5`}>{pageCount}p</small>
             </R_Stack>
           </section>
         )}

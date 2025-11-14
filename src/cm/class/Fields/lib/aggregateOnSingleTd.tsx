@@ -6,7 +6,7 @@ import {C_Stack, R_Stack} from 'src/cm/components/styles/common-components/commo
 import {cl} from 'src/cm/lib/methods/common'
 import React, {Fragment} from 'react'
 
-import TdContent from '@cm/components/DataLogic/TFs/MyTable/components/Tbody/TableCell/childrens/TdContent'
+import TdContent from '@cm/components/DataLogic/TFs/MyTable/components/MainTable/TdContent/TdContent'
 import {Fields} from 'src/cm/class/Fields/Fields'
 import {converDataForClient} from 'src/cm/class/Fields/lib/methods'
 import {defaultFormat} from 'src/cm/class/Fields/lib/defaultFormat'
@@ -143,7 +143,7 @@ export const aggregateOnSingleTd = (
           <C_Stack
             className={cn(
               //
-              `bg-gradient-to-b from-gray-50 to-white`,
+              `bg-white/50`,
               `  justify-start gap-0  leading-[20px]`,
               stackClassName
             )}

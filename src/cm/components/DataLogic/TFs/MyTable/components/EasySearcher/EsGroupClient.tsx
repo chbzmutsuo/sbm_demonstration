@@ -43,7 +43,7 @@ export default function EsGroupClient(props: {
 
           if (dataSource.description) {
             return (
-              <ShadPopover PopoverTrigger={Button} key={j}>
+              <ShadPopover Trigger={Button} key={j}>
                 <div>{dataSource.description && <div className={` max-w-[260px]`}>{dataSource.description}</div>}</div>
               </ShadPopover>
             )

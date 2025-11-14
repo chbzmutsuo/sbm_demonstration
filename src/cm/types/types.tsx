@@ -151,7 +151,7 @@ export type MyTableType =
       tableId?: string
       style?: anyObject
       create?: anyObject | boolean
-      delete?: anyObject | boolean | {allowByRecord: (props: {record: any}) => void}
+      delete?: {requiredUserConfirmation?: boolean} | boolean | {allowByRecord: (props: {record: any}) => void}
       update?: anyObject | boolean
       search?: anyObject | boolean
       sort?: anyObject | boolean
@@ -167,6 +167,7 @@ export type MyTableType =
       showRecordIndex?: boolean
       hideEasySearch?: boolean
       useWrapperCard?: boolean
+      beforeHandleDelete?: (props: {record: any; columns: colType[][]}) => boolean | void
     }
   | undefined
 

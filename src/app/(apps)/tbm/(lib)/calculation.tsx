@@ -2,7 +2,6 @@ import {eigyoshoRecordKey, fetchEigyoshoUriageData} from '@app/(apps)/tbm/(class
 
 import {carHistoryKey, fetchRuisekiKyoriKichoData} from '@app/(apps)/tbm/(server-actions)/fetchRuisekiKyoriKichoData'
 
-import {TbmReportCl} from '@app/(apps)/tbm/(class)/TbmReportCl'
 import {fetchUnkoMeisaiData} from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fetchUnkoMeisaiData'
 import {unkoMeisaiKey} from '@app/(apps)/tbm/(class)/TbmReportCl/cols/createUnkoMeisaiRow'
 type userSchedule = Awaited<ReturnType<typeof fetchUnkoMeisaiData>>['monthlyTbmDriveList']

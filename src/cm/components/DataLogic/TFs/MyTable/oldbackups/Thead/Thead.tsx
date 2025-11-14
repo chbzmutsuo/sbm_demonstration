@@ -1,4 +1,4 @@
-import {Kado, ThDisplayJSX} from '@cm/components/DataLogic/TFs/MyTable/components/Thead/thead-methods'
+import {Kado, ThDisplayJSX} from '@cm/components/DataLogic/TFs/MyTable/oldbackups/Thead/thead-methods'
 import {funcOrVar} from 'src/cm/lib/methods/common'
 import React, {CSSProperties, useMemo} from 'react'
 import {MyTableType} from '@cm/types/types'

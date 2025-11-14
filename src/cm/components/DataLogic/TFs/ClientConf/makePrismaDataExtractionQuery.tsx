@@ -13,8 +13,18 @@ export const makePrismaDataExtractionQuery = ({
   skip,
   page,
   searchQueryAnd,
+  disableOrderByFromUrlParams ,
 }) => {
-  const flexQuery = P_Query.createFlexQuery({query, dataModelName, myTable, additional, take, skip, page})
+  const flexQuery = P_Query.createFlexQuery({
+    query,
+    dataModelName,
+    myTable,
+    additional,
+    take,
+    skip,
+    page,
+    disableOrderByFromUrlParams,
+  })
 
   const where = DetailePageId
     ? {id: DetailePageId}

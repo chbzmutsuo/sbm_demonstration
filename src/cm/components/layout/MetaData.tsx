@@ -17,7 +17,7 @@ export const MetaData = React.memo(({pathItemObject, AppName}: MetaDataProps) =>
     const title = left ? `${left} ${right}` : (right ?? process.env.NEXT_PUBLIC_TITLE ?? '無題')
 
     return {
-      title: title.replace('[object Object]', ''),
+      title: String(title).replace('[object Object]', ''),
       icon,
     }
   }, [matchedPathItem, AppName])

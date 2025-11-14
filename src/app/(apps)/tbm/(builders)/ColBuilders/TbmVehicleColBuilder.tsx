@@ -81,7 +81,7 @@ export const TbmVehicleColBuilder = (props: columnGetterType) => {
           const {TbmVehicleMaintenanceRecord} = row
 
           return (
-            <ShadPopover {...{PopoverTrigger: `${TbmVehicleMaintenanceRecord.length}件`}}>
+            <ShadPopover {...{Trigger: `${TbmVehicleMaintenanceRecord.length}件`}}>
               <div>
                 {TbmVehicleMaintenanceRecord?.map((item: TbmVehicleMaintenanceRecord) => {
                   return (
@@ -105,7 +105,7 @@ export const TbmVehicleColBuilder = (props: columnGetterType) => {
           const {TbmFuelCard} = row ?? {}
 
           return (
-            <ShadPopover {...{PopoverTrigger: `${TbmFuelCard?.length ?? 0}件`}}>
+            <ShadPopover {...{Trigger: `${TbmFuelCard?.length ?? 0}件`}}>
               <div>
                 {TbmFuelCard?.map((item: TbmFuelCard) => {
                   return (

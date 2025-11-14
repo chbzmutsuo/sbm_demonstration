@@ -37,7 +37,11 @@ export const ChildCreator = React.memo((props: ChildCreatorProps) => {
   const columns = convertColumns(props)
 
   const orderBy = useMemo(
-    () => [...(props.myTable?.drag ? [{sortOrder: 'asc'}] : []), ...(additional?.orderBy ?? [{sortOrder: 'asc'}, {id: 'asc'}])],
+    () => [
+      //
+      ...(props.myTable?.drag ? [{sortOrder: 'asc'}] : []),
+      ...(additional?.orderBy ?? [{sortOrder: 'asc'}, {id: 'asc'}]),
+    ],
     [props.myTable?.drag, additional?.orderBy]
   )
 
@@ -79,6 +83,7 @@ export const ChildCreator = React.memo((props: ChildCreatorProps) => {
       DetailePageId: null,
       include: tunedAdditional?.include ? tunedAdditional?.include : undefined,
       easySearchObject: null,
+      disableOrderByFromUrlParams: true,
     })
     return prismaDataExtractionQuery
   }, [dataModelName, query, tunedAdditional, myTable])

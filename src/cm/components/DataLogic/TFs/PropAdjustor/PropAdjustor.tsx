@@ -5,15 +5,14 @@ import {C_Stack, Padding, R_Stack} from 'src/cm/components/styles/common-compone
 import {Z_INDEX} from '@cm/lib/constants/constants'
 
 import {TableSkelton} from '@cm/components/utils/loader/TableSkelton'
-import DetailedPageCC from '@cm/components/DataLogic/TFs/PropAdjustor/components/DetailedPageCC'
 import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
-
-import EasySearcher from '@cm/components/DataLogic/TFs/MyTable/components/EasySearcher/EasySearcher'
 
 import {usePropAdjustorLogic} from '@cm/components/DataLogic/TFs/PropAdjustor/hooks/usePropAdjusctorLogic/usePropAdjustorLogic'
 import {PropAdjustorPropsType} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
 import useWindowSize from '@cm/hooks/useWindowSize'
 import {SurroundingComponent} from '@cm/components/DataLogic/TFs/PropAdjustor/components/SurroundingComponent'
+import EasySearcher from '@cm/components/DataLogic/TFs/MyTable/components/EasySearcher/EasySearcher'
+import DetailedPageCC from '@cm/components/DataLogic/TFs/PropAdjustor/components/DetailedPageCC'
 
 const PropAdjustor = React.memo<PropAdjustorPropsType>(props => {
   const {serverFetchProps} = props

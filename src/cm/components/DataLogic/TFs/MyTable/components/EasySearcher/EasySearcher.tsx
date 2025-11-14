@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useCallback} from 'react'
+import React, {useCallback, useMemo} from 'react'
 
 import useGlobal, {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobal'
 import {C_Stack, R_Stack} from 'src/cm/components/styles/common-components/common-components'
@@ -92,13 +92,9 @@ export default function EasySearcher(props: {
     [availableEasySearchObj, query]
   )
 
-  // const handleEasySearch = useCallback(
-  //   async ({dataSource}) => {
-  //     const newQuery = createNextQuery(dataSource)
-  //     shallowAddQuery(newQuery)
-  //   },
-  //   [shallowAddQuery, availableEasySearchObj, createNextQuery]
-  // )
+  const MainComponentMemo = useMemo(() => {
+    return <Main {...{dataModelName, nonActiveExGroup, RowGroups, activeExGroup, createNextQuery, hideEasySearch}} />
+  }, [dataModelName, nonActiveExGroup, RowGroups, activeExGroup, createNextQuery, hideEasySearch])
 
   if (activeExGroup.length === 0) return <PlaceHolder />
 
@@ -115,16 +111,14 @@ export default function EasySearcher(props: {
           </IconBtn>
         }
       >
-        <Main {...{dataModelName, nonActiveExGroup, RowGroups, activeExGroup, createNextQuery, hideEasySearch}} />
+        {MainComponentMemo}
       </GlobalModal>
     )
   }
 
   return (
     <div>
-      <R_Stack className={` items-stretch  gap-0.5`}>
-        <Main {...{dataModelName, nonActiveExGroup, RowGroups, activeExGroup, createNextQuery, hideEasySearch}} />
-      </R_Stack>
+      <R_Stack className={` items-stretch  gap-0.5`}>{MainComponentMemo}</R_Stack>
     </div>
   )
 }
@@ -164,7 +158,7 @@ const Main = ({
                   return (
                     <R_Stack key={j}>
                       {/* <R_Stack className={`${border}  relative pr-6 `}> */}
-                      <Wrapper>
+                      <Wrapper className={`p-0.5!`}>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4 px-0.5">
                             <div className={` `}>

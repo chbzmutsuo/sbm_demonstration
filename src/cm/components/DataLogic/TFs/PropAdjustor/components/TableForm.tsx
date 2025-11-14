@@ -1,11 +1,12 @@
 'use client'
 import React, {useMemo} from 'react'
 import {getMyTableDefault, myFormDefault} from 'src/cm/constants/defaults'
-
 import BasicModal from '@cm/components/utils/modal/BasicModal'
+
+import {ClientPropsType2} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
 import MyTable from '@cm/components/DataLogic/TFs/MyTable/MyTable'
 import MyForm from '@cm/components/DataLogic/TFs/MyForm/MyForm'
-import {ClientPropsType2} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
+
 // convertProps関数を分離して最適化
 const convertProps = (props: ClientPropsType2): ClientPropsType2 => {
   const myTableDefault = getMyTableDefault()
@@ -51,7 +52,7 @@ const TableForm = (props: ClientPropsType2) => {
           setopen: setformData,
         }}
       >
-        <div id="editFormOnMyDataViwe" className={` p-3`}>
+        <div id="editFormOnMyDataViwe" className={`p-1`}>
           {formComponent}
         </div>
       </BasicModal>

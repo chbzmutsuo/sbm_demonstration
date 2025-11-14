@@ -54,7 +54,7 @@ export default function BlockEditPopover({block, onSave, trigger}: BlockEditPopo
       <ShadPopover
         open={open}
         setopen={setOpen}
-        PopoverTrigger={trigger}
+        Trigger={trigger}
         mode="hover"
         closeOnHoverLeave={false}
         // confirmBeforeClose={true}

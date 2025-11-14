@@ -13,7 +13,7 @@ const Label = ({horizontal, ReactHookForm, col, ControlOptions, required, classN
     <R_Stack
       id={`${col.id}-label`}
       style={LabelStyle}
-      className={cn(horizontal ? 'min-w-fit' : '!w-full', ` text-[15px] font-medium text-gray-500`, className)}
+      className={cn(horizontal ? 'min-w-fit' : 'w-full!', ` text-[15px] font-medium text-gray-500`, className)}
     >
       <div className={` flex  gap-0.5`}>
         {required && <Asterisk className="text-red-600 w-4" />}

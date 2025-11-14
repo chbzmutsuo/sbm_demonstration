@@ -12,8 +12,8 @@ export const getQueryArgs = ({
   myTable,
   DetailePageId,
   include,
-
   easySearchObject,
+  disableOrderByFromUrlParams,
 }) => {
   const {page, take, skip} = P_Query.getPaginationPropsByQuery({
     query,
@@ -29,6 +29,7 @@ export const getQueryArgs = ({
   })
 
   const prismaDataExtractionQuery = makePrismaDataExtractionQuery({
+    disableOrderByFromUrlParams,
     query,
     dataModelName,
     additional,

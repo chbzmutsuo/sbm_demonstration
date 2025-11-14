@@ -3,6 +3,7 @@ import MidTableDataList, {TableProps} from './MidTableDataList'
 
 import {NoData} from 'src/cm/components/styles/common-components/common-components'
 import useMidTableProps, {MidTableProps} from 'src/cm/components/DataLogic/RTs/MidTable/useMidTableProps'
+import {Button} from '@cm/components/styles/common-components/Button'
 
 export default function MidTable(props: MidTableProps) {
   const {
@@ -48,9 +49,9 @@ export default function MidTable(props: MidTableProps) {
         </section>
 
         <section className={` row-stack  mt-2 justify-end`}>
-          <button type="button" className={`t-btn`} onClick={handleConfirm}>
+          <Button color="sub" type="button" onClick={handleConfirm}>
             確定
-          </button>
+          </Button>
         </section>
       </div>
     </>

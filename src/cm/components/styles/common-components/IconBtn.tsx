@@ -8,11 +8,12 @@ import {twMerge} from 'tailwind-merge'
 import {tv} from 'tailwind-variants'
 import {htmlProps} from '@cm/types/utility-types'
 import {iconBtnProps} from '@cm/lib/methods/Coloring'
+import {cn} from '@cm/shadcn/lib/utils'
 
 export const IconBtnBaseClass = ` rounded-full px-2 py-0.5  text-[15px]  `
 
 export const IconBtn = React.memo((props: htmlProps & iconBtnProps) => {
-  const {className, style, color, active = true, vivid = true, rounded = false, children, ...rest} = props
+  const {className, style, color, active = true, vivid = true, rounded = false, children, size = 'md', ...rest} = props
 
   const colorUndetected = !iconBtnColorVariants[color ?? ''] && color
 
@@ -36,13 +37,18 @@ export const IconBtn = React.memo((props: htmlProps & iconBtnProps) => {
   }, [vivid, color, colorUndetected])
 
   const classNameOutput = tv({
-    base: twMerge(color ? `shadow-2xs border-[0.5px]  inline-block` : '', IconBtnBaseClass, className),
+    base: cn(color ? `shadow-2xs border-[0.5px]  inline-block` : '', IconBtnBaseClass, className),
     variants: {
       color: iconBtnColorVariants,
       active: {false: 'opacity-[35%]', true: 'opacity-100'},
       rounded: {false: 'rounded'},
       vivid: {true: 'text-inherit bg-inherit border-inherit'},
       disabled: {true: 'disabled !cursor-not-allowed'},
+      size: {
+        sm: 'text-[12px]',
+        md: 'text-[14px]',
+        lg: 'text-[20px]',
+      },
     },
     defaultVariants: {
       color: '',
@@ -50,8 +56,9 @@ export const IconBtn = React.memo((props: htmlProps & iconBtnProps) => {
       active: true,
       vivid: false,
       disabled: false,
+      size: 'md',
     },
-  })({color: color as any, active, rounded, disabled: props.disabled})
+  })({color: color as any, active, rounded, disabled: props.disabled, size})
 
   return (
     <div className={classNameOutput} style={{...customeStyle, ...style}} disabled={props.disabled} {...rest}>
@@ -91,7 +98,7 @@ export const IconBtnForSelect = React.memo(
     const {children, color, className, style} = props
 
     return (
-      <IconBtn color={color} style={style} className={twMerge(`rounded-sm p-0.5! px-1! !text-sm text-gray-800`, className)}>
+      <IconBtn color={color} style={style} className={twMerge(`rounded-sm p-0.5! px-1! text-sm text-gray-800`, className)}>
         {children}
       </IconBtn>
     )

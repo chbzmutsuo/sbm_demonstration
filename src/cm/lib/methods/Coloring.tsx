@@ -15,14 +15,14 @@ export type iconBtnProps = {
   vivid?: boolean
   rounded?: boolean
   disabled?: boolean
+  size?: 'sm' | 'md' | 'lg'
 }
 export default function Coloring(props: {mode?: 'text' | 'bg'} & htmlProps & iconBtnProps & TextProps) {
-  const {mode = 'bg', ...rest} = props
+  const {mode = 'bg', asLink, size, ...commonProps} = props
   if (mode === 'bg') {
-    const {asLink, ...rest} = props
-    return <IconBtn {...rest} />
+    return <IconBtn {...{size, ...commonProps}} />
   }
   if (mode === 'text') {
-    return <Text {...rest} />
+    return <Text {...{asLink, ...commonProps}} />
   }
 }

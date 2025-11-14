@@ -2,10 +2,10 @@ import React from 'react'
 
 import {R_Stack} from 'src/cm/components/styles/common-components/common-components'
 
-import CreateBtn from '@cm/components/DataLogic/TFs/MyTable/components/Thead/TableConfig/CreateBtn'
-import SearchBtn from '@cm/components/DataLogic/TFs/MyTable/components/Thead/TableConfig/SearchBtn'
+import CreateBtn from '@cm/components/DataLogic/TFs/MyTable/components/TableConfig/CreateBtn'
+import SearchBtn from '@cm/components/DataLogic/TFs/MyTable/components/TableConfig/SearchBtn'
 import {ClientPropsType2} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
-import SortBtn from '@cm/components/DataLogic/TFs/MyTable/components/Thead/TableConfig/SortBtn'
+import SortBtn from '@cm/components/DataLogic/TFs/MyTable/components/TableConfig/SortBtn'
 
 const TableConfig = React.memo((props: {TableConfigProps: TableConfigPropsType; ClientProps2: ClientPropsType2}) => {
   const {TableConfigProps, ClientProps2} = props

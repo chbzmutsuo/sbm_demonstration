@@ -29,6 +29,7 @@ interface FlexQueryProps {
   take: number
   skip: number
   page: number
+  disableOrderByFromUrlParams?: boolean
 }
 
 interface FlexQueryResult {
@@ -152,7 +153,11 @@ export class P_Query {
    * フレックスクエリ作成（最適化）
    */
   static createFlexQuery = (props: FlexQueryProps): FlexQueryResult => {
-    const {tableId = '', dataModelName, additional, take, skip, page} = props
+    const {dataModelName, additional, take, skip, page, disableOrderByFromUrlParams} = props
+
+    if (disableOrderByFromUrlParams) {
+      delete props.query.orderBy
+    }
 
     // クエリのマージ（効率化）
     const mergedQuery = {...props.query, ...additional?.where}

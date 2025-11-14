@@ -28,7 +28,11 @@ const withPWA = require('next-pwa')({
 const nextConfig: NextConfig = {
   reactStrictMode: false,
   experimental: {
-    serverActions: {bodySizeLimit: '10mb'},
+    serverActions: {
+      bodySizeLimit: '10mb',
+      // 開発環境のみDev Tunnelとlocalhostを許可
+      ...(isProd ? {} : {allowedOrigins: ['*.devtunnels.ms:*', 'localhost:3000']}),
+    },
   },
   images: {
     remotePatterns: [

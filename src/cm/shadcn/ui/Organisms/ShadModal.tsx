@@ -1,26 +1,25 @@
 'use client'
 
 import {useIsMobile} from '@shadcn/hooks/use-mobile'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogPortal,
-} from '@shadcn/ui/dialog'
+import {Dialog, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger} from '@shadcn/ui/dialog'
 import {
   Drawer,
-  DrawerContent,
+  // DrawerContent,
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
-  DrawerPortal,
   DrawerTitle,
   DrawerTrigger,
 } from '@shadcn/ui/drawer'
+
+import dynamic from 'next/dynamic'
+const DialogContent = dynamic(() => import('@shadcn/ui/dialog').then(mod => mod.DialogContent), {
+  loading: () => <></>,
+})
+
+const DrawerContent = dynamic(() => import('@shadcn/ui/drawer').then(mod => mod.DrawerContent), {
+  loading: () => <></>,
+})
 
 import {cn} from '@shadcn/lib/utils'
 
@@ -78,26 +77,24 @@ const ShadModal = React.memo((props: ShadModalProps) => {
       <Drawer open={openState} onOpenChange={handleOpenChange}>
         {Trigger && <DrawerTrigger asChild>{Trigger}</DrawerTrigger>}
 
-        <DrawerPortal>
-          <DrawerContent
-            style={style}
-            onOpenAutoFocus={onOpenAutoFocus}
-            className={cn(`ModalContent rounded-lg bg-white p-1 shadow-md border border-gray-200 ${className}`)}
-          >
-            <div>
-              <div className="mx-auto w-full ">
-                <DrawerHeader>
-                  <DrawerTitle>{title}</DrawerTitle>
-                  <DrawerDescription>{description}</DrawerDescription>
-                </DrawerHeader>
+        <DrawerContent
+          style={style}
+          onOpenAutoFocus={onOpenAutoFocus}
+          className={cn(`ModalContent rounded-lg bg-white p-1 shadow-md border border-gray-200 ${className}`)}
+        >
+          <div>
+            <div className="mx-auto w-full ">
+              <DrawerHeader>
+                <DrawerTitle>{title}</DrawerTitle>
+                <DrawerDescription>{description}</DrawerDescription>
+              </DrawerHeader>
 
-                <div className="w-fit mx-auto">{children}</div>
+              <div className="w-fit mx-auto">{children}</div>
 
-                <DrawerFooter>{footer}</DrawerFooter>
-              </div>
+              {footer && <DrawerFooter>{footer}</DrawerFooter>}
             </div>
-          </DrawerContent>
-        </DrawerPortal>
+          </div>
+        </DrawerContent>
       </Drawer>
     )
   }
@@ -106,30 +103,28 @@ const ShadModal = React.memo((props: ShadModalProps) => {
     <Dialog open={openState} onOpenChange={handleOpenChange}>
       {Trigger && <DialogTrigger asChild>{Trigger}</DialogTrigger>}
 
-      <DialogPortal>
-        <DialogContent
-          onOpenAutoFocus={onOpenAutoFocus}
-          style={{
-            ...style,
-            maxHeight: '95vh',
-            maxWidth: '95vw',
-            overflow: 'auto',
-          }}
-          className={cn(
-            `ModalContent  w-fit mx-auto shadow-lg shadow-gray-500  border-gray-200 bg-white ${className}`,
-            childrenProps?.className
-          )}
-        >
-          <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
-            <DialogDescription>{description}</DialogDescription>
-          </DialogHeader>
+      <DialogContent
+        onOpenAutoFocus={onOpenAutoFocus}
+        style={{
+          ...style,
+          maxHeight: '85vh',
+          maxWidth: '95vw',
+          overflow: 'auto',
+        }}
+        className={cn(
+          `ModalContent  w-fit mx-auto shadow-lg shadow-gray-500  border-gray-200 bg-white ${className}`,
+          childrenProps?.className
+        )}
+      >
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
 
-          <div className="bg-white">{children}</div>
+        <div className="bg-white">{children}</div>
 
-          <DialogFooter>{footer}</DialogFooter>
-        </DialogContent>
-      </DialogPortal>
+        <DialogFooter>{footer}</DialogFooter>
+      </DialogContent>
     </Dialog>
   )
 })

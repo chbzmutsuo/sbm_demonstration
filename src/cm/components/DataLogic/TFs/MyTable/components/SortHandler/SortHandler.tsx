@@ -8,7 +8,7 @@ import {myFormDefault} from 'src/cm/constants/defaults'
 import {cl} from 'src/cm/lib/methods/common'
 
 import {C_Stack} from 'src/cm/components/styles/common-components/common-components'
-import Sorter from '@cm/components/DataLogic/TFs/MyTable/components/Thead/ColOption/Sorter'
+import Sorter from '@cm/components/DataLogic/TFs/MyTable/components/MainTable/TdContent/ColOption/Sorter'
 import {atomTypes, useJotaiByKey} from '@cm/hooks/useJotai'
 import {Button} from '@cm/components/styles/common-components/Button'
 

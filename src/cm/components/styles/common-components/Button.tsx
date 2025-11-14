@@ -18,7 +18,7 @@ export const Button = (
       `t-btn transition-all duration-300 ease-in-out transform shadow-md `,
       `ring-1 `,
       `focus:outline-none focus:ring-2  focus:ring-opacity-50`,
-      `hover:scale-105 active:scale-95 `
+      `disabled:opacity-50 disabled:cursor-not-allowed `
     ),
     variants: {
       color: btnColorVariants,

@@ -6,8 +6,8 @@ import {Days} from '@cm/class/Days/Days'
 import {formatDate, TimeFormatType} from '@cm/class/Days/date-utils/formatters'
 import {ControlContextType} from '@cm/types/form-control-type'
 import {Center, R_Stack} from 'src/cm/components/styles/common-components/common-components'
-import ShadPopover from '@cm/shadcn/ui/Organisms/ShadPopover'
 import {CalendarDays} from 'lucide-react'
+import ShadModal from '@cm/shadcn/ui/Organisms/ShadModal'
 
 const MyDatepicker = React.forwardRef((props: anyObject, ref) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -68,12 +68,12 @@ const MyDatepicker = React.forwardRef((props: anyObject, ref) => {
 
   return (
     <>
-      <ShadPopover
+      <ShadModal
         {...{
           open: isOpen,
-          setopen: setIsOpen,
-          mode: 'click',
-          PopoverTrigger: (
+          onOpenChange: setIsOpen,
+
+          Trigger: (
             <R_Stack className={`  justify-between gap-1`}>
               <DateInputter {...{col, currentValue, formProps, selectedDate, toggleCalendar, timeFormat, ControlStyle}} />
               {col.type === `datetime` && <TimeInputter {...{col, selectedDate, setDate, formProps}} />}
@@ -94,7 +94,7 @@ const MyDatepicker = React.forwardRef((props: anyObject, ref) => {
             handleDateChange: (date, e) => setDate({date, timeStr: ''}),
           }}
         />
-      </ShadPopover>
+      </ShadModal>
     </>
   )
 })
