@@ -194,14 +194,23 @@ ${(() => {
 2. 入力欄や記入欄が見つかった場合：
    - その左上隅のピクセル座標を検出してください
    - 枠線がある場合は、枠線の内側の左上隅を検出してください
+   - X座標とY座標は必ず個別に測定してください（同じX座標を複数の項目に使用しないでください）
 3. 入力欄が見つからない場合：
    - 対応するラベルの右側または下側の空白スペースの左上隅を検出してください
    - ラベルと空白スペースの間隔を考慮してください
+   - 各項目は異なるX座標を持つ必要があります（縦に並んでいる場合でも、X座標は必ず個別に測定してください）
 4. テーブル形式の場合：
    - 該当するセルの左上隅を検出してください
    - セル内の余白を考慮してください
+   - テーブルの各列は異なるX座標を持ちます。同じ列内の複数行でも、各セルのX座標を正確に測定してください
+   - 例：氏名列のX座標、年齢列のX座標、性別列のX座標はそれぞれ異なる値になります
 5. 座標は必ず整数値で指定してください
 6. 各ページの画像サイズは上記の【画像サイズ情報】を参照してください
+7. 【重要】各項目のX座標は必ず異なる値になるように検出してください。全ての項目が同じX座標を持つことはありません
+8. X座標の検出方法：
+   - 各入力欄の左端を画像上で正確に測定してください
+   - ラベルが左側にある場合、ラベルの右端から入力欄の左端までの距離を考慮してください
+   - 複数の項目が縦に並んでいる場合でも、それぞれのX座標を個別に測定してください
 
 【出力形式】
 以下のJSON形式で回答してください。各項目について、画像上のピクセル座標（imageX, imageY）を正確に指定してください。
@@ -215,6 +224,22 @@ ${(() => {
       "confidence": 0.9,
       "fieldType": "text_field",
       "pageIndex": 0
+    },
+    {
+      "componentId": "s_address",
+      "imageX": 827,
+      "imageY": 350,
+      "confidence": 0.9,
+      "fieldType": "text_field",
+      "pageIndex": 0
+    },
+    {
+      "componentId": "s_amount",
+      "imageX": 1200,
+      "imageY": 300,
+      "confidence": 0.9,
+      "fieldType": "text_field",
+      "pageIndex": 0
     }
   ],
   "analysisMetadata": {
@@ -224,11 +249,17 @@ ${(() => {
   }
 }
 
+注意：上記の例では、s_nameとs_addressは同じX座標(827)ですが、これは同じ列に縦に並んでいる場合の例です。通常は各項目が異なるX座標を持ちます（例：s_amountはimageX: 1200）。実際のPDFでは、各項目のX座標を個別に測定してください。
+
 【重要な注意事項】
 - 必ず画像上で実際の入力欄や記入欄の位置を視覚的に検出してください
 - 情報を列挙するだけではなく、各項目の具体的な位置座標（imageX, imageY）を必ず返してください
 - 各項目について、画像上の正確なピクセル座標を測定してください
 - imageX, imageYは画像上のピクセル座標で指定してください（整数値、0以上）
+- 【最重要】各項目のimageX座標は必ず異なる値になるように検出してください。全ての項目が同じimageX座標を持つことは絶対にありません
+- 例：複数の項目が検出される場合、それぞれ異なるimageX値を持つ必要があります
+  - 正しい例: imageX: 100, imageX: 200, imageX: 300（それぞれ異なる値）
+  - 誤った例: imageX: 100, imageX: 100, imageX: 100（全て同じ値 - これは絶対に避けてください）
 - pageIndexは0ベースで指定してください（1ページ目は0）
 - confidenceは0-1の範囲で指定してください：
   - 入力欄を明確に検出できた場合: 0.9以上
@@ -289,6 +320,12 @@ ${(() => {
     }
 
     const jsonText = jsonMatch[1] || jsonMatch[0]
+
+    // AIの生の応答をログ出力（デバッグ用）
+    console.log('=== OpenAI API生の応答（JSON） ===')
+    console.log(jsonText)
+    console.log('================================')
+
     let rawResult: OpenAIAnalysisRawResult
     try {
       rawResult = JSON.parse(jsonText)
@@ -306,8 +343,41 @@ ${(() => {
       throw new Error('OpenAI APIからの応答の形式が不正です（itemsが配列ではありません）')
     }
 
+    // 座標の重複チェック（X座標が全て同じ値でないか確認）
+    if (rawResult.items.length > 0) {
+      const xCoordinates = rawResult.items.map(item => item.imageX)
+      const uniqueXCoordinates = new Set(xCoordinates)
+
+      if (uniqueXCoordinates.size === 1 && rawResult.items.length > 1) {
+        console.warn('⚠️ 警告: 全ての項目のX座標が同じ値です！', {
+          同じX座標値: xCoordinates[0],
+          項目数: rawResult.items.length,
+          各項目のcomponentId: rawResult.items.map(item => item.componentId),
+        })
+      }
+
+      // X座標の統計情報をログ出力
+      const minX = Math.min(...xCoordinates)
+      const maxX = Math.max(...xCoordinates)
+      const avgX = xCoordinates.reduce((sum, x) => sum + x, 0) / xCoordinates.length
+
+      console.log('X座標の統計:', {
+        最小値: minX,
+        最大値: maxX,
+        平均値: avgX.toFixed(2),
+        ユニークな値の数: uniqueXCoordinates.size,
+        総項目数: rawResult.items.length,
+      })
+    }
+
     // ピクセル座標をmm座標に変換
-    const convertedItems = rawResult.items.map(item => {
+    const convertedItems = rawResult.items.map((item, index) => {
+      // pageIndexが未定義の場合のエラーハンドリング
+      if (item.pageIndex === undefined || item.pageIndex === null) {
+        console.warn(`警告: ${item.componentId}のpageIndexが未定義です。デフォルト値0を使用します。`)
+        item.pageIndex = 0
+      }
+
       const imageData = request.pdfImages[item.pageIndex]
       if (!imageData) {
         throw new Error(`ページ${item.pageIndex}の画像データが見つかりません`)
@@ -328,8 +398,19 @@ ${(() => {
       //       = (ピクセル座標 / scale) × (PDFサイズ(mm) / PDFサイズ(ポイント))
       //       = (ピクセル座標 / scale) × 0.352778
       // ただし、より直感的な計算式: mm座標 = (ピクセル座標 / 画像サイズ) × PDFサイズ(mm)
-      const xMm = (item.imageX / imageData.width) * imageData.pdfWidth
-      const yMm = (item.imageY / imageData.height) * imageData.pdfHeight
+      let xMm = (item.imageX / imageData.width) * imageData.pdfWidth
+      let yMm = (item.imageY / imageData.height) * imageData.pdfHeight
+
+      // 誤差調整係数（A4サイズ想定での座標誤差を補正）
+      // 環境変数から取得可能（デフォルト: 1.0 = 調整なし）
+      // 値が1より大きい場合、座標を拡大（例: 1.05 = 5%拡大）
+      // 値が1より小さい場合、座標を縮小（例: 0.95 = 5%縮小）
+      const coordinateAdjustmentFactor = parseFloat(process.env.AI_COORDINATE_ADJUSTMENT_FACTOR || '1.0')
+
+      if (coordinateAdjustmentFactor !== 1.0) {
+        xMm = xMm * coordinateAdjustmentFactor
+        yMm = yMm * coordinateAdjustmentFactor
+      }
 
       // 検証: スケールから逆算
       // 画像サイズ = PDFサイズ(ポイント) × scale
@@ -353,6 +434,7 @@ ${(() => {
         mm座標方法1: {x: xMm.toFixed(2), y: yMm.toFixed(2)},
         mm座標方法2: {x: xMmAlt.toFixed(2), y: yMmAlt.toFixed(2)},
         差分: {x: Math.abs(xMm - xMmAlt).toFixed(2), y: Math.abs(yMm - yMmAlt).toFixed(2)},
+        誤差調整係数: coordinateAdjustmentFactor,
         信頼度: item.confidence,
       })
 
@@ -368,11 +450,42 @@ ${(() => {
       }
     })
 
+    // 変換後の座標が全て同じ値でないかチェック
+    if (convertedItems.length > 0) {
+      const convertedXCoordinates = convertedItems.map(item => item.x)
+      const uniqueConvertedX = new Set(convertedXCoordinates)
+
+      if (uniqueConvertedX.size === 1 && convertedItems.length > 1) {
+        console.warn('⚠️ 警告: 変換後のmm座標で、全ての項目のX座標が同じ値です！', {
+          同じX座標値: convertedXCoordinates[0],
+          項目数: convertedItems.length,
+          各項目のcomponentId: convertedItems.map(item => item.componentId),
+        })
+      }
+
+      // 変換後のX座標の統計情報をログ出力
+      const minConvertedX = Math.min(...convertedXCoordinates)
+      const maxConvertedX = Math.max(...convertedXCoordinates)
+      const avgConvertedX = convertedXCoordinates.reduce((sum, x) => sum + x, 0) / convertedXCoordinates.length
+
+      console.log('変換後のmm座標（X）の統計:', {
+        最小値: minConvertedX.toFixed(2),
+        最大値: maxConvertedX.toFixed(2),
+        平均値: avgConvertedX.toFixed(2),
+        ユニークな値の数: uniqueConvertedX.size,
+        総項目数: convertedItems.length,
+      })
+    }
+
+    // 誤差調整係数を取得（ログ用）
+    const coordinateAdjustmentFactor = parseFloat(process.env.AI_COORDINATE_ADJUSTMENT_FACTOR || '1.0')
+
     // 検出結果のサマリーをログ出力
     console.log(`OpenAI解析完了: ${convertedItems.length}項目を検出`, {
       検出項目数: convertedItems.length,
       平均信頼度: convertedItems.reduce((sum, item) => sum + item.confidence, 0) / convertedItems.length,
       ページ数: request.pdfImages.length,
+      誤差調整係数: coordinateAdjustmentFactor,
     })
 
     // 日付をDateオブジェクトに変換

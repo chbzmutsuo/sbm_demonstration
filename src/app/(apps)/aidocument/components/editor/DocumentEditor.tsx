@@ -129,6 +129,68 @@ export default function DocumentEditor({
   const MAX_HEIGHT = (FIXED_WIDTH / 297) * 210
   const ACTUAL_HEIGHT = Math.max(FIXED_HEIGHT, MAX_HEIGHT)
 
+  // ドラッグハンドルサイズ（PlacedItem.tsxの`-left-1 -top-1 w-4 h-4`から）
+  const DRAG_HANDLE_SIZE = 4 // px
+  const DRAG_HANDLE_OFFSET = -4 // px (left-1 = -4px, top-1 = -4px)
+
+  /**
+   * ドラッグハンドルオフセットをmm単位に変換
+   * @param offsetPx ピクセル単位のオフセット
+   * @param dimension 'x' または 'y'
+   * @returns mm単位のオフセット
+   */
+  const pxToMmOffset = (offsetPx: number, dimension: 'x' | 'y'): number => {
+    if (dimension === 'x') {
+      return (offsetPx / FIXED_WIDTH) * 210
+    } else {
+      return (offsetPx / ACTUAL_HEIGHT) * 297
+    }
+  }
+
+  /**
+   * DragEndEventから正確なマウス位置を取得
+   * @param event DragEndEvent
+   * @param pdfRect PDF要素のgetBoundingClientRect()の結果
+   * @returns マウスのclientX, clientY
+   */
+  const getMousePositionFromEvent = (event: DragEndEvent, pdfRect: DOMRect): {x: number; y: number} | null => {
+    const {delta, activatorEvent} = event
+
+    // 方法1: activatorEventから開始位置を取得し、deltaを加算
+    if (activatorEvent && 'clientX' in activatorEvent && 'clientY' in activatorEvent) {
+      const startX = (activatorEvent as MouseEvent).clientX
+      const startY = (activatorEvent as MouseEvent).clientY
+      return {
+        x: startX + delta.x,
+        y: startY + delta.y,
+      }
+    }
+
+    // 方法2: over.rectとdeltaを使用（フォールバック）
+    if (event.over?.rect) {
+      const overRect = event.over.rect
+      // over.rectの中心を基準にdeltaを加算
+      return {
+        x: overRect.left + overRect.width / 2 + delta.x,
+        y: overRect.top + overRect.height / 2 + delta.y,
+      }
+    }
+
+    return null
+  }
+
+  /**
+   * ピクセル座標をmm座標に変換（オフセット考慮）
+   * @param pxX ピクセルX座標（PDF要素内の相対座標）
+   * @param pxY ピクセルY座標（PDF要素内の相対座標）
+   * @returns mm座標 {x, y}
+   */
+  const convertPxToMm = (pxX: number, pxY: number): {x: number; y: number} => {
+    const mmX = (pxX / FIXED_WIDTH) * 210
+    const mmY = (pxY / ACTUAL_HEIGHT) * 297
+    return {x: mmX, y: mmY}
+  }
+
   const handleDragEnd = (event: DragEndEvent) => {
     const {active, over, delta} = event
     setDraggedComponentId(null)
@@ -137,45 +199,22 @@ export default function DocumentEditor({
 
     const pdfRect = pdfRef.current.getBoundingClientRect()
 
-    // 固定サイズを使用（実際のDOMサイズではなく）
-    const pdfWidth = FIXED_WIDTH
-    const pdfHeight = ACTUAL_HEIGHT
-
     // 既存のアイテムを移動する場合
     if (active.id.toString().startsWith('placed-item-')) {
       const activeData = active.data.current as {item: PlacedItem; index: number; initialX: number; initialY: number}
       if (activeData && activeData.index !== undefined && over.id.toString().startsWith('pdf-drop-zone-page-')) {
         // ページ番号を取得
         const pageIndex = parseInt(over.id.toString().replace('pdf-drop-zone-page-', '')) - 1
-        const currentItem = items[activeData.index]
-        if (currentItem) {
-          // マウス座標を取得（グローバルなマウス位置を優先）
-          let mouseX = 0
-          let mouseY = 0
 
-          if (mousePosition) {
-            // グローバルなマウス位置を使用（最も正確）
-            mouseX = mousePosition.x
-            mouseY = mousePosition.y
-          } else {
-            // フォールバック: deltaを使った相対移動
-            // 固定サイズを使用
-            const currentPxX = (currentItem.x / 210) * pdfWidth
-            const currentPxY = (currentItem.y / 297) * pdfHeight
-            mouseX = pdfRect.left + currentPxX + delta.x
-            mouseY = pdfRect.top + currentPxY + delta.y
-          }
+        // アイテムの現在位置（ピクセル単位）にdeltaを加算
+        // initialXとinitialYは既にピクセル単位で保存されている
+        const newPxX = activeData.initialX + delta.x
+        const newPxY = activeData.initialY + delta.y
 
-          const x = mouseX - pdfRect.left
-          const y = mouseY - pdfRect.top
+        // mm座標に変換
+        const {x: mmX, y: mmY} = convertPxToMm(newPxX, newPxY)
 
-          // PDF座標系に変換（mm単位、A4サイズ: 210mm × 297mm）
-          // 固定サイズを使用
-          const mmX = (x / pdfWidth) * 210
-          const mmY = (y / pdfHeight) * 297
-
-          onItemMove(activeData.index, mmX, mmY, pageIndex)
-        }
+        onItemMove(activeData.index, mmX, mmY, pageIndex)
       }
       return
     }
@@ -186,40 +225,19 @@ export default function DocumentEditor({
       // ページ番号を取得（pdf-drop-zone-page-1 → 0）
       const pageIndex = parseInt(over.id.toString().replace('pdf-drop-zone-page-', '')) - 1
 
-      // マウス座標を取得（グローバルなマウス位置を優先）
-      let mouseX = 0
-      let mouseY = 0
-
-      if (mousePosition) {
-        // グローバルなマウス位置を使用（最も正確）
-        mouseX = mousePosition.x
-        mouseY = mousePosition.y
-      } else if (event.activatorEvent && 'clientX' in event.activatorEvent) {
-        // フォールバック: activatorEventから取得（ドラッグ開始時の位置）
-        const startX = (event.activatorEvent as MouseEvent).clientX
-        const startY = (event.activatorEvent as MouseEvent).clientY
-        // deltaを加算して終了位置を計算
-        mouseX = startX + delta.x
-        mouseY = startY + delta.y
-      } else {
-        // それでも取得できない場合は、over.rectの中心にdeltaを加算
-        const overRect = event.over?.rect
-        if (overRect) {
-          mouseX = overRect.left + overRect.width / 2 + delta.x
-          mouseY = overRect.top + overRect.height / 2 + delta.y
-        } else {
-          console.warn('Could not get mouse coordinates from drag event')
-          return
-        }
+      // マウス位置を取得（イベントベースの方法を優先）
+      const mousePos = getMousePositionFromEvent(event, pdfRect)
+      if (!mousePos) {
+        console.warn('Could not get mouse coordinates from drag event')
+        return
       }
 
-      const x = mouseX - pdfRect.left
-      const y = mouseY - pdfRect.top
+      // PDF要素内の相対座標を計算
+      const relativeX = mousePos.x - pdfRect.left
+      const relativeY = mousePos.y - pdfRect.top
 
-      // PDF座標系に変換（mm単位、A4サイズ: 210mm × 297mm）
-      // 固定サイズを使用
-      const mmX = (x / pdfWidth) * 210
-      const mmY = (y / pdfHeight) * 297
+      // mm座標に変換
+      const {x: mmX, y: mmY} = convertPxToMm(relativeX, relativeY)
 
       const newItem: PlacedItem = {
         componentId: componentId as string,
@@ -233,9 +251,9 @@ export default function DocumentEditor({
   }
 
   const onItemMove = (index: number, mmX: number, mmY: number, pageIndex?: number) => {
-    // PdfViewerからmm単位で渡されるのでそのまま使用
+    // mm単位で渡される座標をそのまま使用（オフセット不要）
     const newItems = [...items]
-    const updatedItem = {...newItems[index], x: mmX - 13, y: mmY}
+    const updatedItem = {...newItems[index], x: mmX, y: mmY}
     if (pageIndex !== undefined) {
       updatedItem.pageIndex = pageIndex
     }

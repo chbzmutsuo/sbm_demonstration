@@ -32,8 +32,8 @@ export default function EditorClient({document}: EditorClientProps) {
     processingTime: number
   } | null>(null)
   const [loadingStage, setLoadingStage] = useState<string>('')
-  const [aiProvider, setAiProvider] = useState<AIProvider>('openai')
-  console.log(items) //logs
+  const [aiProvider, setAiProvider] = useState<AIProvider>('geminie')
+
   useEffect(() => {
     // JSONからitemsを読み込む
     if (document.items && typeof document.items === 'object') {
