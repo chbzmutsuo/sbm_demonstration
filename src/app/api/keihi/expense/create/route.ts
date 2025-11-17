@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from 'next/server'
 import prisma from 'src/lib/prisma'
-import {uploadAttachment, linkAttachmentsToExpense} from '@app/(apps)/keihi/actions/expense-actions'
+import {uploadAttachment, linkAttachmentsToExpense} from '@app/(excluded)/keihi/actions/expense-actions'
 
 export async function POST(request: NextRequest) {
   try {

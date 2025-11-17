@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from 'next/server'
 import prisma from 'src/lib/prisma'
-import type {AnalysisFormData, AnalysisResult} from '@app/(apps)/teamSynapse/types'
+import type {AnalysisFormData, AnalysisResult} from '@app/(excluded)/teamSynapse/types'
 
 export async function POST(request: NextRequest) {
   try {

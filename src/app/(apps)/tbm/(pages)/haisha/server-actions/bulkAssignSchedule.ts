@@ -1,6 +1,6 @@
 'use server'
 
-import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {doTransaction, transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {getMidnight} from '@cm/class/Days/date-utils/calculations'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import prisma from 'src/lib/prisma'
@@ -104,7 +104,7 @@ export async function bulkAssignSchedule(params: BulkAssignParams) {
 
     // トランザクション実行
     const result = await doTransaction({
-      transactionQueryList: transactionQueries,
+      transactionQueryList: transactionQueries as transactionQuery<'tbmDriveSchedule', 'create' | 'update'>[],
     })
 
     return {

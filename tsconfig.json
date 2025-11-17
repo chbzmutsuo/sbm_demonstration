@@ -48,6 +48,7 @@
   ],
   "exclude": [
     "node_modules",
+    "src/app/(excluded)/**/*",
     "**/*.dump",
     "public/**/*",
     "scripts/**/*",

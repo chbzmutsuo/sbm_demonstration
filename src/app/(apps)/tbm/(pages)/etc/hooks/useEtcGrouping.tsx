@@ -1,7 +1,7 @@
 import {useState} from 'react'
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {toastByResult} from '@cm/lib/ui/notifications'
-import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {doTransaction, transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 export const useEtcGrouping = (etcRawData: EtcRecord[], onSuccess: () => void) => {
@@ -52,8 +52,8 @@ export const useEtcGrouping = (etcRawData: EtcRecord[], onSuccess: () => void) =
       })
 
       // EtcCsvRawのisGroupedとtbmEtcMeisaiIdを更新
-      const updateQueries = records.map(record => ({
-        model: 'EtcCsvRaw',
+      const updateQueries: transactionQuery<'etcCsvRaw', 'update'>[] = records.map(record => ({
+        model: 'etcCsvRaw',
         method: 'update',
         queryObject: {
           where: {id: record.id},
@@ -64,9 +64,7 @@ export const useEtcGrouping = (etcRawData: EtcRecord[], onSuccess: () => void) =
         },
       }))
 
-      await doTransaction({
-        transactionQueryList: updateQueries,
-      })
+      await doTransaction({transactionQueryList: updateQueries})
 
       onSuccess()
       toastByResult({success: true, message: 'グルーピングが保存されました'})
@@ -93,8 +91,8 @@ export const useEtcGrouping = (etcRawData: EtcRecord[], onSuccess: () => void) =
       }
 
       // EtcCsvRawのisGroupedとtbmEtcMeisaiIdをリセット
-      const updateQueries = records.map(record => ({
-        model: 'EtcCsvRaw',
+      const updateQueries: transactionQuery<'etcCsvRaw', 'update'>[] = records.map(record => ({
+        model: 'etcCsvRaw',
         method: 'update',
         queryObject: {
           where: {id: record.id},
