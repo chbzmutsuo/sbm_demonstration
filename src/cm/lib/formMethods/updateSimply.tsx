@@ -86,7 +86,7 @@ export const updateSimply = async (props: {
   if (midTableTargetCols.length > 0) {
     const createdData = updatedModelRes.result
 
-    const midTableTransactionQuery: transactionQuery[] = []
+    const midTableTransactionQuery: transactionQuery<any, any>[] = []
 
     midTableTargetCols.forEach((col: colType) => {
       const {

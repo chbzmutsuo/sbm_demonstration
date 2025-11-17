@@ -45,19 +45,19 @@ latest.dump
 
 
 #ignoreを選択
-src/app/**/health
-src/app/**/sbm
-src/app/**/sohken
-src/app/**/aquapot
-src/app/**/shinsei
-src/app/**/apex
-src/app/**/Advantage
-src/app/**/tmp
-src/app/**/achievement
+src/app/**/tbm
 src/app/**/kingOfTime
-src/app/**/edu
-src/app/**/KM
-src/app/**/kickswrap
-src/app/**/stock
-src/app/**/keihi
-#src/app/**/tbm
+src/app/**/achievement
+src/app/**/tmp
+src/app/**/Advantage
+src/app/**/apex
+src/app/**/shinsei
+src/app/**/aquapot
+src/app/**/sohken
+src/app/**/sbm
+src/app/**/health
+#src/app/**/edu
+#src/app/**/KM
+#src/app/**/kickswrap
+#src/app/**/stock
+#src/app/**/keihi

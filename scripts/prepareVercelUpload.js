@@ -28,7 +28,7 @@ const asyncFunction = async appName => {
 
   let targetAppNames = [appName]
   if (appName === `KM`) {
-    targetAppNames = [`KM`, `kickswrap`, 'stock', 'keihi', 'edu']
+    targetAppNames = [`KM`, `kickswrap`, 'stock', 'keihi', 'aidocument']
   }
 
   console.log({targetAppNames})

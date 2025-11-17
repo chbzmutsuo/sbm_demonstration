@@ -4,7 +4,7 @@ import {GetDevice} from '@cm/hooks/useWindowSize'
 
 import Loader from '@cm/components/utils/loader/Loader'
 
-export const appbarHeight = 40
+export const appbarHeight = 0
 export const footerHeight = 40
 export const headerMargin = 0
 type DeviceContextType = {

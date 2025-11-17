@@ -2,14 +2,12 @@
 
 import {Popover, PopoverContent, PopoverTrigger} from '@shadcn/ui/popover'
 
-
-
-
 import {PopoverPortal} from '@radix-ui/react-popover'
 
 import React from 'react'
 import {JSX} from 'react'
 import {useIsMobile} from '@shadcn/hooks/use-mobile'
+import {useJotaiByKey} from '@cm/hooks/useJotai'
 
 type ShadPopoverProps = {
   Trigger?: JSX.Element | string
@@ -26,6 +24,9 @@ type ShadPopoverProps = {
   closeOnOutsideClick?: boolean
   confirmBeforeClose?: boolean
   confirmMessage?: string
+
+  popoverId?: string // 同じIDを持つPopoverをグループ化
+  maxOpen?: number // 同じIDで同時に開ける最大数（デフォルト: 1）
 }
 const ShadPopover = React.memo((props: ShadPopoverProps) => {
   const {
@@ -43,9 +44,19 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
     closeOnOutsideClick = true,
     confirmBeforeClose = false,
     confirmMessage = '閉じてもよろしいですか？',
+    popoverId,
+    maxOpen = 1,
   } = props
   const mobile = useIsMobile()
   const [isOpen, setIsOpen] = React.useState(false)
+
+  // 各PopoverインスタンスにユニークなIDを生成
+  const instanceId = React.useMemo(() => `popover_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`, [])
+
+  // 同じIDを持つPopoverの開いているインスタンスIDのセットを管理
+  // popoverIdが指定されている場合のみ制限機能を有効化
+  const jotaiKey = popoverId ? `popover_open_instances_${popoverId}` : `popover_no_limit_${instanceId}`
+  const [openInstances, setOpenInstances] = useJotaiByKey<Set<string>>(jotaiKey, new Set<string>())
 
   const isControlled = open !== undefined
   const openState = isControlled ? open : isOpen
@@ -53,13 +64,53 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
   const headerClass = title || description ? '' : 'hidden'
   const footerClass = footer ? '' : 'hidden'
 
+  // アンマウント時にインスタンスIDを削除
+  React.useEffect(() => {
+    return () => {
+      if (popoverId) {
+        setOpenInstances(prev => {
+          const newSet = new Set(prev)
+          newSet.delete(instanceId)
+          return newSet
+        })
+      }
+    }
+  }, [popoverId, instanceId, setOpenInstances])
+
   const handleOpenChange = React.useCallback(
     (newOpen: boolean) => {
-      // 閉じる処理の場合、確認メッセージを表示
-      if (!newOpen && confirmBeforeClose) {
-        const shouldClose = window.confirm(confirmMessage)
-        if (!shouldClose) {
-          return // ユーザーがキャンセルした場合は閉じない
+      // 開く処理の場合、最大数チェック
+      if (newOpen && popoverId) {
+        const currentOpenCount = openInstances.size
+        if (currentOpenCount >= maxOpen) {
+          // 既に最大数開いている場合は開かない
+          return
+        }
+        // このインスタンスを開いているセットに追加
+        setOpenInstances(prev => {
+          const newSet = new Set(prev)
+          newSet.add(instanceId)
+          return newSet
+        })
+      }
+
+      // 閉じる処理の場合
+      if (!newOpen) {
+        // 確認メッセージを表示
+        if (confirmBeforeClose) {
+          const shouldClose = window.confirm(confirmMessage)
+          if (!shouldClose) {
+            return // ユーザーがキャンセルした場合は閉じない
+          }
+        }
+
+        // このインスタンスを開いているセットから削除
+        if (popoverId) {
+          setOpenInstances(prev => {
+            const newSet = new Set(prev)
+            newSet.delete(instanceId)
+            return newSet
+          })
         }
       }
 
@@ -71,7 +122,7 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
         setopen(newOpen)
       }
     },
-    [setopen, isControlled, confirmBeforeClose, confirmMessage]
+    [setopen, isControlled, confirmBeforeClose, confirmMessage, popoverId, maxOpen, openInstances, instanceId, setOpenInstances]
   )
 
   const handleMouseEnter = React.useCallback(() => {
@@ -127,10 +178,9 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
         )}
 
         <PopoverPortal>
-          <div onClick={handleMouseLeave} className={`fixed inset-0 bg-red-500/20 z-200`} style={{}}></div>
           <PopoverContent
             onOpenAutoFocus={onOpenAutoFocus}
-            className="PopoverContent  p-3 w-fit  mx-auto  shadow-lg shadow-gray-500 border border-gray-200 bg-white"
+            className="PopoverContent  p-2 w-fit   mx-auto  shadow-lg shadow-gray-500 border border-gray-200 bg-white"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             onInteractOutside={handleInteractOutside}

@@ -27,7 +27,7 @@ export default function GlobalTemplate({children}) {
       <div
         {...{
           id: 'main-wrapper',
-          className: 'bg-background min-h-screen',
+          className: 'bg-background ',
           style: rootPath === `apex` ? {} : {overscrollBehavior: 'none'},
         }}
       >

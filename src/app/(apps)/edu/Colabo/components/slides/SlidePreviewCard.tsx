@@ -46,6 +46,7 @@ export default function SlidePreviewCard({slide, index, isSelected, onSelect, ha
           <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">{getTemplateLabel(slide.templateType)}</span>
         </div>
         {isSelected && <span className="text-blue-600 text-sm font-medium">選択中</span>}
+
         <Trash
           onClick={async () => {
             if (confirm('このスライドを削除してもよろしいですか？')) {

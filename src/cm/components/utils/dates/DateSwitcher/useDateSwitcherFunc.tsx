@@ -219,7 +219,7 @@ const getColumnBase = ({
   const columnsBase: any = {
     from: {
       id: 'from',
-      label: selectPeriod ? 'から' : monthOnly || yearOnly ? '' : '基準日',
+      label: selectPeriod ? 'から' : monthOnly || yearOnly ? '' : '',
       type: monthOnly ? 'month' : yearOnly ? 'year' : 'date',
       form: {
         register: {

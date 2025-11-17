@@ -4,6 +4,8 @@ import {DndContext, closestCenter, PointerSensor, useSensor, useSensors} from '@
 import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable'
 import SlideThumbnail from './SlideThumbnail'
 import AutoGridContainer from '@cm/components/utils/AutoGridContainer'
+import {GRID_TEMPLATES} from '../../constants/grid-templates'
+
 const templates = [
   {
     type: 'normal',
@@ -54,7 +56,7 @@ interface LeftSidebarProps {
   selectedSlideId: number | null
   onSelectSlide: (slideId: number) => void
   onReorderSlides: (oldIndex: number, newIndex: number) => void
-  onAddSlide: (templateType: string) => void
+  onAddSlide: (templateType: string, gridTemplateId?: string) => void
 }
 
 export default function LeftSidebar({slides, selectedSlideId, onSelectSlide, onReorderSlides, onAddSlide}: LeftSidebarProps) {
@@ -94,6 +96,26 @@ export default function LeftSidebar({slides, selectedSlideId, onSelectSlide, onR
             </button>
           ))}
         </AutoGridContainer>
+
+        {/* グリッドレイアウトテンプレート */}
+        {templates.some(t => t.type === 'normal') && (
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <h4 className="font-semibold text-xs text-gray-600 mb-2">グリッドレイアウト</h4>
+            <AutoGridContainer {...{maxCols: {md: 2}}} className="gap-2">
+              {GRID_TEMPLATES.map(template => (
+                <button
+                  key={template.id}
+                  onClick={() => onAddSlide('normal', template.id)}
+                  className="w-full flex flex-col items-center gap-1 p-2 rounded-lg border border-gray-200 hover:border-green-400 hover:bg-green-50 transition-colors"
+                  title={template.name}
+                >
+                  <span className="text-sm">{template.icon}</span>
+                  <span className="text-[9px] font-medium text-gray-700 text-center leading-tight">{template.name}</span>
+                </button>
+              ))}
+            </AutoGridContainer>
+          </div>
+        )}
       </div>
       {/* ヘッダー */}
       <div className="p-3 border-b border-gray-200 bg-white">

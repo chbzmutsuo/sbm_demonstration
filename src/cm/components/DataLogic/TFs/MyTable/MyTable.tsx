@@ -23,10 +23,18 @@ const MyTable = React.memo<MyTableProps>(props => {
 
   return (
     <div>
-      <div>
+      <div className={` relative `}>
         {TABLE_CONTROL_POSITION === 'top' && <Components.MyTableControlsCallback />}
-        <MainTable {...props} />
-        {TABLE_CONTROL_POSITION === 'bottom' && <Components.MyTableControlsCallback />}
+        <div
+          style={{
+            maxHeight: useMyTableLogicReturn.mainTableProps.tableStyle.maxHeight,
+          }}
+        >
+          <MainTable {...props} />
+          <div className={` sticky w-full mx-auto bottom-0     z-10 `}>
+            {TABLE_CONTROL_POSITION === 'bottom' && <Components.MyTableControlsCallback />}
+          </div>
+        </div>
       </div>
     </div>
   )

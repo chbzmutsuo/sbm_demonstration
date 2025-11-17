@@ -18,7 +18,7 @@ export const Review = () => {
 
   useEffect(() => {
     if (fetchedReviews && fetchedReviews.length === 0) {
-      const transactionQueryList: transactionQuery[] = reviews.map(review => {
+      const transactionQueryList: transactionQuery<'kaizenReview', 'create'>[] = reviews.map(review => {
         return {
           method: 'create',
           model: 'kaizenReview',

@@ -4,7 +4,6 @@ import {toast} from 'react-toastify'
 import {memoize} from 'lodash'
 
 export const basePath = typeof window === `undefined` ? (process.env.NEXT_PUBLIC_BASEPATH ?? '') : window.location.origin
-
 export const isDev = process.env.NODE_ENV === 'development'
 export const apiPath = `${basePath}/api`
 export const systemEmailTo = String(process.env.SYSTEM_EMAIL_TO ?? '').split(',')

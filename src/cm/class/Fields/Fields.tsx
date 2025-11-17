@@ -75,7 +75,7 @@ export class Fields {
           if (col.format) {
             colValue = col.format(value, row, col)
           } else if (col.type === 'price') {
-            colValue = NumHandler.toPrice(colValue)
+            colValue = NumHandler.toPrice(row[col.id])
           } else if (col.type === 'password') {
             colValue = '********'
           } else if (col.forSelect) {

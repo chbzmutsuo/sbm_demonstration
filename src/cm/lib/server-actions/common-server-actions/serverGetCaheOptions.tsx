@@ -19,6 +19,7 @@ export type GetCaheOptionSWR_REQUEST_PARAMS = usePrismaOnServerPropType & anyObj
 
 export const serverGetCaheOptions = async (props: {SWR_REQUEST_PARAMS: GetCaheOptionSWR_REQUEST_PARAMS[]}) => {
   const {SWR_REQUEST_PARAMS} = props
+
   try {
     const options = {}
     await Promise.all(

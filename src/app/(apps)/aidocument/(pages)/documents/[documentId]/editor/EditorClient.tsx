@@ -32,7 +32,7 @@ export default function EditorClient({document}: EditorClientProps) {
     processingTime: number
   } | null>(null)
   const [loadingStage, setLoadingStage] = useState<string>('')
-  const [aiProvider, setAiProvider] = useState<AIProvider>('geminie')
+  const [aiProvider, setAiProvider] = useState<AIProvider>('gemini')
 
   useEffect(() => {
     // JSONからitemsを読み込む

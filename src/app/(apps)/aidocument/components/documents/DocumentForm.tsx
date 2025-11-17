@@ -56,7 +56,7 @@ export default function DocumentForm({isOpen, onClose, onSave, initialData, site
           />
         </div>
         <div className="flex gap-2 justify-end pt-2">
-          <Button variant="outline" onClick={onClose} type="button">
+          <Button onClick={onClose} type="button">
             キャンセル
           </Button>
           <Button type="submit">{initialData ? '保存' : '作成して編集'}</Button>
@@ -65,4 +65,3 @@ export default function DocumentForm({isOpen, onClose, onSave, initialData, site
     </BasicModal>
   )
 }
-

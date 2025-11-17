@@ -7,7 +7,7 @@ import {authOptions} from '@app/api/auth/[...nextauth]/constants/authOptions'
 
 // ログインユーザーの自社IDを取得
 const getSelfCompanyId = async (): Promise<number | null> => {
-  const session = await getServerSession(authOptions)
+  const session = (await getServerSession(authOptions)) as any
   const userId = session?.user?.id
   if (!userId) return null
 
@@ -225,13 +225,7 @@ export const deleteSite = async (id: number) => {
 }
 
 // Create: スタッフを作成
-export const createStaff = async (data: {
-  siteId: number
-  name: string
-  age?: number
-  gender?: string
-  term?: string
-}) => {
+export const createStaff = async (data: {siteId: number; name: string; age?: number; gender?: string; term?: string}) => {
   try {
     const staff = await prisma.aidocumentStaff.create({
       data: {
@@ -359,4 +353,3 @@ export const deleteVehicle = async (id: number) => {
     }
   }
 }
-

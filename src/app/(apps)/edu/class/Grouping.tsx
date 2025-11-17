@@ -67,12 +67,12 @@ export class Grouping {
     await Grouping.switchGameStatus({Game, status: newStatus})
     // faker.locale = 'ja'
 
-    const transactionQueryList: transactionQuery[] = []
+    const transactionQueryList: transactionQuery<'answer', 'create'>[] = []
     players.map(async s => {
       // const forTestSeed = makeTestSeed(asSummary)
       const studentId = s.id
 
-      const query: transactionQuery = {
+      const query: transactionQuery<'answer', 'create'> = {
         model: 'answer',
         method: 'create',
         queryObject: {

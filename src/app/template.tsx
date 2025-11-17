@@ -27,12 +27,7 @@ export default function template({children}) {
     }
   }
 
-  return (
-    <GlobalTemplate>
-      {children}
-      <Menu />
-    </GlobalTemplate>
-  )
+  return <GlobalTemplate>{children}</GlobalTemplate>
 }
 
 //

@@ -36,7 +36,7 @@ export const MainTable = React.memo<MyTableProps>(props => {
 
   if (records === null) {
     return (
-      <div className="max-w-[90%] w-[300px] mx-auto h-fit overflow-hidden">
+      <div className="max-w-[90%] w-[300px] h-fit overflow-hidden">
         <TableSkelton />
       </div>
     )

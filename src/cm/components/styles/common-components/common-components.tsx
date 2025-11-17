@@ -98,7 +98,7 @@ export const NoData = (props: {style?: React.CSSProperties; children?: React.Rea
 }
 
 export const Divider = () => {
-  return <div className={` bg-sub-light my-auto h-[100%] w-[.125rem]`}></div>
+  return <div className={` bg-sub-light my-auto h-full w-[.125rem]`}></div>
 }
 
 export const KeyValuePair = props => {

@@ -40,29 +40,16 @@ export default function ClientsClient({initialClients}: ClientsClientProps) {
       if (data.id) {
         const result = await updateClient(data.id, {name: data.name})
         if (result.success && result.result) {
-          setClients(prev =>
-            prev.map(c =>
-              c.id === data.id
-                ? {
-                    ...result.result,
-                    Site: c.Site, // 既存のSite情報を保持
-                  }
-                : c
-            )
-          )
+          const updatedClient = result.result as ClientWithSites
+          setClients(prev => prev.map(c => (c.id === data.id ? updatedClient : c)))
         } else {
           setError(result.message)
         }
       } else {
         const result = await createClient({name: data.name})
         if (result.success && result.result) {
-          setClients(prev => [
-            {
-              ...result.result,
-              Site: [], // 新規作成時は空配列
-            },
-            ...prev,
-          ])
+          const newClient = result.result as ClientWithSites
+          setClients(prev => [newClient, ...prev])
         } else {
           setError(result.message)
         }

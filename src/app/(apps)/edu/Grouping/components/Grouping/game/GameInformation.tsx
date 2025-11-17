@@ -47,7 +47,7 @@ export default function GameInformation({GameCtxValue, useGroupReturnObj, groupC
   const handleQuestionFinish = async () => {
     const updatedPrompt = await toggleLoad(async () => {
       //未回答の児童・生徒はデータを作る
-      let transactionQueryList: transactionQuery[] = [
+      let transactionQueryList: transactionQuery<any, any>[] = [
         ...players.map(student => {
           const data = {
             studentId: student.id,

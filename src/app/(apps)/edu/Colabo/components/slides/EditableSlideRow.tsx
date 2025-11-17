@@ -3,7 +3,7 @@
 import {useState, useEffect, useMemo} from 'react'
 import {Button} from '@cm/components/styles/common-components/Button'
 import {SlideBlock} from '@app/(apps)/edu/Colabo/(components)/SlideBlock'
-import {Plus, Settings, Pencil} from 'lucide-react'
+import {Plus, Settings, Pencil, TrashIcon} from 'lucide-react'
 import type {SlideRow, SlideBlock as SlideBlockType} from '../../types/game-types'
 import BlockEditPopover from './BlockEditPopover'
 import {
@@ -21,6 +21,7 @@ import {arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStra
 import {useSortable} from '@dnd-kit/sortable'
 import {CSS} from '@dnd-kit/utilities'
 import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import ShadPopover from '@cm/shadcn/ui/Organisms/ShadPopover'
 
 interface EditableSlideRowProps {
   row: SlideRow
@@ -74,41 +75,43 @@ function SortableBlockItem({
     onBlockEditingChange(block.id, isEditing)
   }
 
+  const ConfigArea = () => {
+    return (
+      <>
+        <R_Stack>
+          <BlockEditPopover
+            block={block}
+            onSave={(blockId, updates) => {
+              onUpdateBlock(blockId, updates)
+            }}
+            trigger={
+              <button onClick={e => e.stopPropagation()} title="スタイル編集">
+                <Pencil className="w-3 h-3 text-blue-500" />
+              </button>
+            }
+          />
+          {/* 削除ボタン */}
+          <button
+            onClick={e => {
+              e.stopPropagation()
+              if (confirm('このブロックを削除しますか？')) {
+                onDeleteBlock(block.id)
+              }
+            }}
+            title="削除"
+          >
+            <TrashIcon className="w-3 h-3 text-red-500" />
+          </button>
+        </R_Stack>
+      </>
+    )
+  }
+
   return (
     <div className="relative">
       {isEditing && (
         <div className="absolute -top-2 left-2 flex gap-1 z-5">
-          {/* プロパティ編集ボタン（Popover） */}
-          <R_Stack>
-            <BlockEditPopover
-              block={block}
-              onSave={(blockId, updates) => {
-                onUpdateBlock(blockId, updates)
-              }}
-              trigger={
-                <button
-                  onClick={e => e.stopPropagation()}
-                  className="bg-blue-500 text-white rounded p-1 hover:bg-blue-600 text-xs"
-                  title="スタイル編集"
-                >
-                  <Pencil className="w-3 h-3" />
-                </button>
-              }
-            />
-            {/* 削除ボタン */}
-            <button
-              onClick={e => {
-                e.stopPropagation()
-                if (confirm('このブロックを削除しますか？')) {
-                  onDeleteBlock(block.id)
-                }
-              }}
-              className="bg-red-500 text-white rounded p-1 hover:bg-red-600 text-xs"
-              title="削除"
-            >
-              ×
-            </button>
-          </R_Stack>
+          <ConfigArea />
         </div>
       )}
 
@@ -251,163 +254,184 @@ export default function EditableSlideRow({
     }
   }, [isColumnSettingOpen, isBlockTypeMenuOpen])
 
-  return (
-    <div className="border border-gray-200 rounded p-2" onClick={e => e.stopPropagation()}>
-      {/* 行ヘッダー */}
-      {isEditing && (
-        <div className="flex items-center justify-between  mb-4">
-          <div className="flex items-center gap-2">
-            <span
-              className="text-[10px] font-medium text-gray-700"
-              {...(dragHandleProps || {})}
-              style={{cursor: dragHandleProps ? 'grab' : 'default'}}
-            >
-              行 {rowIndex + 1}
-            </span>
-            {/* 列数設定 */}
-            <div className="relative">
+  const RowEditConfig = (
+    <div className="flex items-center gap-2">
+      <div className="relative">
+        <Button
+          size="sm"
+          onClick={e => {
+            e.stopPropagation()
+            setIsBlockTypeMenuOpen(!isBlockTypeMenuOpen)
+          }}
+          className="text-xs"
+          data-menu="block-type"
+        >
+          <Plus className="w-3 h-3 inline mr-1" />
+          ブロック追加
+        </Button>
+        {isBlockTypeMenuOpen && (
+          <div
+            className="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded shadow-lg z-50 min-w-[150px]"
+            data-menu="block-type"
+          >
+            <div className="p-2">
               <button
                 onClick={e => {
                   e.stopPropagation()
-                  setIsColumnSettingOpen(!isColumnSettingOpen)
+                  onAddBlock(row.id, 'text')
+                  setIsBlockTypeMenuOpen(false)
                 }}
-                className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
-                data-menu="column-setting"
+                className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded flex items-center gap-2"
               >
-                <Settings className="w-3 h-3" />
-                <span className="text-[10px]">{row.columns}列</span>
+                📝 テキスト
               </button>
-              {isColumnSettingOpen && (
-                <div
-                  className="absolute w-[300px] top-full left-0 mt-1 bg-white border border-gray-300 rounded shadow-lg z-50"
+              <button
+                onClick={e => {
+                  e.stopPropagation()
+                  onAddBlock(row.id, 'image')
+                  setIsBlockTypeMenuOpen(false)
+                }}
+                className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded flex items-center gap-2"
+              >
+                🖼️ 画像
+              </button>
+              <button
+                onClick={e => {
+                  e.stopPropagation()
+                  onAddBlock(row.id, 'link')
+                  setIsBlockTypeMenuOpen(false)
+                }}
+                className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded flex items-center gap-2"
+              >
+                🔗 リンク
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+      {totalRows > 1 && (
+        <Button
+          size="sm"
+          onClick={e => {
+            e.stopPropagation()
+            onDeleteRow(row.id)
+          }}
+          className="bg-red-600 hover:bg-red-700 text-xs"
+        >
+          行を削除
+        </Button>
+      )}
+    </div>
+  )
+
+  const Row = () => {
+    return (
+      <div className="border border-gray-200 rounded p-2" onClick={e => e.stopPropagation()}>
+        {/* 行ヘッダー */}
+        {isEditing && (
+          <div className="flex items-center justify-between  mb-4">
+            <div className="flex items-center gap-2">
+              <span
+                className="text-[10px] font-medium text-gray-700"
+                {...(dragHandleProps || {})}
+                style={{cursor: dragHandleProps ? 'grab' : 'default'}}
+              >
+                行 {rowIndex + 1}
+              </span>
+              {/* 列数設定 */}
+              <div className="relative">
+                <button
+                  onClick={e => {
+                    e.stopPropagation()
+                    setIsColumnSettingOpen(!isColumnSettingOpen)
+                  }}
+                  className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
                   data-menu="column-setting"
                 >
-                  <div className="p-2">
-                    <div className="text-xs text-gray-600">列数を選択</div>
-                    <div className="grid grid-cols-3 gap-1">
-                      {[1, 2, 3, 4, 5, 6].map(cols => (
-                        <button
-                          key={cols}
-                          onClick={e => {
-                            e.stopPropagation()
-                            handleColumnChange(cols)
-                          }}
-                          className={`px-2 py-1 text-xs rounded ${
-                            row.columns === cols ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'
-                          }`}
-                        >
-                          {cols}列
-                        </button>
-                      ))}
+                  <Settings className="w-3 h-3" />
+                  <span className="text-[10px]">{row.columns}列</span>
+                </button>
+                {isColumnSettingOpen && (
+                  <div
+                    className="absolute w-[300px] top-full left-0 mt-1 bg-white border border-gray-300 rounded shadow-lg z-50"
+                    data-menu="column-setting"
+                  >
+                    <div className="p-2">
+                      <div className="text-xs text-gray-600">列数を選択</div>
+                      <div className="grid grid-cols-3 gap-1">
+                        {[1, 2, 3, 4, 5, 6].map(cols => (
+                          <button
+                            key={cols}
+                            onClick={e => {
+                              e.stopPropagation()
+                              handleColumnChange(cols)
+                            }}
+                            className={`px-2 py-1 text-xs rounded ${
+                              row.columns === cols ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'
+                            }`}
+                          >
+                            {cols}列
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
+        )}
 
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <Button
-                size="sm"
-                onClick={e => {
-                  e.stopPropagation()
-                  setIsBlockTypeMenuOpen(!isBlockTypeMenuOpen)
-                }}
-                className="text-xs"
-                data-menu="block-type"
-              >
-                <Plus className="w-3 h-3 inline mr-1" />
-                ブロック追加
-              </Button>
-              {isBlockTypeMenuOpen && (
-                <div
-                  className="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded shadow-lg z-50 min-w-[150px]"
-                  data-menu="block-type"
-                >
-                  <div className="p-2">
-                    <button
-                      onClick={e => {
-                        e.stopPropagation()
-                        onAddBlock(row.id, 'text')
-                        setIsBlockTypeMenuOpen(false)
-                      }}
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded flex items-center gap-2"
-                    >
-                      📝 テキスト
-                    </button>
-                    <button
-                      onClick={e => {
-                        e.stopPropagation()
-                        onAddBlock(row.id, 'image')
-                        setIsBlockTypeMenuOpen(false)
-                      }}
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded flex items-center gap-2"
-                    >
-                      🖼️ 画像
-                    </button>
-                    <button
-                      onClick={e => {
-                        e.stopPropagation()
-                        onAddBlock(row.id, 'link')
-                        setIsBlockTypeMenuOpen(false)
-                      }}
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded flex items-center gap-2"
-                    >
-                      🔗 リンク
-                    </button>
-                  </div>
-                </div>
-              )}
+        {/* グリッドレイアウト */}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+          onDragStart={handleDragStart}
+          onDragCancel={handleDragCancel}
+        >
+          <SortableContext items={row.blocks.map(b => b.id)} strategy={rectSortingStrategy}>
+            <div
+              className="grid gap-4"
+              style={{
+                gridTemplateColumns: `repeat(${row.columns}, minmax(0, 1fr))`,
+              }}
+            >
+              {row.blocks.map((block, blockIndex) => (
+                <SortableBlockItem
+                  key={block.id}
+                  block={block}
+                  blockIndex={blockIndex}
+                  totalBlocks={row.blocks.length}
+                  row={row}
+                  onMoveBlock={onMoveBlock}
+                  onUpdateBlock={onUpdateBlock}
+                  onDeleteBlock={onDeleteBlock}
+                  isEditing={isEditing}
+                  onBlockEditingChange={handleBlockEditingChange}
+                />
+              ))}
             </div>
-            {totalRows > 1 && (
-              <Button
-                size="sm"
-                onClick={e => {
-                  e.stopPropagation()
-                  onDeleteRow(row.id)
-                }}
-                className="bg-red-600 hover:bg-red-700 text-xs"
-              >
-                行を削除
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* グリッドレイアウト */}
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-        onDragStart={handleDragStart}
-        onDragCancel={handleDragCancel}
-      >
-        <SortableContext items={row.blocks.map(b => b.id)} strategy={rectSortingStrategy}>
-          <div
-            className="grid gap-4"
-            style={{
-              gridTemplateColumns: `repeat(${row.columns}, minmax(0, 1fr))`,
-            }}
-          >
-            {row.blocks.map((block, blockIndex) => (
-              <SortableBlockItem
-                key={block.id}
-                block={block}
-                blockIndex={blockIndex}
-                totalBlocks={row.blocks.length}
-                row={row}
-                onMoveBlock={onMoveBlock}
-                onUpdateBlock={onUpdateBlock}
-                onDeleteBlock={onDeleteBlock}
-                isEditing={isEditing}
-                onBlockEditingChange={handleBlockEditingChange}
-              />
-            ))}
-          </div>
-        </SortableContext>
-      </DndContext>
+          </SortableContext>
+        </DndContext>
+      </div>
+    )
+  }
+  return (
+    <div className={`relative`}>
+      <div className={`absolute -top-1 right-1`}>
+        <ShadPopover
+          {...{
+            mode: 'hover',
+            Trigger: <small>設定</small>,
+            popoverId: 'blockItemEditorPopover',
+            maxOpen: 1,
+          }}
+        >
+          {RowEditConfig}
+        </ShadPopover>
+      </div>
+      <Row />
     </div>
   )
 }

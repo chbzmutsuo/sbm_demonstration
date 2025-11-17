@@ -9,20 +9,16 @@ import MyTextarea from '@cm/components/DataLogic/TFs/MyForm/components/HookFormC
 import MyCheckBox from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyCheckBox/MyCheckBox'
 import ErrorMessage from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/util-components/ErrorMessage'
 import MyDatepicker from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyDatePIcker/MyDatepicker'
-import MySelect from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MySelect'
+const MySelect = dynamic(() => import('@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MySelect'))
 
 const Loader = () => <div className="animate-pulse bg-gray-200 h-10 rounded" />
-const MyMdEditor = dynamic(() => import('@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyMdEditor'), {
-  loading: Loader,
-})
+const MyMdEditor = dynamic(() => import('@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyMdEditor'))
 const MyFileControl = dynamic(
-  () => import('@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyFileControl/MyFileControl'),
-  {loading: Loader}
+  () => import('@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyFileControl/MyFileControl')
 )
 
 const MyMultipleChoice = dynamic(
-  () => import('@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MyMultipleChoice'),
-  {loading: Loader}
+  () => import('@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MyMultipleChoice')
 )
 
 export type ControlProps = {
@@ -85,6 +81,12 @@ const Control = ({controlContextValue}) => {
 export default Control
 
 const Main = ({type, col, props}) => {
+  // カスタムコンポーネントがある場合はそれを使用
+  if (col?.form?.customComponent) {
+    const CustomComponent = col.form.customComponent
+    return <CustomComponent {...props} />
+  }
+
   if (type === 'slate') {
     return <MyMdEditor {...props} />
   }

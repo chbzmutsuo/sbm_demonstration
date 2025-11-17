@@ -10,9 +10,17 @@ import type {SlideContentData, SlideRow, SlideBlock} from '../types/game-types'
  * 既存データは1行・1列として扱う
  */
 export function migrateBlocksToRows(contentData: any): SlideContentData {
-  // 既にrowsが存在する場合はそのまま返す
+  // 既にrowsが存在する場合は、columnsが欠落している行を修正して返す
   if (contentData.rows && Array.isArray(contentData.rows)) {
-    return contentData
+    // columnsが欠落している行があれば、デフォルト値1を設定
+    const normalizedRows = contentData.rows.map((row: any) => ({
+      ...row,
+      columns: row.columns !== undefined ? row.columns : 1,
+    }))
+    return {
+      ...contentData,
+      rows: normalizedRows,
+    }
   }
 
   // blocksが存在しない場合は空のrowsを作成

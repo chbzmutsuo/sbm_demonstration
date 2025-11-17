@@ -6,10 +6,9 @@ import {getServerSession} from 'next-auth'
 import {authOptions} from '@app/api/auth/[...nextauth]/constants/authOptions'
 
 // ログインユーザーの自社データを取得
-export const getSelfCompany = async () => {
+export const getSelfCompany = async ({userId}) => {
   try {
     const session = await getServerSession(authOptions)
-    const userId = session?.user?.id
 
     if (!userId) {
       return {
@@ -50,24 +49,24 @@ export const getSelfCompany = async () => {
 }
 
 // 自社データを更新
-export const updateSelfCompany = async (data: {
-  name?: string
-  representativeName?: string
-  address?: string
-  phone?: string
-  constructionLicense?: Array<{type: string; number: string; date: string}>
-  socialInsurance?: {
-    health: string
-    pension: string
-    employment: string
-    officeName?: string
-    officeCode?: string
+export const updateSelfCompany = async (
+  userId: number,
+  data: {
+    name?: string
+    representativeName?: string
+    address?: string
+    phone?: string
+    constructionLicense?: Array<{type: string; number: string; date: string}>
+    socialInsurance?: {
+      health: string
+      pension: string
+      employment: string
+      officeName?: string
+      officeCode?: string
+    }
   }
-}) => {
+) => {
   try {
-    const session = await getServerSession(authOptions)
-    const userId = session?.user?.id
-
     if (!userId) {
       return {
         success: false,
@@ -248,4 +247,3 @@ export const getClientCompanyById = async (id: number) => {
     }
   }
 }
-

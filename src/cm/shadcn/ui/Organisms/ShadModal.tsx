@@ -77,24 +77,26 @@ const ShadModal = React.memo((props: ShadModalProps) => {
       <Drawer open={openState} onOpenChange={handleOpenChange}>
         {Trigger && <DrawerTrigger asChild>{Trigger}</DrawerTrigger>}
 
-        <DrawerContent
-          style={style}
-          onOpenAutoFocus={onOpenAutoFocus}
-          className={cn(`ModalContent rounded-lg bg-white p-1 shadow-md border border-gray-200 ${className}`)}
-        >
-          <div>
-            <div className="mx-auto w-full ">
-              <DrawerHeader>
-                <DrawerTitle>{title}</DrawerTitle>
-                <DrawerDescription>{description}</DrawerDescription>
-              </DrawerHeader>
+        {openState && (
+          <DrawerContent
+            style={style}
+            onOpenAutoFocus={onOpenAutoFocus}
+            className={cn(`ModalContent rounded-lg bg-white p-1 shadow-md border border-gray-200 ${className}`)}
+          >
+            <div>
+              <div className="mx-auto w-full ">
+                <DrawerHeader>
+                  <DrawerTitle>{title}</DrawerTitle>
+                  <DrawerDescription>{description}</DrawerDescription>
+                </DrawerHeader>
 
-              <div className="w-fit mx-auto">{children}</div>
+                <div className="w-fit mx-auto">{children}</div>
 
-              {footer && <DrawerFooter>{footer}</DrawerFooter>}
+                {footer && <DrawerFooter>{footer}</DrawerFooter>}
+              </div>
             </div>
-          </div>
-        </DrawerContent>
+          </DrawerContent>
+        )}
       </Drawer>
     )
   }
@@ -103,28 +105,30 @@ const ShadModal = React.memo((props: ShadModalProps) => {
     <Dialog open={openState} onOpenChange={handleOpenChange}>
       {Trigger && <DialogTrigger asChild>{Trigger}</DialogTrigger>}
 
-      <DialogContent
-        onOpenAutoFocus={onOpenAutoFocus}
-        style={{
-          ...style,
-          maxHeight: '85vh',
-          maxWidth: '95vw',
-          overflow: 'auto',
-        }}
-        className={cn(
-          `ModalContent  w-fit mx-auto shadow-lg shadow-gray-500  border-gray-200 bg-white ${className}`,
-          childrenProps?.className
-        )}
-      >
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
-        </DialogHeader>
+      {openState && (
+        <DialogContent
+          onOpenAutoFocus={onOpenAutoFocus}
+          style={{
+            ...style,
+            maxHeight: '85vh',
+            maxWidth: '95vw',
+            overflow: 'auto',
+          }}
+          className={cn(
+            `ModalContent  w-fit mx-auto shadow-lg shadow-gray-500  border-gray-200 bg-white ${className}`,
+            childrenProps?.className
+          )}
+        >
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+            <DialogDescription>{description}</DialogDescription>
+          </DialogHeader>
 
-        <div className="bg-white">{children}</div>
+          <div className="bg-white">{children}</div>
 
-        <DialogFooter>{footer}</DialogFooter>
-      </DialogContent>
+          <DialogFooter>{footer}</DialogFooter>
+        </DialogContent>
+      )}
     </Dialog>
   )
 })

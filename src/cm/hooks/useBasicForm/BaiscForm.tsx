@@ -237,7 +237,7 @@ const BasicForm = (props: BasicFormType) => {
     return (
       <form {...{ref: formRef, id: formId, onSubmit}}>
         <C_Stack className={` items-start `}>
-          <AutoGridContainer maxCols={{lg: 2}} className={` gap-8 `}>
+          <AutoGridContainer maxCols={{lg: 2}} className={` gap-8 mx-auto w-fit`}>
             {transposedRowsForForm.map((columns, i) => {
               const SectionLabel = columns.find(col => col.form?.colIndex)?.form?.colIndex
 

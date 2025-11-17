@@ -19,19 +19,42 @@ interface CompanyFormProps {
 }
 
 export default function CompanyForm({initialData, onSave}: CompanyFormProps) {
+  const defaultSocialInsurance: SocialInsurance = {
+    health: 'joined',
+    pension: 'joined',
+    employment: 'joined',
+    officeName: '',
+    officeCode: '',
+  }
+
+  const parseConstructionLicense = (value: AidocumentCompany['constructionLicense']): ConstructionLicense[] => {
+    if (!value || !Array.isArray(value)) {
+      return []
+    }
+    return value as unknown as ConstructionLicense[]
+  }
+
+  const parseSocialInsurance = (value: AidocumentCompany['socialInsurance']): SocialInsurance => {
+    if (!value || Array.isArray(value) || typeof value !== 'object') {
+      return defaultSocialInsurance
+    }
+    const {health, pension, employment, officeName, officeCode} = value as Partial<SocialInsurance>
+    return {
+      health: health || 'joined',
+      pension: pension || 'joined',
+      employment: employment || 'joined',
+      officeName: officeName || '',
+      officeCode: officeCode || '',
+    }
+  }
+
   const [formData, setFormData] = useState({
     name: initialData.name || '',
-    representativeName: (initialData.representativeName as string) || '',
-    address: (initialData.address as string) || '',
-    phone: (initialData.phone as string) || '',
-    constructionLicense: (initialData.constructionLicense as ConstructionLicense[]) || [],
-    socialInsurance: (initialData.socialInsurance as SocialInsurance) || {
-      health: 'joined',
-      pension: 'joined',
-      employment: 'joined',
-      officeName: '',
-      officeCode: '',
-    },
+    representativeName: initialData.representativeName || '',
+    address: initialData.address || '',
+    phone: initialData.phone || '',
+    constructionLicense: parseConstructionLicense(initialData.constructionLicense),
+    socialInsurance: parseSocialInsurance(initialData.socialInsurance),
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {

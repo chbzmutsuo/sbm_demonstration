@@ -40,7 +40,7 @@ const TableForm = (props: ClientPropsType2) => {
     () => (EditForm ? <EditForm {...ClientProps2} /> : <MyForm {...ClientProps2} />),
     [EditForm, ClientProps2]
   )
-
+  formComponent
   return (
     <div>
       <MyTable ClientProps2={ClientProps2} />

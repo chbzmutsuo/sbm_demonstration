@@ -52,12 +52,15 @@ export default function BlockEditPopover({block, onSave, trigger}: BlockEditPopo
   return (
     <div>
       <ShadPopover
-        open={open}
-        setopen={setOpen}
-        Trigger={trigger}
-        mode="hover"
-        closeOnHoverLeave={false}
-        // confirmBeforeClose={true}
+        {...{
+          open: open,
+          setopen: setOpen,
+          Trigger: trigger,
+          mode: 'hover',
+
+          popoverId: 'blockItemEditorPopover',
+          maxOpen: 1,
+        }}
       >
         <div className="p-4 max-w-sm">
           <h3 className="text-lg font-bold mb-4">ブロックのスタイル</h3>

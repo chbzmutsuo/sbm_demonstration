@@ -17,7 +17,7 @@ import useModal from '@cm/components/utils/modal/useModal'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {driveInputPageType} from '@app/(apps)/tbm/(pages)/driver/driveInput/driveInput-page-type'
 import {cl} from '@cm/lib/methods/common'
-import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {doTransaction, transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {DriveScheduleCl} from '@app/(apps)/tbm/(class)/DriveScheduleCl'
 import {DriveScheduleItem} from './DriveScheduleItem'
 
@@ -130,9 +130,7 @@ export default function DriveInputCC({driveScheduleList}: {driveScheduleList: dr
                           <div>
                             <span>降車:</span>
                             {odometerEnd ? (
-                              <TextGreen {...{onClick: handleOpenEditGMF, className: TextBtnClass}}>
-                                {NumHandler.toPrice(odometerEnd)}
-                              </TextGreen>
+                              <TextGreen {...{onClick: handleOpenEditGMF, className: TextBtnClass}}>{odometerEnd}</TextGreen>
                             ) : (
                               <TextRed {...{onClick: handleOpenEditGMF, className: TextBtnClass}}>未</TextRed>
                             )}
@@ -194,8 +192,8 @@ export default function DriveInputCC({driveScheduleList}: {driveScheduleList: dr
 
                     toggleLoad(async () => {
                       if (confirm(msg)) {
-                        await doTransaction({
-                          transactionQueryList: driveScheduleList.map(d => {
+                        const transactionQueryList: transactionQuery<'tbmDriveSchedule', 'update'>[] = driveScheduleList.map(
+                          d => {
                             return {
                               model: `tbmDriveSchedule`,
                               method: 'update',
@@ -204,8 +202,9 @@ export default function DriveInputCC({driveScheduleList}: {driveScheduleList: dr
                                 data: {confirmed: gyomushuryo ? false : true},
                               },
                             }
-                          }),
-                        })
+                          }
+                        )
+                        await doTransaction({transactionQueryList})
                       }
                     })
                   }}

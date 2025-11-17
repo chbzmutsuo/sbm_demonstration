@@ -154,6 +154,7 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
                   )}
                 >
                   <LabelCallback position="left" />
+
                   <div>
                     <LeftControlRight
                       {...{
@@ -161,18 +162,18 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
                         controlContextValue,
                       }}
                     />
+                    {showDescription && (
+                      <Description
+                        {...{
+                          col,
+                          ControlStyle,
+                          currentValue,
+                          formData,
+                          latestFormData,
+                        }}
+                      />
+                    )}
                   </div>
-                  {showDescription && (
-                    <Description
-                      {...{
-                        col,
-                        ControlStyle,
-                        currentValue,
-                        formData,
-                        latestFormData,
-                      }}
-                    />
-                  )}
 
                   <LabelCallback position="right" />
                 </div>

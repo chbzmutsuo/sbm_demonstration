@@ -66,7 +66,10 @@ const calcPaginationInfo = (totalCount: number, page: number, take: number) => {
 const calcSkip = (page: number, take: number): number => (page - 1) * take
 
 // transactionQueryList作成を分離
-const createTransactionQueryList = (switchedItemsInOrder: any[], dataModelName: PrismaModelNames): transactionQuery[] => {
+const createTransactionQueryList = (
+  switchedItemsInOrder: any[],
+  dataModelName: PrismaModelNames
+): transactionQuery<any, any>[] => {
   return switchedItemsInOrder.map((item, idx) => ({
     model: dataModelName,
     method: 'update',

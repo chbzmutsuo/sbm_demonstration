@@ -5,12 +5,14 @@ import {Loader2, AlertCircle, Save} from 'lucide-react'
 import {AidocumentCompany} from '@prisma/client'
 import {updateSelfCompany} from '../../actions/company-actions'
 import CompanyForm from '../../components/company/CompanyForm'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 interface CompanyClientProps {
   initialCompany: AidocumentCompany
 }
 
 export default function CompanyClient({initialCompany}: CompanyClientProps) {
+  const {session} = useGlobal()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -34,7 +36,7 @@ export default function CompanyClient({initialCompany}: CompanyClientProps) {
     setSuccess(false)
 
     try {
-      const result = await updateSelfCompany(data)
+      const result = await updateSelfCompany(session.id, data)
       if (result.success) {
         setSuccess(true)
         setTimeout(() => setSuccess(false), 3000)
@@ -82,4 +84,3 @@ export default function CompanyClient({initialCompany}: CompanyClientProps) {
     </div>
   )
 }
-

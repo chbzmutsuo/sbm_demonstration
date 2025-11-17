@@ -48,7 +48,7 @@ export default function ClientForm({isOpen, onClose, onSave, initialData}: Clien
           />
         </div>
         <div className="flex gap-2 justify-end pt-2">
-          <Button variant="outline" onClick={onClose} type="button">
+          <Button color="sub" onClick={onClose} type="button">
             キャンセル
           </Button>
           <Button type="submit">保存</Button>
@@ -57,4 +57,3 @@ export default function ClientForm({isOpen, onClose, onSave, initialData}: Clien
     </BasicModal>
   )
 }
-

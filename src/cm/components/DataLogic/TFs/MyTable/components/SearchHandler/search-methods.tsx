@@ -6,7 +6,7 @@ import {Fields} from 'src/cm/class/Fields/Fields'
 import {P_Query} from 'src/cm/class/PQuery'
 import {mapAdjustOptionValue} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
 
-import {getSchema} from 'src/cm/lib/methods/prisma-schema'
+import {getDMMFModel, getSchema} from 'src/cm/lib/methods/prisma-schema'
 
 import {colType} from '@cm/types/col-types'
 import {StrHandler} from '@cm/class/StrHandler'
@@ -240,11 +240,14 @@ const getSearchTypeKeyValArrFromQueryStr = ({dataModelName, query}) => {
 export const SearchQuery = {
   /**serverに送るwherequeryオブジェクトを作成する */
   createWhere: ({dataModelName, query}) => {
+    const schema = getDMMFModel(StrHandler.capitalizeFirstLetter(dataModelName))
     const AND: any = []
     const SearchTypeKeyValArr = getSearchTypeKeyValArrFromQueryStr({dataModelName, query})
 
     SearchTypeKeyValArr.forEach(({searchType, key, val}) => {
-      AND.push({[key]: {[searchType]: val}})
+      const col = schema?.fields?.find(field => field.name === key)
+
+      AND.push({[key]: {[searchType]: col?.type === 'String' ? String(val) : val}})
     })
 
     return AND

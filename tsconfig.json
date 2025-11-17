@@ -58,6 +58,7 @@
     "build",
     "**/*.spec.ts",
     "**/*.test.ts",
-    "coverage"
+    "coverage",
+    "**/scheme-json-export.js"
   ]
 }

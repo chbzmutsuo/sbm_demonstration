@@ -81,7 +81,7 @@ export const updateMultiItemInTransaction = async props => {
   })()
 
   const {transactionQueryList} = (() => {
-    const transactionQueryList: transactionQuery[] = []
+    const transactionQueryList: transactionQuery<any, any>[] = []
 
     /**upsertの対象データ */
     Object.keys(ChildRecordsToUpsert).forEach((model: PrismaModelNames) => {
@@ -109,7 +109,7 @@ export const updateMultiItemInTransaction = async props => {
           data = {...data, ...colPayload}
         })
 
-        const result: transactionQuery = {
+        const result: transactionQuery<any, any> = {
           model,
           method: 'upsert',
           queryObject: {
@@ -128,7 +128,7 @@ export const updateMultiItemInTransaction = async props => {
     Object.keys(ChildRecordsToDelete).forEach((model: PrismaModelNames) => {
       const arr = ChildRecordsToDelete[model].filter(id => id !== undefined)
       arr.forEach(id => {
-        const result: transactionQuery = {
+        const result: transactionQuery<any, any> = {
           model,
           method: 'delete',
           queryObject: {where: {id: id}},

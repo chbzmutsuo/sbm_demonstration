@@ -103,7 +103,7 @@ export const upsertStockHistory = async ({date}) => {
 
   for (let i = 0; i < daily_quotes_list.length; i += BATCH_SIZE) {
     const batch = daily_quotes_list.slice(i, i + BATCH_SIZE)
-    const transactionQueryList: transactionQuery[] = []
+    const transactionQueryList: transactionQuery<any, any>[] = []
 
     batch.forEach(payload => {
       const theStock = stockMap.get(payload.Code)
@@ -113,7 +113,7 @@ export const upsertStockHistory = async ({date}) => {
 
         payload = {...payload, ...stockHistory_stockId_Date_unique}
 
-        const queryData: transactionQuery = {
+        const queryData: transactionQuery<any, any> = {
           model: `stockHistory`,
           method: `upsert`,
           queryObject: {
@@ -138,7 +138,7 @@ export const upsertStockHistory = async ({date}) => {
           })
         )
 
-        const queryDataForStock: transactionQuery = {
+        const queryDataForStock: transactionQuery<any, any> = {
           model: `stock`,
           method: `upsert`,
           queryObject: {
@@ -201,7 +201,7 @@ export const updateAlgorithm = async ({date}) => {
       },
     })
 
-    const transactionQueryList: transactionQuery[] = []
+    const transactionQueryList: transactionQuery<any, any>[] = []
 
     stockBatch.forEach(stock => {
       // StockHistoryが不十分な場合はスキップ
@@ -223,7 +223,7 @@ export const updateAlgorithm = async ({date}) => {
       const latestHistory = StockInst.latest
       if (latestHistory) {
         const stockHistory_stockId_Date_unique = {stockId: stock?.id, Date: latestHistory.Date}
-        const stockHistoryQueryData: transactionQuery = {
+        const stockHistoryQueryData: transactionQuery<any, any> = {
           model: `stockHistory`,
           method: `upsert`,
           queryObject: {
@@ -240,7 +240,7 @@ export const updateAlgorithm = async ({date}) => {
         transactionQueryList.push(stockHistoryQueryData)
       }
 
-      const stockQueryData: transactionQuery = {
+      const stockQueryData: transactionQuery<any, any> = {
         model: `stock`,
         method: `upsert`,
         queryObject: {

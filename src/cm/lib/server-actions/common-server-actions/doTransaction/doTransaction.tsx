@@ -2,11 +2,15 @@
 
 import {requestResultType} from '@cm/types/types'
 import prisma from 'src/lib/prisma'
+import {prismaMethodType, PrismaModelNames} from '@cm/types/prisma-types'
+import {PrismaClient} from '@prisma/client'
 
-export type transactionQuery = {
-  model: any
-  method: any
-  queryObject: any
+export type transactionQuery<T extends PrismaModelNames = PrismaModelNames, M extends prismaMethodType = prismaMethodType> = {
+  model: T
+  method: M
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  queryObject: Parameters<PrismaClient[T][M]>[0]
   transactiondb?: any
 }
 
@@ -27,8 +31,7 @@ export const doTransaction = async (props: {transactionQueryList: transactionQue
     .filter(d => d)
     .join('_')
 
-  console.time(timeKey)
-  const errorItemList: (transactionQuery & {error: string})[] = []
+  const errorItemList: (transactionQuery<any, any> & {error: string})[] = []
 
   try {
     let data: any[] = []

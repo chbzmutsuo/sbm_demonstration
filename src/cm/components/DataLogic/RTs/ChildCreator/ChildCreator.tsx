@@ -122,52 +122,28 @@ export const ChildCreator = React.memo((props: ChildCreatorProps) => {
     [props.additional?.toggleLoadFunc]
   )
 
-  const tableFormProps = useMemo(
-    () => ({
-      params: params as any,
-      easySearchPrismaDataOnServer: easySearchPrismaDataOnServer,
-      prismaDataExtractionQuery,
-      dataModelName,
-      columns,
+  const tableFormProps = {
+    params: params as any,
+    easySearchPrismaDataOnServer: easySearchPrismaDataOnServer,
+    prismaDataExtractionQuery,
+    dataModelName,
+    columns,
 
-      formData,
-      setformData,
-      records,
-      setrecords,
-      mutateRecords,
-      deleteRecord,
-      totalCount,
-      myTable,
-      myForm,
-      additional: {...tunedAdditional, toggleLoadFunc},
-      EditForm,
-      editType,
-      useGlobalProps,
-      UseRecordsReturn,
-    }),
-    [
-      params,
-      easySearchPrismaDataOnServer,
-      prismaDataExtractionQuery,
-      dataModelName,
-      columns,
-      formData,
-      setformData,
-      records,
-      setrecords,
-      mutateRecords,
-      deleteRecord,
-      totalCount,
-      myTable,
-      myForm,
-      tunedAdditional,
-      toggleLoadFunc,
-      EditForm,
-      editType,
-      useGlobalProps,
-      UseRecordsReturn,
-    ]
-  )
+    formData,
+    setformData,
+    records,
+    setrecords,
+    mutateRecords,
+    deleteRecord,
+    totalCount,
+    myTable,
+    myForm,
+    additional: {...tunedAdditional, toggleLoadFunc},
+    EditForm,
+    editType,
+    useGlobalProps,
+    UseRecordsReturn,
+  }
 
   return (
     <div className={`w-fit`}>

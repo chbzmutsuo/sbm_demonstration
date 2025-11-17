@@ -13,7 +13,7 @@ export const POST = async (req: NextRequest) => {
       model: PrismaModelNames
       method: prismaMethodType
       queryObject: anyObject
-      transactionQueryList: transactionQuery[]
+      transactionQueryList: transactionQuery<any, any>[]
       fetchKey?: string
       transactionPrisma?: any
     }

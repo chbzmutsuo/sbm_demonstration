@@ -59,8 +59,10 @@ export const getInitModelRecordsProps = async (props: serverFetchProps & {query:
     DetailePageId,
     include,
     easySearchObject,
-    disableOrderByFromUrlParams: true,
+    disableOrderByFromUrlParams: false,
   })
+
+
 
   const EasySearcherQuery = await makeEasySearcherQuery({
     EasySearchBuilder,

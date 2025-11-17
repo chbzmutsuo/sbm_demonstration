@@ -1,8 +1,10 @@
+import {initServerComopnent} from 'src/non-common/serverSideFunction'
 import {getSelfCompany} from '../../actions/company-actions'
 import CompanyClient from './CompanyClient'
 
 export default async function CompanyPage() {
-  const result = await getSelfCompany()
+  const {session} = await initServerComopnent({query: {}})
+  const result = await getSelfCompany({userId: session.id})
 
   if (!result.success || !result.result) {
     return (

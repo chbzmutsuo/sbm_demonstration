@@ -3,6 +3,7 @@
 import {toast} from 'react-toastify'
 import {createSlide, deleteSlide, updateSlide, updateSlideOrder} from '../../../colabo-server-actions'
 import {arrayMove} from '@dnd-kit/sortable'
+import {createRowsFromTemplate} from '@app/(apps)/edu/Colabo/constants/grid-templates'
 
 export default function useSlideHandlers({
   game,
@@ -21,29 +22,44 @@ export default function useSlideHandlers({
 }) {
   // スライド追加
   const selectedSlide = slides.find((s: any) => s.id === selectedSlideId) || null
-  const handleAddSlide = async (templateType: string) => {
+  const handleAddSlide = async (templateType: string, gridTemplateId?: string) => {
     try {
       const sortOrder = selectedSlide ? selectedSlide.sortOrder + 1 : slides.length
+
+      // グリッドテンプレートが指定されている場合はそれを使用、そうでなければデフォルト
+      const rows =
+        templateType === 'normal' && gridTemplateId
+          ? createRowsFromTemplate(gridTemplateId)
+          : templateType === 'normal'
+            ? [
+                {
+                  id: `row_${Date.now()}`,
+                  columns: 1,
+                  blocks: [],
+                },
+              ]
+            : undefined
+
+      // デバッグ: 生成されたrowsを確認
+      if (rows && gridTemplateId) {
+        console.log('[handleAddSlide] グリッドテンプレート適用:', gridTemplateId)
+        console.log('[handleAddSlide] 生成されたrows:', JSON.stringify(rows, null, 2))
+      }
 
       const result = await createSlide({
         gameId: game.id,
         templateType,
         contentData: {
           title: '',
-          ...(templateType === 'normal'
-            ? {
-                rows: [
-                  {
-                    id: `row_${Date.now()}`,
-                    columns: 1,
-                    blocks: [],
-                  },
-                ],
-              }
-            : {blocks: []}),
+          ...(rows ? {rows} : {blocks: []}),
         },
         sortOrder,
       })
+
+      // デバッグ: サーバーから返されたスライドデータを確認
+      if (result.success && result.slide) {
+        console.log('[handleAddSlide] サーバーから返されたslide.contentData:', JSON.stringify(result.slide.contentData, null, 2))
+      }
 
       if (result.success && result.slide) {
         toast.success('スライドを追加しました')

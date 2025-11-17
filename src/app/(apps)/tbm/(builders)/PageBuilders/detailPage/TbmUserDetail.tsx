@@ -1,18 +1,12 @@
 'use client'
 
-import {R_Stack} from '@cm/components/styles/common-components/common-components'
 import MyForm from '@cm/components/DataLogic/TFs/MyForm/MyForm'
 import {DetailPagePropType} from '@cm/types/types'
 
 import {Days} from '@cm/class/Days/Days'
 import {toUtc} from '@cm/class/Days/date-utils/calculations'
-import {TextBlue} from '@cm/components/styles/common-components/Alert'
 import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
-import {createUpdate} from '@cm/lib/methods/createUpdate'
-import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
-import {toastByResult} from '@cm/lib/ui/notifications'
 import BasicTabs from '@cm/components/utils/tabs/BasicTabs'
-import BulkCalendarSetter from '@app/(apps)/tbm/(pages)/eigyoshoSettei/components/BulkCalendarSetter'
 
 export default function TbmUserDetail(props: DetailPagePropType) {
   const {useGlobalProps} = props
@@ -78,48 +72,48 @@ export default function TbmUserDetail(props: DetailPagePropType) {
       }}
     />
   )
-  return (
-    <R_Stack className={` items-start gap-20 p-8`}>
-      <div>
-        <TextBlue className={` text-2xl font-bold `}>便基本設定</TextBlue>
-        <MyForm {...props}></MyForm>
-      </div>
-      {!!props?.formData?.id && (
-        <div>
-          <TextBlue className={` text-2xl font-bold `}>稼働予定</TextBlue>
-          <BulkCalendarSetter
-            {...{
-              months,
-              days: days,
-              defaultSelectedDays: defaultSelectedDays,
-              onConfirm: async ({selectedDays}) => {
-                if (!confirm('変更を反映しますか？')) return
+  // return (
+  //   <R_Stack className={` items-start gap-20 p-8`}>
+  //     <div>
+  //       <TextBlue className={` text-2xl font-bold `}>便基本設定</TextBlue>
+  //       <MyForm {...props}></MyForm>
+  //     </div>
+  //     {!!props?.formData?.id && (
+  //       <div>
+  //         <TextBlue className={` text-2xl font-bold `}>稼働予定</TextBlue>
+  //         <BulkCalendarSetter
+  //           {...{
+  //             months,
+  //             days: days,
+  //             defaultSelectedDays: defaultSelectedDays,
+  //             onConfirm: async ({selectedDays}) => {
+  //               if (!confirm('変更を反映しますか？')) return
 
-                const res = await doTransaction({
-                  transactionQueryList: days.map(day => {
-                    const isSelected = selectedDays.some(d => Days.validate.isSameDate(d, day))
+  //               const res = await doTransaction({
+  //                 transactionQueryList: days.map(day => {
+  //                   const isSelected = selectedDays.some(d => Days.validate.isSameDate(d, day))
 
-                    const unique_userId_date = {
-                      userId,
-                      date: day,
-                    }
+  //                   const unique_userId_date = {
+  //                     userId,
+  //                     date: day,
+  //                   }
 
-                    return {
-                      model: 'userWorkStatus',
-                      method: 'upsert',
-                      queryObject: {
-                        where: {unique_userId_date},
-                        ...createUpdate({...unique_userId_date, workStatus: isSelected ? '稼働' : null}),
-                      },
-                    }
-                  }),
-                })
-                toastByResult(res)
-              },
-            }}
-          />
-        </div>
-      )}
-    </R_Stack>
-  )
+  //                   return {
+  //                     model: 'userWorkStatus',
+  //                     method: 'upsert',
+  //                     queryObject: {
+  //                       where: {unique_userId_date},
+  //                       ...createUpdate({...unique_userId_date, workStatus: isSelected ? '稼働' : null}),
+  //                     },
+  //                   }
+  //                 }),
+  //               })
+  //               toastByResult(res)
+  //             },
+  //           }}
+  //         />
+  //       </div>
+  //     )}
+  //   </R_Stack>
+  // )
 }

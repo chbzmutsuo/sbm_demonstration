@@ -5,8 +5,7 @@ export type codeItemCore = {
   label: string
   color?: string
   type?: string
-  list?: string[]
-  postHandler?: postHandlerProps
+  // postHandler?: postHandlerProps
 }
 
 export type postHandlerProps = {
@@ -43,7 +42,7 @@ export class Code<T extends codeObjectArgs = codeObjectArgs> {
     }))
   }
 
-  getBy(property: keyof codeItem, value: string | boolean): (codeItem & T[keyof T]) | undefined {
+  getBy(property: keyof (codeItem & T[keyof T]), value: string | boolean): (codeItem & T[keyof T]) | undefined {
     const noPropertyDefined = this.array.every(item => {
       return item[property] === undefined
     })

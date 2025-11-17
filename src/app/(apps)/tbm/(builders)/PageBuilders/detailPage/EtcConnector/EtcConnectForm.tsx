@@ -7,8 +7,7 @@ import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doS
 import {Button} from '@cm/components/styles/common-components/Button'
 import {GoogleSheet_Read} from '@app/api/google/actions/sheetAPI'
 
-import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
-import {createUpdate} from '@cm/lib/methods/createUpdate'
+import {doTransaction, transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {NumHandler} from '@cm/class/NumHandler'
 import {superTrim} from '@cm/lib/methods/common'
 import {Days} from '@cm/class/Days/Days'
@@ -60,18 +59,22 @@ export default function EtcConnectForm({EtcConnectFormMD, tbmVehicleId}) {
 
         const sum = obj.data.reduce((acc, data) => acc + data.toll, 0)
 
-        return {
+        const payload = {
+          ...unique_tbmVehicleId_groupIndex_month,
+          info: obj.data.map(data => JSON.stringify(data)),
+          sum,
+        }
+        const queryObject: transactionQuery<'tbmEtcMeisai', 'upsert'> = {
           model: `tbmEtcMeisai`,
           method: `upsert`,
           queryObject: {
             where: {unique_tbmVehicleId_groupIndex_month},
-            ...createUpdate({
-              ...unique_tbmVehicleId_groupIndex_month,
-              info: obj.data.map(data => JSON.stringify(data)),
-              sum,
-            }),
+            create: payload,
+            update: payload,
           },
         }
+
+        return queryObject
       }),
     })
 

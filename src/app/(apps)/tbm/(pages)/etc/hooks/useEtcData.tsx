@@ -1,7 +1,7 @@
 import {useState} from 'react'
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {toastByResult} from '@cm/lib/ui/notifications'
-import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {doTransaction, transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {createUpdate} from '@cm/lib/methods/createUpdate'
 
 export const useEtcData = () => {
@@ -96,21 +96,22 @@ export const useEtcData = () => {
         .filter(Boolean)
 
       // データをDBに保存
-      const transactionQueries = parsedData.map(item => {
+      const transactionQueries: transactionQuery<'etcCsvRaw', 'upsert'>[] = parsedData.map(item => {
         return {
-          model: 'EtcCsvRaw',
+          model: 'etcCsvRaw',
           method: 'upsert',
           queryObject: {
             where: {
               unique_tbmVehicleId_fromDate_fromTime: {
-                tbmVehicleId: item?.tbmVehicleId,
-                fromDate: item?.fromDate,
-                fromTime: item?.fromTime,
+                tbmVehicleId: item?.tbmVehicleId ?? 0,
+                fromDate: item?.fromDate ?? new Date(),
+                fromTime: item?.fromTime ?? '',
               },
             },
-            ...createUpdate(item),
+            create: item ?? {},
+            update: item ?? {},
           },
-        }
+        } as transactionQuery<'etcCsvRaw', 'upsert'>
       })
 
       const result = await doTransaction({

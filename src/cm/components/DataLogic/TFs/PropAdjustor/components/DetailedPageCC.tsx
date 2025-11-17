@@ -32,19 +32,13 @@ const DetailedPageCC = ({modelData, ClientProps2}: DetailedPageCCProps) => {
     [ClientProps2, modelData, setformData]
   )
 
-  // ✅ 条件分岐のあるJSX要素なのでメモ化有効
-  const formComponent = useMemo(
-    () => (EditForm ? <EditForm {...enhancedClientProps2} /> : <MyForm {...enhancedClientProps2} />),
-    [EditForm, enhancedClientProps2]
-  )
-
   const formId = `${dataModelName}-formMemo-${EditForm ? 'Custom' : 'Normal'}`
 
   return (
     <div className={cl('mx-auto w-fit p-1.5')}>
       {/* //paperはつけない */}
       <div className="p-0.5" id={formId}>
-        {formComponent}
+        <EditForm {...enhancedClientProps2} /> : <MyForm {...enhancedClientProps2} />
       </div>
     </div>
   )

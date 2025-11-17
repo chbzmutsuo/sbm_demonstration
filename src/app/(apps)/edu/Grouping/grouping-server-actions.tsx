@@ -43,7 +43,7 @@ export const createStudentDataFromCsv = async (props: {csvArr: any[]; schoolId: 
   if (errorMessage) {
     return {success: false, message: errorMessage, result: null}
   }
-  const transactionQueries: transactionQuery[] = []
+  const transactionQueries: transactionQuery<'student', 'upsert'>[] = []
   // schoolObjects（学級別に児童・生徒配列を格納したもの）をループして
   // 所属クラスのprismaデータを取得し、
   // transaction用の配列にpushする
@@ -74,7 +74,7 @@ export const createStudentDataFromCsv = async (props: {csvArr: any[]; schoolId: 
       }
       students.forEach((student: studentData) => {
         const {id, gender, name, kana, attendanceNumber} = student
-        const queryFromClient: transactionQuery = {
+        const queryFromClient: transactionQuery<'student', 'upsert'> = {
           model: 'student',
           method: 'upsert',
           queryObject: {

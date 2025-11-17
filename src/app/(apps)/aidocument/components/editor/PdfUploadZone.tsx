@@ -46,13 +46,7 @@ export default function PdfUploadZone({onPdfUpload, loading}: PdfUploadZoneProps
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <input
-        type="file"
-        ref={inputRef}
-        accept="application/pdf"
-        className="hidden"
-        onChange={handleChange}
-      />
+      <input type="file" ref={inputRef} accept="application/pdf" className="hidden" onChange={handleChange} />
       {loading ? (
         <>
           <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
@@ -63,12 +57,9 @@ export default function PdfUploadZone({onPdfUpload, loading}: PdfUploadZoneProps
           <UploadCloud className="w-10 h-10 text-gray-500" />
           <p className="mt-2 text-sm text-gray-600">【下地】PDFファイルをドラッグ＆ドロップ</p>
           <p className="text-xs text-gray-500 mb-2">または</p>
-          <Button variant="secondary" onClick={() => inputRef.current?.click()}>
-            ファイルを選択
-          </Button>
+          <Button onClick={() => inputRef.current?.click()}>ファイルを選択</Button>
         </>
       )}
     </div>
   )
 }
-

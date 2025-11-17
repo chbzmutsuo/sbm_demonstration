@@ -13,6 +13,14 @@ export type CompanyWithSites = AidocumentCompany & {
   SitesAsClient: AidocumentSite[]
 }
 
+// 取引先の型（関連データ含む）
+// client-actions.tsではSiteリレーションを含むため、この型を使用
+export type ClientWithSites = AidocumentCompany & {
+  SitesAsClient: AidocumentSite[]
+  // client-actions.tsの実装に合わせて、Siteという名前でもアクセス可能にする
+  Site?: AidocumentSite[]
+}
+
 // 現場の型（関連データ含む）
 export type SiteWithRelations = AidocumentSite & {
   Staff: AidocumentStaff[]

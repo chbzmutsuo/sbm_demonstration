@@ -38,7 +38,7 @@ export const MyTableControls = React.memo<MyTableControlsProps>(
     sectionStyle,
   }) => {
     return (
-      <section className="sticky bottom-2 mx-auto mt-4 px-1 pb-2 md:scale-[1.25]" style={sectionStyle}>
+      <section style={sectionStyle}>
         <div className={cl('rounded-sm bg-white/70', 'mx-auto w-fit px-1.5 py-1')}>
           <C_Stack className="items-start">
             {SearchingStatusMemo && <div>{SearchingStatusMemo}</div>}

@@ -446,6 +446,7 @@ model TbmEtcMeisai {
 
   EtcCsvRaw EtcCsvRaw[]
 
+  @@unique([tbmVehicleId, groupIndex, month], name: "unique_tbmVehicleId_groupIndex_month")
   @@index([tbmVehicleId])
 }
 

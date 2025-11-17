@@ -2053,6 +2053,7 @@ model TbmEtcMeisai {
 
   EtcCsvRaw EtcCsvRaw[]
 
+  @@unique([tbmVehicleId, groupIndex, month], name: "unique_tbmVehicleId_groupIndex_month")
   @@index([tbmVehicleId])
 }
 
@@ -2213,6 +2214,9 @@ model TeamSynapseAnalysis {
   @@index([userId])
   @@index([createdAt])
 }
+
+
+
 
 
 
@@ -23983,8 +23987,23 @@ export const prismaDMMF = {
         }
       ],
       "primaryKey": null,
-      "uniqueFields": [],
-      "uniqueIndexes": [],
+      "uniqueFields": [
+        [
+          "tbmVehicleId",
+          "groupIndex",
+          "month"
+        ]
+      ],
+      "uniqueIndexes": [
+        {
+          "name": "unique_tbmVehicleId_groupIndex_month",
+          "fields": [
+            "tbmVehicleId",
+            "groupIndex",
+            "month"
+          ]
+        }
+      ],
       "isGenerated": false
     },
     {
@@ -27413,6 +27432,23 @@ export const prismaDMMF = {
       "fields": [
         {
           "name": "tbmVehicleId"
+        }
+      ]
+    },
+    {
+      "model": "TbmEtcMeisai",
+      "type": "unique",
+      "isDefinedOnField": false,
+      "name": "unique_tbmVehicleId_groupIndex_month",
+      "fields": [
+        {
+          "name": "tbmVehicleId"
+        },
+        {
+          "name": "groupIndex"
+        },
+        {
+          "name": "month"
         }
       ]
     },

@@ -9,7 +9,7 @@ import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
 import {createUpdate} from '@cm/lib/methods/createUpdate'
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
-import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {doTransaction, transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {toastByResult} from '@cm/lib/ui/notifications'
 import BasicTabs from '@cm/components/utils/tabs/BasicTabs'
 import {ColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/ColBuilder'
@@ -28,36 +28,38 @@ export default function TbmRouteGroupDetail(props: DetailPagePropType) {
 
   const handleSaveShare = async () => {
     if (tbmRouteGroupId) {
+      // 既存の共有設定を削除
       await doStandardPrisma('tbmRouteGroupShare', 'deleteMany', {where: {tbmRouteGroupId}})
 
-      const res = await doTransaction({
-        transactionQueryList: [
-          // 既存の共有設定を削除
+      const transactionQueryList: (
+        | transactionQuery<'tbmRouteGroupShare', 'create'>
+        | transactionQuery<'tbmRouteGroup', 'update'>
+      )[] = []
 
-          // 新しい共有設定を追加
-          ...shareBaseIds.map(tbmBaseId => ({
-            model: 'tbmRouteGroupShare',
-            method: 'create',
-            queryObject: {
-              data: {
-                tbmRouteGroupId,
-                tbmBaseId,
-                isActive: true,
-              },
-            },
-          })),
-
-          // 便の共有状態フラグを更新
-          {
-            model: 'tbmRouteGroup',
-            method: 'update',
-            queryObject: {
-              where: {id: tbmRouteGroupId},
-              data: {isShared: shareBaseIds.length > 0},
+      shareBaseIds.map(tbmBaseId => {
+        transactionQueryList.push({
+          model: 'tbmRouteGroupShare',
+          method: 'create',
+          queryObject: {
+            data: {
+              tbmRouteGroupId,
+              tbmBaseId,
+              isActive: true,
             },
           },
-        ],
+        })
       })
+
+      transactionQueryList.push({
+        model: 'tbmRouteGroup',
+        method: 'update',
+        queryObject: {
+          where: {id: tbmRouteGroupId},
+          data: {isShared: shareBaseIds.length > 0},
+        },
+      })
+
+      const res = await doTransaction({transactionQueryList})
     }
   }
   const {tbmBaseId: currentBaseId} = session.scopes.getTbmScopes()
@@ -202,25 +204,25 @@ export default function TbmRouteGroupDetail(props: DetailPagePropType) {
                 onConfirm: async ({selectedDays}) => {
                   if (!confirm('変更を反映しますか？')) return
 
-                  const res = await doTransaction({
-                    transactionQueryList: days.map(day => {
-                      const isSelected = selectedDays.some(d => Days.validate.isSameDate(d, day))
+                  const transactionQueryList: transactionQuery<'tbmRouteGroupCalendar', 'upsert'>[] = days.map(day => {
+                    const isSelected = selectedDays.some(d => Days.validate.isSameDate(d, day))
 
-                      const unique_tbmRouteGroupId_date = {
-                        tbmRouteGroupId,
-                        date: day,
-                      }
+                    const unique_tbmRouteGroupId_date = {
+                      tbmRouteGroupId,
+                      date: day,
+                    }
 
-                      return {
-                        model: 'tbmRouteGroupCalendar',
-                        method: 'upsert',
-                        queryObject: {
-                          where: {unique_tbmRouteGroupId_date},
-                          ...createUpdate({...unique_tbmRouteGroupId_date, holidayType: isSelected ? '稼働' : ''}),
-                        },
-                      }
-                    }),
+                    return {
+                      model: 'tbmRouteGroupCalendar',
+                      method: 'upsert',
+                      queryObject: {
+                        where: {unique_tbmRouteGroupId_date},
+                        ...createUpdate({...unique_tbmRouteGroupId_date, holidayType: isSelected ? '稼働' : ''}),
+                      },
+                    }
                   })
+
+                  const res = await doTransaction({transactionQueryList})
                   toastByResult(res)
                 },
               }}

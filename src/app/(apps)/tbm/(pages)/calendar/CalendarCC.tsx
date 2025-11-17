@@ -16,7 +16,7 @@ import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
-import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {doTransaction, transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 
 import {Calendar, Prisma} from '@prisma/client'
 import React from 'react'
@@ -69,20 +69,19 @@ const MonthlyCalendar = ({dayInMonth}) => {
           onClick={async () => {
             toggleLoad(
               async () => {
-                await doTransaction({
-                  transactionQueryList: month.days.map(date => {
-                    const calendarRecord = calendarRecordList.find(d => Days.validate.isSameDate(d.date, date))
-                    return {
-                      model: `calendar`,
-                      method: `upsert`,
-                      queryObject: {
-                        where: {id: calendarRecord?.id ?? 0},
-                        create: {date: date},
-                        update: {date: date},
-                      } as Prisma.CalendarUpsertArgs,
-                    }
-                  }),
+                const transactionQueryList: transactionQuery<'calendar', 'upsert'>[] = month.days.map(date => {
+                  const calendarRecord = calendarRecordList.find(d => Days.validate.isSameDate(d.date, date))
+                  return {
+                    model: `calendar`,
+                    method: `upsert`,
+                    queryObject: {
+                      where: {id: calendarRecord?.id ?? 0},
+                      create: {date: date},
+                      update: {date: date},
+                    } as Prisma.CalendarUpsertArgs,
+                  }
                 })
+                await doTransaction({transactionQueryList})
               },
               {refresh: false, mutate: true}
             )

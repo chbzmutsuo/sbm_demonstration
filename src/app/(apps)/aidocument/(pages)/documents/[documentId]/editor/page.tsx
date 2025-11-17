@@ -1,5 +1,6 @@
 import EditorClient from './EditorClient'
 import {getDocumentById} from '@app/(apps)/aidocument/actions/document-actions'
+import {DocumentWithRelations} from '@app/(apps)/aidocument/types'
 import {notFound} from 'next/navigation'
 
 export default async function EditorPage({params}: {params: Promise<{documentId: string}>}) {
@@ -16,5 +17,5 @@ export default async function EditorPage({params}: {params: Promise<{documentId:
     notFound()
   }
 
-  return <EditorClient document={result.result} />
+  return <EditorClient document={result.result as DocumentWithRelations} />
 }

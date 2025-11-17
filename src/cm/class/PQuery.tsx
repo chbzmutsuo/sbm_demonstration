@@ -1,8 +1,9 @@
 import {SearchQuery} from '@cm/components/DataLogic/TFs/MyTable/components/SearchHandler/search-methods'
-import {getRelationalModels} from 'src/cm/lib/methods/prisma-schema'
+import {getDMMFModel, getRelationalModels} from 'src/cm/lib/methods/prisma-schema'
 import {additionalPropsType, MyTableType} from '@cm/types/types'
 import {anyObject} from '@cm/types/utility-types'
 import {DH__switchColType} from '@cm/class/DataHandler/type-converter'
+import {StrHandler} from '@cm/class/StrHandler'
 
 // 型定義
 interface WhereQueryItem {
@@ -167,17 +168,39 @@ export class P_Query {
     const additionalAND = Object.entries(additional?.where ?? {}).map(([key, value]) => ({[key]: value}))
     const AND = [...searchAND, ...additionalAND]
 
-    // OrderBy の構築（効率化）
+    //OrderBy の構築（効率化）===
     const orderBy = [...(additional?.orderBy ?? []), ...defaultOrderByArray]
-
-    // 動的ソートの追加
     if (mergedQuery?.orderBy) {
-      orderBy.unshift({
-        [mergedQuery.orderBy]: {
-          sort: mergedQuery.orderDirection || 'asc',
-          nulls: 'last',
-        },
-      })
+      // 動的ソートの追加
+      const schema = getDMMFModel(StrHandler.capitalizeFirstLetter(dataModelName))
+      const col = schema?.fields?.find(field => field.name === mergedQuery.orderBy)
+      if (col) {
+        if (col.isRequired) {
+          orderBy.unshift({
+            [mergedQuery.orderBy]: mergedQuery.orderDirection || 'asc',
+          })
+        } else {
+          orderBy.unshift({
+            [mergedQuery.orderBy]: {
+              sort: mergedQuery.orderDirection || 'asc',
+              nulls: 'last',
+            },
+          })
+        }
+      }
+
+      // if (col) {
+      //   orderBy.unshift({
+      //     [mergedQuery.orderBy]: mergedQuery.orderDirection || 'asc',
+      //   })
+      // }
+      // orderBy.unshift({
+      //   [mergedQuery.orderBy]: mergedQuery.orderDirection || 'asc',
+      //   // [mergedQuery.orderBy]: {
+      //   //   sort: mergedQuery.orderDirection || 'asc',
+      //   //   nulls: 'last',
+      //   // },
+      // })
     }
 
     const from = (page - 1) * take + 1

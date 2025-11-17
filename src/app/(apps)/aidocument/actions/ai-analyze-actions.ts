@@ -118,7 +118,7 @@ export const analyzePdfAndAutoPlace = async (request: AnalyzePdfRequest): Promis
 
     const analysisResult = provider === 'openai' ? await analyzePdfWithOpenAI(apiRequest) : await analyzePdfWithGemini(apiRequest)
 
-    console.log(analysisResult) //logs
+    console.log(analysisResult)
 
     const processingTime = Date.now() - startTime
 

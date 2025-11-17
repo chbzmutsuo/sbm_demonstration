@@ -24,7 +24,7 @@ export const useDocumentEditor = (
     if (initialDocument?.items && typeof initialDocument.items === 'object') {
       try {
         const parsedItems = Array.isArray(initialDocument.items) ? initialDocument.items : []
-        setItems(parsedItems as PlacedItem[])
+        setItems(parsedItems as unknown as PlacedItem[])
       } catch (err) {
         console.error('Items parsing error:', err)
         setItems([])

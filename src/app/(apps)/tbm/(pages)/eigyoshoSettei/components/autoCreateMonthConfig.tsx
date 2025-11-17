@@ -71,7 +71,7 @@ export const autoCreateMonthConfig = async ({
       return alert('引き継げるデータがありません。')
     }
 
-    const transactionQueryList: transactionQuery[] = targetRouteListWithPreviousData?.map(route => {
+    const transactionQueryList: transactionQuery<any, any>[] = targetRouteListWithPreviousData?.map(route => {
       const previousMonthConfig = route.prevMonthConfig
 
       const payload = {

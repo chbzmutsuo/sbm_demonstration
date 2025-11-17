@@ -168,6 +168,17 @@ export type MyTableType =
       hideEasySearch?: boolean
       useWrapperCard?: boolean
       beforeHandleDelete?: (props: {record: any; columns: colType[][]}) => boolean | void
+      csvOutput?: {
+        fileTitle: string
+        columns: Array<
+          | {
+              key: string
+              label?: string
+              format?: (record: any) => string | number | boolean | null | undefined
+            }
+          | ((record: any) => string | number | boolean | null | undefined)
+        >
+      }
     }
   | undefined
 

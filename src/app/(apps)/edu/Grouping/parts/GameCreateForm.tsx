@@ -41,7 +41,7 @@ const GameCreateForm = ({newGameFormData, setnewGameFormData}) => {
               })
 
               if (copyMode) {
-                const GameStudentQueries: transactionQuery[] = []
+                const GameStudentQueries: transactionQuery<'gameStudent', 'create'>[] = []
                 GameStudent.forEach(d => {
                   const {studentId, gameId} = d
                   GameStudentQueries.push({

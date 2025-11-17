@@ -48,19 +48,28 @@ export const stylesByDevice: StylesByDevice = {
   SP: {
     Modal: {},
     Form: {maxWidth: '90vw', maxHeight: '70vh'},
-    Table: {maxWidth: '85vw'},
+    Table: {
+      maxWidth: '85vw',
+      maxHeight: '70vh',
+    },
   },
 
   TB: {
     Modal: {},
     Form: {maxWidth: '90vw', maxHeight: '75vh'},
-    Table: {maxWidth: '85vw'},
+    Table: {
+      maxWidth: '85vw',
+      maxHeight: '70vh',
+    },
   },
 
   PC: {
     Modal: {},
     Form: {maxWidth: '90vw', maxHeight: '70vh'},
-    Table: {maxWidth: '85vw'},
+    Table: {
+      maxWidth: '85vw',
+      maxHeight: '70vh',
+    },
   },
 }
 
