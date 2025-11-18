@@ -19,36 +19,36 @@ export const AdminLayout = React.memo(({children, adminContext, menuContext, use
 
   const {horizontalMenu, pathItemObject} = adminContext
 
-  const MainDisplay = React.memo(() => <div>{children}</div>)
-
   if (PC) {
     return (
       <PCLayout
-        MainDisplay={MainDisplay}
         adminContext={adminContext}
         menuContext={menuContext}
         useGlobalProps={useGlobalProps}
         horizontalMenu={horizontalMenu}
         pathItemObject={pathItemObject}
-      />
+      >
+        {children}
+      </PCLayout>
     )
   }
 
   return (
     <SPLayout
-      MainDisplay={MainDisplay}
       adminContext={adminContext}
       menuContext={menuContext}
       useGlobalProps={useGlobalProps}
       horizontalMenu={horizontalMenu}
       pathItemObject={pathItemObject}
-    />
+    >
+      {children}
+    </SPLayout>
   )
 })
 
 // PC用レイアウト
-const PCLayout = React.memo(({MainDisplay, adminContext, menuContext, useGlobalProps, horizontalMenu, pathItemObject}: any) => (
-  <div>
+const PCLayout = React.memo(({children, adminContext, menuContext, useGlobalProps, horizontalMenu, pathItemObject}: any) => (
+  <div className={` max-w-screen min-h-screen overflow-x-auto overflow-y-hidden`}>
     <Header adminContext={adminContext} />
 
     {adminContext.navBarPosition === `left` && (
@@ -59,12 +59,12 @@ const PCLayout = React.memo(({MainDisplay, adminContext, menuContext, useGlobalP
       </div>
     )}
 
-    <MainDisplay />
+    {children}
   </div>
 ))
 
 // SP用レイアウト
-const SPLayout = React.memo(({MainDisplay, adminContext, menuContext, useGlobalProps, horizontalMenu, pathItemObject}: any) => (
+const SPLayout = React.memo(({children, adminContext, menuContext, useGlobalProps, horizontalMenu, pathItemObject}: any) => (
   <div className="sticky top-0">
     <div>
       <Header adminContext={adminContext} />
@@ -74,7 +74,7 @@ const SPLayout = React.memo(({MainDisplay, adminContext, menuContext, useGlobalP
       </Drawer>
     </div>
 
-    <MainDisplay />
+    {children}
   </div>
 ))
 

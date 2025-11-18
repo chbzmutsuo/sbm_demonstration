@@ -56,17 +56,17 @@ export default async function Page(props) {
                         },
                         {
                           label: `走行距離計`,
-                          cellValue: NumHandler.WithUnit(sokoKyoriInPeriod, 'km', 2),
+                          cellValue: NumHandler.WithUnit(sokoKyoriInPeriod, 'km', 1),
                           style: {textAlign: `right`},
                         },
                         {
                           label: `平均燃費`,
-                          cellValue: NumHandler.WithUnit(heikinNempiInPeriod, 'km/L', 2),
+                          cellValue: NumHandler.WithUnit(heikinNempiInPeriod, 'km/L', 1),
                           style: {textAlign: `right`},
                         },
                         {
                           label: `総給油量`,
-                          cellValue: NumHandler.WithUnit(sokyuyuRyoInPeriod, 'L', 2),
+                          cellValue: NumHandler.WithUnit(sokyuyuRyoInPeriod, 'L', 1),
                           style: {textAlign: `right`},
                         },
 

@@ -42,6 +42,7 @@ latest.dump
 **dump
 .vercelignore
 
+src/app/(excluded)/**/*
 
 
 #ignoreを選択

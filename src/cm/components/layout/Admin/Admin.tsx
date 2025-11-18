@@ -47,7 +47,7 @@ const Admin = React.memo((props: adminProps) => {
     <div>
       <MetaData pathItemObject={adminContext.pathItemObject} AppName={AppName} />
       <AdminLayout adminContext={adminContext} menuContext={menuContext} useGlobalProps={useGlobalProps}>
-        <div className={` max-w-screen overflow-x-auto overflow-y-hidden`}>{children}</div>
+        <div>{children}</div>
       </AdminLayout>
     </div>
   )

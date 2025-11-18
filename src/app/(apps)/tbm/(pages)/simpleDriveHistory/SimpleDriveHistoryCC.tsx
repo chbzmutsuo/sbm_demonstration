@@ -63,10 +63,8 @@ export default function SimpleDriveHistoryCC({tbmBase, driveHistory, query, wher
     })
   }
 
-  const selectedDriver = driveHistory.length > 0 ? driveHistory[0]?.User?.name : null
+  const selectedDriver = latestFormData.driverId ? tbmBase?.User?.find(user => user.id === latestFormData.driverId)?.name : null
   const selectedMonth = query.month
-
-
 
   const componentRef = useRef(null)
   const handlePrint = useReactToPrint({
@@ -122,12 +120,19 @@ export default function SimpleDriveHistoryCC({tbmBase, driveHistory, query, wher
                 {driveHistory.length > 0 ? (
                   CsvTable({
                     records: driveHistory.map(data => {
+                      const approved = data.approved
                       return {
                         csvTableRow: [
                           {label: '日付', cellValue: formatDate(data.date, 'YYYY/MM/DD(ddd)')},
                           {label: '担当ドライバ', cellValue: data.User?.name},
                           {label: '便名', cellValue: data.TbmRouteGroup?.name},
                           {label: '車両番号', cellValue: data.TbmVehicle?.vehicleNumber},
+                          {
+                            label: '承認',
+                            cellValue: approved ? '承認' : '未承認',
+                            style: {color: approved ? 'green' : 'red'},
+                            thStyle: {color: ''},
+                          },
                         ],
                       }
                     }),

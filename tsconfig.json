@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -26,29 +22,15 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@app/*": [
-        "src/app/*"
-      ],
-      "@cm/*": [
-        "src/cm/*"
-      ],
-      "@shadcn/*": [
-        "src/cm/shadcn/*"
-      ]
+      "@app/*": ["src/app/*"],
+      "@cm/*": ["src/cm/*"],
+      "@shadcn/*": ["src/cm/shadcn/*"]
     },
     "strictNullChecks": true
   },
-  "include": [
-    "next-env.d.ts",
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    ".next/types/**/*.ts",
-    "next.config.ts",
-    "src/**/*"
-  ],
+  "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx", ".next/types/**/*.ts", "next.config.ts", "src/**/*"],
   "exclude": [
     "node_modules",
-    "src/app/(excluded)/**/*",
     "**/*.dump",
     "public/**/*",
     "scripts/**/*",

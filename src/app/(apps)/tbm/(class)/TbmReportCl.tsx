@@ -9,8 +9,11 @@ export class TbmReportCl {
   constructor(private readonly tbmBaseId: string) {}
 
   static allowNonApprovedSchedule = false
-
   static reportCols = {
     createUnkoMeisaiRow,
+  }
+
+  static getKukankYori = (start: number, end: number) => {
+    return start > 0 && end > 0 ? end - start : null
   }
 }

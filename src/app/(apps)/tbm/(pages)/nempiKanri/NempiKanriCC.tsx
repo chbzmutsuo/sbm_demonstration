@@ -8,6 +8,7 @@ import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTabl
 import {KeyValue} from '@cm/components/styles/common-components/ParameterCard'
 import EmptyPlaceholder from '@cm/components/utils/loader/EmptyPlaceHolder'
 import AutoGridContainer from '@cm/components/utils/AutoGridContainer'
+import {TbmReportCl} from '@app/(apps)/tbm/(class)/TbmReportCl'
 
 export default function NempiKanriCC({vehicleList, nenpiKanriDataListByCar, lastRefuelHistoryByCar}) {
   return (
@@ -75,19 +76,19 @@ export default function NempiKanriCC({vehicleList, nenpiKanriDataListByCar, last
                       records: (vehicle.TbmRefuelHistory ?? []).map((current, i) => {
                         const prev = vehicle.TbmRefuelHistory[i - 1] ?? prevRefuelHistory[0]
 
-                        const kukanKyori = (current.odometer ?? 0) - (prev?.odometer ?? 0)
+                        const kukanKyori = TbmReportCl.getKukankYori(prev?.odometer ?? 0, current.odometer ?? 0)
 
                         const kyuyuryo = current.amount
-                        const nempi = kukanKyori / kyuyuryo
+                        const nempi = kukanKyori && kyuyuryo ? kukanKyori / kyuyuryo : null
 
                         return {
                           csvTableRow: [
                             //
                             {label: '日付', cellValue: formatDate(current.date, 'short')},
                             {label: '給油時走行距離', cellValue: current.odometer},
-                            {label: '区間距離', cellValue: kukanKyori},
+                            {label: '区間距離', cellValue: kukanKyori ?? '-'},
                             {label: '給油量', cellValue: kyuyuryo},
-                            {label: '燃費', cellValue: NumHandler.round(nempi, 1)},
+                            {label: '燃費', cellValue: nempi ? NumHandler.round(nempi) : '-'},
                           ],
                         }
                       }),

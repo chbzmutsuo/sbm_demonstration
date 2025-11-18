@@ -8,6 +8,7 @@ export const tbmCustomerColBuilder = (props: columnGetterType) => {
   return new Fields([
     {id: 'code', label: 'コード'},
     {id: 'name', label: '名称', form: {...defaultRegister}},
+    {id: 'kana', label: '読み仮名', form: {}},
     {id: 'address', label: '住所'},
     {id: 'phoneNumber', label: 'TEL'},
     {id: 'faxNumber', label: 'FAX'},

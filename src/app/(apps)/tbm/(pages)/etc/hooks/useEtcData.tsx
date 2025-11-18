@@ -2,7 +2,6 @@ import {useState} from 'react'
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {toastByResult} from '@cm/lib/ui/notifications'
 import {doTransaction, transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
-import {createUpdate} from '@cm/lib/methods/createUpdate'
 
 export const useEtcData = () => {
   const [etcRawData, setEtcRawData] = useState<EtcRecord[]>([])

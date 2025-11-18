@@ -25,8 +25,8 @@ export type unkoMeisaiKey =
   | `T_thirteenPercentOfPostalHighway`
   | `U_general`
   | `V_highwayExcess`
-  | `W_remarks`
-  | `X_orderNumber`
+// | `W_remarks`
+// | `X_orderNumber`
 
 export type unkoMeisaiKeyValue = {
   [key in unkoMeisaiKey]: tbmTableKeyValue
@@ -193,14 +193,14 @@ export const createUnkoMeisaiRow = (schedule: DriveScheduleData) => {
       label: 'V高速超過額',
       cellValue: 0,
     },
-    W_remarks: {
-      label: 'W備考',
-      cellValue: '要検討',
-    },
-    X_orderNumber: {
-      label: 'X発注書NO',
-      cellValue: '要検討',
-    },
+    // W_remarks: {
+    //   label: 'W備考',
+    //   cellValue: '要検討',
+    // },
+    // X_orderNumber: {
+    //   label: 'X発注書NO',
+    //   cellValue: '要検討',
+    // },
   }
 
   Object.keys(keyValue).forEach(key => {

@@ -7,7 +7,7 @@ import {tbmTableKeyValue} from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fet
 import {TbmCustomer} from '@prisma/client'
 import {unkoMeisaiKey} from '@app/(apps)/tbm/(class)/TbmReportCl/cols/createUnkoMeisaiRow'
 
-export type nioshuUriageRecordKey = `customerName` | `postalFee` | `generalFee` | `driverFee`
+export type nioshuUriageRecordKey = `kana` | `code` | `customerName` | `postalFee` | `generalFee` | `driverFee`
 
 export type NioshuUriageRecord = {
   customer: TbmCustomer | null
@@ -53,6 +53,16 @@ export const fetchNinushiUriageData = async ({whereQuery, tbmBaseId}) => {
     return {
       customer,
       keyValue: {
+        kana: {
+          label: 'かな',
+          cellValue: customer?.kana ?? '',
+          style: {fontSize: 12, minWidth: widthBase},
+        },
+        code: {
+          label: 'コード',
+          cellValue: customer?.code ?? '',
+          style: {fontSize: 12, minWidth: widthBase},
+        },
         customerName: {
           label: 'お得意先',
           cellValue: customer?.name ?? '',
@@ -77,11 +87,21 @@ export const fetchNinushiUriageData = async ({whereQuery, tbmBaseId}) => {
     }
   })
 
-  // 荷主名でソート
+  // かな > コードの昇順でソート
   NioshuUriageRecords.sort((a, b) => {
-    const nameA = a.customer?.name ?? ''
-    const nameB = b.customer?.name ?? ''
-    return nameA.localeCompare(nameB, 'ja')
+    const kanaA = a.customer?.kana ?? ''
+    const kanaB = b.customer?.kana ?? ''
+    const codeA = a.customer?.code ?? ''
+    const codeB = b.customer?.code ?? ''
+
+    // まずかなで比較
+    const kanaCompare = kanaA.localeCompare(kanaB, 'ja')
+    if (kanaCompare !== 0) {
+      return kanaCompare
+    }
+
+    // かなが同じ場合はコードで比較
+    return codeA.localeCompare(codeB, 'ja')
   })
 
   return {

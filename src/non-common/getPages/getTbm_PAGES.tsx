@@ -63,6 +63,7 @@ export const tbm_PAGES = (props: PageGetterType) => {
         {tabId: 'simpleDriveHistory', label: <IconLetter {...{Icon: FileText}}>簡易走行記録（PDF）</IconLetter>},
         {tabId: 'driver/kintai', label: <IconLetter {...{Icon: ListIcon}}>出退勤管理</IconLetter>},
         {tabId: 'seikyu', label: <IconLetter {...{Icon: ListIcon}}>請求書発行</IconLetter>},
+        {tabId: `testProgress`, label: 'テストレポート'},
       ],
     },
   ].map(item => ({

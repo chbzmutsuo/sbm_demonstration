@@ -1,7 +1,7 @@
 'use server'
 import {getNenpiDataByCar} from '@app/(apps)/tbm/(server-actions)/getNenpiDataByCar'
 import prisma from 'src/lib/prisma'
-import {TbmVehicle, User} from '@prisma/client'
+import { TbmVehicle, User} from '@prisma/client'
 import {TbmReportCl} from '@app/(apps)/tbm/(class)/TbmReportCl'
 
 export type carHistoryKey = `sokoKyoriInPeriod` | `heikinNempiInPeriod` | `sokyuyuRyoInPeriod` | `fuelCostInPeriod`
@@ -53,6 +53,7 @@ export const fetchRuisekiKyoriKichoData = async ({tbmBaseId, whereQuery, TbmBase
   })
   type UserWithCarHistory = {
     user: User & {TbmVehicle: TbmVehicle}
+
     allCars: {
       car: TbmVehicle
       sokoKyoriInPeriod: number

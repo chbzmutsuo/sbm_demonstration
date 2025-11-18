@@ -1929,6 +1929,7 @@ model TbmCustomer {
 
   code                          String?                         @unique
   name                          String                          @unique
+  kana                          String?
   address                       String?
   phoneNumber                   String?
   faxNumber                     String?
@@ -2214,6 +2215,7 @@ model TeamSynapseAnalysis {
   @@index([userId])
   @@index([createdAt])
 }
+
 
 
 
@@ -22659,6 +22661,20 @@ export const prismaDMMF = {
           "isList": false,
           "isRequired": true,
           "isUnique": true,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "kana",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": false,
+          "isUnique": false,
           "isId": false,
           "isReadOnly": false,
           "hasDefaultValue": false,

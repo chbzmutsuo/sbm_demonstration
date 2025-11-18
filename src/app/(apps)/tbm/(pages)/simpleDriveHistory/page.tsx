@@ -18,7 +18,6 @@ export default async function SimpleDriveHistoryPage(props) {
     query,
     defaultWhere: {
       month: formatDate(firstDayOfMonth),
-      // driverId: query.driverId || null,
     },
   })
 
@@ -40,6 +39,7 @@ export default async function SimpleDriveHistoryPage(props) {
       userId: query.driverId ? parseInt(query.driverId) : undefined,
       date: whereQuery,
       tbmBaseId: tbmBaseId,
+      // approved: TbmReportCl.allowNonApprovedSchedule,
     },
     include: {
       TbmRouteGroup: true,
