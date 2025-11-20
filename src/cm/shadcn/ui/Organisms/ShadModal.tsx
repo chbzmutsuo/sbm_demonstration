@@ -83,7 +83,13 @@ const ShadModal = React.memo((props: ShadModalProps) => {
             onOpenAutoFocus={onOpenAutoFocus}
             className={cn(`ModalContent rounded-lg bg-white p-1 shadow-md border border-gray-200 ${className}`)}
           >
-            <div>
+            <div
+              style={{
+                maxHeight: '75vh',
+                maxWidth: '95vw',
+                overflow: 'auto',
+              }}
+            >
               <div className="mx-auto w-full ">
                 <DrawerHeader>
                   <DrawerTitle>{title}</DrawerTitle>

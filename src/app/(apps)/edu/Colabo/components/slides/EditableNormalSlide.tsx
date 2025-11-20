@@ -1,16 +1,16 @@
 'use client'
 
-import {useState, useEffect, useCallback} from 'react'
-import {Button} from '@cm/components/styles/common-components/Button'
-import {Plus, Eye, Edit} from 'lucide-react'
+import { useState, useEffect, useCallback } from 'react'
+import { Button } from '@cm/components/styles/common-components/Button'
+import { Plus, Eye, Edit } from 'lucide-react'
 import EditableSlideRow from './EditableSlideRow'
-import {SlideBlock} from '@app/(apps)/edu/Colabo/(components)/SlideBlock'
-import {normalizeSlideContentData} from '../../lib/slide-migration'
-import type {SlideRow, SlideBlock as SlideBlockType} from '../../types/game-types'
-import {DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent} from '@dnd-kit/core'
-import {arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy} from '@dnd-kit/sortable'
-import {useSortable} from '@dnd-kit/sortable'
-import {CSS} from '@dnd-kit/utilities'
+import { SlideBlock } from '@app/(apps)/edu/Colabo/(components)/SlideBlock'
+import { normalizeSlideContentData } from '../../lib/slide-migration'
+import type { SlideRow, SlideBlock as SlideBlockType } from '../../types/game-types'
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core'
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 interface EditableNormalSlideProps {
   slide: any
@@ -44,13 +44,15 @@ function SortableRowItem({
   onAddBlock: (rowId: string, blockType: 'text' | 'image' | 'link') => void
   isPreviewMode: boolean
 }) {
-  const {attributes, listeners, setNodeRef, transform, transition, isDragging} = useSortable({id: row.id})
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: row.id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
   }
+
+
 
   // プレビューモード時は編集UIを非表示にして、SlidePreviewCardと同じ表示にする
   if (isPreviewMode) {
@@ -83,13 +85,13 @@ function SortableRowItem({
         onDeleteBlock={onDeleteBlock}
         onAddBlock={onAddBlock}
         isEditing={true}
-        dragHandleProps={{...attributes, ...listeners}}
+        dragHandleProps={{ ...attributes, ...listeners }}
       />
     </div>
   )
 }
 
-export default function EditableNormalSlide({slide, index, onUpdateSlide, onSelect}: EditableNormalSlideProps) {
+export default function EditableNormalSlide({ slide, index, onUpdateSlide, onSelect }: EditableNormalSlideProps) {
   // スライドコンテンツデータを正規化
   const normalizedContentData = normalizeSlideContentData(slide.contentData || {})
   const [rows, setRows] = useState<SlideRow[]>(normalizedContentData.rows || [])
@@ -118,7 +120,7 @@ export default function EditableNormalSlide({slide, index, onUpdateSlide, onSele
   // 行を更新
   const handleUpdateRow = useCallback(
     (rowId: string, updates: Partial<SlideRow>) => {
-      const newRows = rows.map(row => (row.id === rowId ? {...row, ...updates} : row))
+      const newRows = rows.map(row => (row.id === rowId ? { ...row, ...updates } : row))
       updateSlideContent(newRows)
     },
     [rows, updateSlideContent]
@@ -141,10 +143,16 @@ export default function EditableNormalSlide({slide, index, onUpdateSlide, onSele
   const handleAddRow = useCallback(
     (afterRowId: string) => {
       const afterIndex = rows.findIndex(row => row.id === afterRowId)
+      const initialBlock: SlideBlockType = {
+        id: `block_${Date.now()}`,
+        blockType: 'text',
+        content: 'テキストを入力',
+        sortOrder: 0,
+      }
       const newRow: SlideRow = {
         id: `row_${Date.now()}`,
         columns: 1,
-        blocks: [],
+        blocks: [initialBlock],
       }
       const newRows = [...rows]
       newRows.splice(afterIndex + 1, 0, newRow)
@@ -172,13 +180,13 @@ export default function EditableNormalSlide({slide, index, onUpdateSlide, onSele
       if (sourceRowIndex === -1) return
 
       const newRows = [...rows]
-      const sourceRow = {...newRows[sourceRowIndex]}
-      const block = {...sourceRow.blocks[sourceBlockIndex]}
+      const sourceRow = { ...newRows[sourceRowIndex] }
+      const block = { ...sourceRow.blocks[sourceBlockIndex] }
 
       if (direction === 'up') {
         // 上の行に移動
         if (sourceRowIndex > 0) {
-          const targetRow = {...newRows[sourceRowIndex - 1]}
+          const targetRow = { ...newRows[sourceRowIndex - 1] }
           sourceRow.blocks.splice(sourceBlockIndex, 1)
           targetRow.blocks.push(block)
           newRows[sourceRowIndex] = sourceRow
@@ -187,7 +195,7 @@ export default function EditableNormalSlide({slide, index, onUpdateSlide, onSele
       } else if (direction === 'down') {
         // 下の行に移動
         if (sourceRowIndex < rows.length - 1) {
-          const targetRow = {...newRows[sourceRowIndex + 1]}
+          const targetRow = { ...newRows[sourceRowIndex + 1] }
           sourceRow.blocks.splice(sourceBlockIndex, 1)
           targetRow.blocks.push(block)
           newRows[sourceRowIndex] = sourceRow
@@ -224,7 +232,7 @@ export default function EditableNormalSlide({slide, index, onUpdateSlide, onSele
     (blockId: string, updates: Partial<SlideBlockType>) => {
       const newRows = rows.map(row => ({
         ...row,
-        blocks: row.blocks.map(block => (block.id === blockId ? {...block, ...updates} : block)),
+        blocks: row.blocks.map(block => (block.id === blockId ? { ...block, ...updates } : block)),
       }))
       updateSlideContent(newRows)
     },
@@ -275,7 +283,7 @@ export default function EditableNormalSlide({slide, index, onUpdateSlide, onSele
   )
 
   const handleRowDragEnd = (event: DragEndEvent) => {
-    const {active, over} = event
+    const { active, over } = event
     if (!over || active.id === over.id) return
 
     const oldIndex = rows.findIndex(row => row.id === active.id)
@@ -323,7 +331,7 @@ export default function EditableNormalSlide({slide, index, onUpdateSlide, onSele
         {rows.length > 0 ? (
           isPreviewMode ? (
             // プレビューモード: 編集UIを非表示
-            <div className="space-y-4">
+            <div className="space-y-8">
               {rows.map((row, rowIndex) => (
                 <SortableRowItem
                   key={row.id}
@@ -345,7 +353,7 @@ export default function EditableNormalSlide({slide, index, onUpdateSlide, onSele
             // 編集モード: ドラッグ&ドロップ可能
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleRowDragEnd}>
               <SortableContext items={rows.map(r => r.id)} strategy={verticalListSortingStrategy}>
-                <div className="space-y-4">
+                <div className="space-y-8">
                   {rows.map((row, rowIndex) => (
                     <SortableRowItem
                       key={row.id}
@@ -373,10 +381,16 @@ export default function EditableNormalSlide({slide, index, onUpdateSlide, onSele
               <Button
                 onClick={e => {
                   e.stopPropagation()
+                  const initialBlock: SlideBlockType = {
+                    id: `block_${Date.now()}`,
+                    blockType: 'text',
+                    content: 'テキストを入力',
+                    sortOrder: 0,
+                  }
                   const newRow: SlideRow = {
                     id: `row_${Date.now()}`,
                     columns: 1,
-                    blocks: [],
+                    blocks: [initialBlock],
                   }
                   updateSlideContent([newRow])
                 }}
@@ -395,10 +409,16 @@ export default function EditableNormalSlide({slide, index, onUpdateSlide, onSele
             <Button
               onClick={e => {
                 e.stopPropagation()
+                const initialBlock: SlideBlockType = {
+                  id: `block_${Date.now()}`,
+                  blockType: 'text',
+                  content: 'テキストを入力',
+                  sortOrder: 0,
+                }
                 const newRow: SlideRow = {
                   id: `row_${Date.now()}`,
                   columns: 1,
-                  blocks: [],
+                  blocks: [initialBlock],
                 }
                 updateSlideContent([...rows, newRow])
               }}

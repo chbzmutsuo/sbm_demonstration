@@ -35,7 +35,7 @@ export default function CenterPreview({
     }
   }, [selectedSlideId])
 
-  const selectedSlide = slides.find(s => s.id === selectedSlideId) || null
+  // const selectedSlide = slides.find(s => s.id === selectedSlideId) || null
 
   return (
     <div ref={containerRef} className="bg-white overflow-y-auto">

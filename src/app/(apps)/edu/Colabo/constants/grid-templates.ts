@@ -30,15 +30,7 @@ export const GRID_TEMPLATES: GridTemplate[] = [
       {columns: 3}, // 2行目：3列
     ],
   },
-  {
-    id: 'grid-2-2',
-    name: '2列→2列',
-    icon: '⚏',
-    rows: [
-      {columns: 2}, // 1行目：2列
-      {columns: 2}, // 2行目：2列
-    ],
-  },
+
   {
     id: 'grid-2-1',
     name: '2列→1列',
@@ -108,4 +100,3 @@ export function createRowsFromTemplate(templateId: string): SlideRow[] {
 
   return result
 }
-

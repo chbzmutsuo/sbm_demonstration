@@ -53,11 +53,6 @@ export const fetchNinushiUriageData = async ({whereQuery, tbmBaseId}) => {
     return {
       customer,
       keyValue: {
-        kana: {
-          label: 'かな',
-          cellValue: customer?.kana ?? '',
-          style: {fontSize: 12, minWidth: widthBase},
-        },
         code: {
           label: 'コード',
           cellValue: customer?.code ?? '',
@@ -66,6 +61,11 @@ export const fetchNinushiUriageData = async ({whereQuery, tbmBaseId}) => {
         customerName: {
           label: 'お得意先',
           cellValue: customer?.name ?? '',
+          style: {fontSize: 12, minWidth: widthBase},
+        },
+        kana: {
+          label: 'かな',
+          cellValue: customer?.kana ?? '',
           style: {fontSize: 12, minWidth: widthBase},
         },
         postalFee: {

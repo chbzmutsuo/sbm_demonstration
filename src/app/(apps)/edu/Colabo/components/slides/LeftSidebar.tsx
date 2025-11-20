@@ -1,25 +1,25 @@
 'use client'
 
-import {DndContext, closestCenter, PointerSensor, useSensor, useSensors} from '@dnd-kit/core'
-import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable'
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import SlideThumbnail from './SlideThumbnail'
 import AutoGridContainer from '@cm/components/utils/AutoGridContainer'
-import {GRID_TEMPLATES} from '../../constants/grid-templates'
+import { GRID_TEMPLATES } from '../../constants/grid-templates'
 
 const templates = [
   {
     type: 'normal',
     icon: '📝',
     label: 'ノーマル',
-    modeList: [{value: 'veiw', label: '表示', default: true}],
+    modeList: [{ value: 'veiw', label: '表示', default: true }],
   },
   {
     type: 'choice',
     icon: '☑️',
     label: '選択クイズ',
     modeList: [
-      {value: 'answer', label: '回答', default: true},
-      {value: 'result', label: '結果'},
+      { value: 'answer', label: '回答', default: true },
+      { value: 'result', label: '結果' },
     ],
   },
   {
@@ -27,8 +27,8 @@ const templates = [
     icon: '✍️',
     label: '自由記述',
     modeList: [
-      {value: 'answer', label: '回答', default: true},
-      {value: 'result', label: '結果'},
+      { value: 'answer', label: '回答', default: true },
+      { value: 'result', label: '結果' },
     ],
   },
   {
@@ -36,8 +36,8 @@ const templates = [
     icon: '🧠',
     label: '心理アンケート',
     modeList: [
-      {value: 'answer', label: '回答', default: true},
-      {value: 'result', label: '結果'},
+      { value: 'answer', label: '回答', default: true },
+      { value: 'result', label: '結果' },
     ],
   },
   {
@@ -45,8 +45,8 @@ const templates = [
     icon: '📊',
     label: 'まとめ',
     modeList: [
-      {value: 'answer', label: '回答', default: true},
-      {value: 'result', label: '結果'},
+      { value: 'answer', label: '回答', default: true },
+      { value: 'result', label: '結果' },
     ],
   },
 ]
@@ -59,7 +59,7 @@ interface LeftSidebarProps {
   onAddSlide: (templateType: string, gridTemplateId?: string) => void
 }
 
-export default function LeftSidebar({slides, selectedSlideId, onSelectSlide, onReorderSlides, onAddSlide}: LeftSidebarProps) {
+export default function LeftSidebar({ slides, selectedSlideId, onSelectSlide, onReorderSlides, onAddSlide }: LeftSidebarProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -69,7 +69,7 @@ export default function LeftSidebar({slides, selectedSlideId, onSelectSlide, onR
   )
 
   const handleDragEnd = (event: any) => {
-    const {active, over} = event
+    const { active, over } = event
     if (!over || active.id === over.id) return
 
     const oldIndex = slides.findIndex(s => s.id === active.id)
@@ -84,7 +84,7 @@ export default function LeftSidebar({slides, selectedSlideId, onSelectSlide, onR
     <div className="w-64 bg-gray-50 border-r border-gray-200 flex flex-col">
       <div className="p-2 border-b border-gray-200">
         <h3 className="font-semibold text-sm text-gray-700 mb-3">スライドを追加</h3>
-        <AutoGridContainer {...{maxCols: {md: 3}}} className="gap-2">
+        <AutoGridContainer {...{ maxCols: { md: 3 } }} className="gap-2">
           {templates.map(template => (
             <button
               key={template.type}
@@ -101,7 +101,7 @@ export default function LeftSidebar({slides, selectedSlideId, onSelectSlide, onR
         {templates.some(t => t.type === 'normal') && (
           <div className="mt-4 pt-4 border-t border-gray-200">
             <h4 className="font-semibold text-xs text-gray-600 mb-2">グリッドレイアウト</h4>
-            <AutoGridContainer {...{maxCols: {md: 2}}} className="gap-2">
+            <AutoGridContainer {...{ maxCols: { md: 4 } }} className="gap-1">
               {GRID_TEMPLATES.map(template => (
                 <button
                   key={template.id}

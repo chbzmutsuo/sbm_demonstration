@@ -41,11 +41,11 @@ export default function HaishaProgressTable({routeGroupStats, routeGroupTotals, 
                     // 運行なしの場合、運行完了数セルを赤
                     finishedBgColor = '#ef4444'
                     // 運行入力ができていないものは分母に入れないため、締数・承認数の色付けはしない
-                  } else if (stat.confirmedCount === 0) {
-                    // 締忘れの場合、締数セルをオレンジ（運行完了数 > 0 の場合のみ）
+                  } else if (stat.finishedCount > stat.confirmedCount) {
+                    // 締め忘れの場合、締数セルをオレンジ（運行数より締め数が少ない）
                     confirmedBgColor = '#fb923c'
-                  } else if (stat.approvedCount === 0) {
-                    // 承認忘れの場合、承認数セルを黄色（締数 > 0 の場合のみ）
+                  } else if (stat.confirmedCount > stat.approvedCount) {
+                    // 承認忘れの場合、承認数セルを黄色（締め数より承認数が少ない）
                     approvedBgColor = '#eab308'
                   }
 

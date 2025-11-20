@@ -1,17 +1,1 @@
-{
- "framework": "nextjs",
- "installCommand": "npm install",
- "devCommand": "next dev",
- "buildCommand": "npx prisma generate && next build --no-lint",
- "cleanUrls": true,
- "regions": [
-  "sin1"
- ],
- "trailingSlash": false,
- "crons": [],
- "build": {
-  "env": {
-   "NEXT_TELEMETRY_DISABLED": "1"
-  }
- }
-}
+{"framework":"nextjs","installCommand":"npm install","devCommand":"next dev","buildCommand":"npx prisma generate && next build --no-lint","cleanUrls":true,"regions":["sin1"],"trailingSlash":false,"crons":[{"path":"/sohken/api/cron/refreshGoogleCalendar","schedule":"0 */3 * * *"},{"path":"/stock/api/cron/4_dailyBatchAll","schedule":"0 22 * * *"}],"build":{"env":{"NEXT_TELEMETRY_DISABLED":"1"}}}

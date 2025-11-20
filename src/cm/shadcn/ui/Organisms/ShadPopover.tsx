@@ -1,13 +1,13 @@
 'use client'
 
-import {Popover, PopoverContent, PopoverTrigger} from '@shadcn/ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@shadcn/ui/popover'
 
-import {PopoverPortal} from '@radix-ui/react-popover'
+import { PopoverPortal } from '@radix-ui/react-popover'
 
 import React from 'react'
-import {JSX} from 'react'
-import {useIsMobile} from '@shadcn/hooks/use-mobile'
-import {useJotaiByKey} from '@cm/hooks/useJotai'
+import { JSX } from 'react'
+import { useIsMobile } from '@shadcn/hooks/use-mobile'
+import { useJotaiByKey } from '@cm/hooks/useJotai'
 
 type ShadPopoverProps = {
   Trigger?: JSX.Element | string
@@ -50,6 +50,7 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
   const mobile = useIsMobile()
   const [isOpen, setIsOpen] = React.useState(false)
 
+
   // 各PopoverインスタンスにユニークなIDを生成
   const instanceId = React.useMemo(() => `popover_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`, [])
 
@@ -64,6 +65,8 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
   const headerClass = title || description ? '' : 'hidden'
   const footerClass = footer ? '' : 'hidden'
 
+
+
   // アンマウント時にインスタンスIDを削除
   React.useEffect(() => {
     return () => {
@@ -76,6 +79,8 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
       }
     }
   }, [popoverId, instanceId, setOpenInstances])
+
+
 
   const handleOpenChange = React.useCallback(
     (newOpen: boolean) => {
@@ -141,6 +146,8 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
   const handleTriggerClick = React.useCallback(
     (e: React.MouseEvent) => {
       if (mode === 'hover') return
+
+
       e.preventDefault()
       e.stopPropagation()
 
@@ -161,6 +168,9 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
     [closeOnOutsideClick]
   )
 
+
+
+
   return (
     <div>
       <Popover open={openState} onOpenChange={handleOpenChange}>
@@ -170,7 +180,7 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
               onClick={handleTriggerClick}
-              style={{cursor: 'pointer'}}
+              style={{ cursor: 'pointer' }}
             >
               {React.isValidElement(Trigger) ? Trigger : <span>{Trigger}</span>}
             </div>

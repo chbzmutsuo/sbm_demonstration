@@ -1,8 +1,8 @@
 'use client'
 
-import {useState, useEffect, useRef} from 'react'
-import {T_LINK} from '@cm/components/styles/common-components/links'
-import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
+import { useState, useEffect, useRef } from 'react'
+import { T_LINK } from '@cm/components/styles/common-components/links'
+import { cn } from '@cm/shadcn/lib/utils'
 
 export const SlideBlock = ({
   block,
@@ -117,13 +117,29 @@ export const SlideBlock = ({
     fontSize: fontSize ? `${fontSize}px` : undefined,
   })
 
-  const containerClass = `${getAlignmentClass()} ${getVerticalAlignClass()}  p-2`
+  const containerClass = `${getAlignmentClass()} ${getVerticalAlignClass()} p-0.5  `
+
+
+
+  const TextDisplay = ({ text }) => {
+    return <div>
+      {String(text).split('\n').map((line) => {
+        return <div>{line}</div>
+      })}
+    </div>
+
+  }
+
 
   if (blockType === 'text') {
+
     return (
+
       <div className={containerClass} style={getTextStyle()}>
         {isPreview ? (
-          <MarkDownDisplay>{content}</MarkDownDisplay>
+          <div className={containerClass}>
+            <TextDisplay text={content} />
+          </div>
         ) : isEditing ? (
           <div className="w-full ">
             <textarea
@@ -132,21 +148,21 @@ export const SlideBlock = ({
               onChange={e => setEditValue(e.target.value)}
               onBlur={handleSave}
               onKeyDown={handleKeyDown}
-              className="w-full min-h-[60px] border-2 border-blue-500 rounded p-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+              className="w-full min-h-[60px] border-2 border-blue-500 rounded p-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
               style={getTextStyle()}
               rows={4}
             />
           </div>
         ) : (
-          <div className="w-full relative hover:bg-blue-500/10 cursor-pointer">
-            <div className=" p-2    hover:border-blue-400 transition-colors" onClick={handleStartEditing}>
+          <div className="w-full  relative hover:bg-blue-500/10 cursor-pointer">
+            <div className={cn(containerClass, " hover:border-blue-400 transition-colors")} onClick={handleStartEditing}>
               {content ? (
-                <MarkDownDisplay>{content}</MarkDownDisplay>
+                <TextDisplay text={content} />
               ) : (
                 <span className="text-gray-400">テキストを入力してください</span>
               )}
             </div>
-            <div className="text-[10px] text-gray-500 absolute -bottom-3 right-0">テキストブロック</div>
+            {/* <div className="text-[10px] text-gray-500 absolute -bottom-3 right-0">テキストブロック</div> */}
           </div>
         )}
       </div>
@@ -164,7 +180,7 @@ export const SlideBlock = ({
               <div className="border-2 border-dashed border-gray-300 rounded p-8 text-center text-gray-400">
                 画像URLを設定してください
               </div>
-              <div className="text-[10px] text-gray-500 absolute -bottom-3 right-0">画像ブロック</div>
+              {/* <div className="text-[10px] text-gray-500 absolute -bottom-3 right-0">画像ブロック</div> */}
             </div>
           )
         )}
@@ -173,7 +189,7 @@ export const SlideBlock = ({
   }
 
   if (blockType === 'link') {
-    const {color, backgroundColor, fontWeight, textDecoration} = getTextStyle()
+    const { color, backgroundColor, fontWeight, textDecoration } = getTextStyle()
     const noColorStyle = color === '#000000' && backgroundColor === '#ffffff'
     return (
       <div className={containerClass}>
@@ -221,7 +237,7 @@ export const SlideBlock = ({
               >
                 <T_LINK href={linkUrl}>リンクURLを設定してください</T_LINK>
               </div>
-              <div className="text-[10px] text-gray-500 absolute -bottom-3 right-0">リンクブロック</div>
+              {/* <div className="text-[10px] text-gray-500 absolute -bottom-3 right-0">リンクブロック</div> */}
             </div>
           )
         )}
@@ -236,7 +252,7 @@ export const SlideBlock = ({
           {!isPreview && <div className="text-sm text-gray-600 mb-1">クイズ問題</div>}
           <div className={isPreview ? 'text-xl font-bold' : 'border rounded p-3 bg-blue-50'} style={getTextStyle()}>
             {content ? (
-              <MarkDownDisplay>{content}</MarkDownDisplay>
+              <TextDisplay text={content} />
             ) : (
               !isPreview && <span className="text-gray-400">問題文を入力してください</span>
             )}
@@ -263,7 +279,7 @@ export const SlideBlock = ({
             style={getTextStyle()}
           >
             {content ? (
-              <MarkDownDisplay>{content}</MarkDownDisplay>
+              <TextDisplay text={content} />
             ) : (
               !isPreview && <span className="text-gray-400">選択肢を入力してください</span>
             )}
