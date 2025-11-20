@@ -1,9 +1,9 @@
 'use client'
 
-import {SlideBlock} from '@app/(apps)/edu/Colabo/(components)/SlideBlock'
-import {PSYCHO_QUESTIONS} from '../../lib/psycho-questions'
-import {Trash} from 'lucide-react'
-import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import { SlideBlock } from '@app/(apps)/edu/Colabo/(components)/SlideBlock'
+import { PSYCHO_QUESTIONS } from '../../lib/psycho-questions'
+import { Trash } from 'lucide-react'
+import { R_Stack } from '@cm/components/styles/common-components/common-components'
 
 interface SlidePreviewCardProps {
   slide: any
@@ -13,7 +13,7 @@ interface SlidePreviewCardProps {
   handleDeleteSlide: (slideId: number) => void
 }
 
-export default function SlidePreviewCard({slide, index, isSelected, onSelect, handleDeleteSlide}: SlidePreviewCardProps) {
+export default function SlidePreviewCard({ slide, index, isSelected, onSelect, handleDeleteSlide }: SlidePreviewCardProps) {
   const getTemplateLabel = (type: string) => {
     switch (type) {
       case 'normal':
@@ -47,14 +47,7 @@ export default function SlidePreviewCard({slide, index, isSelected, onSelect, ha
         </div>
         {isSelected && <span className="text-blue-600 text-sm font-medium">選択中</span>}
 
-        <Trash
-          onClick={async () => {
-            if (confirm('このスライドを削除してもよろしいですか？')) {
-              handleDeleteSlide(slide.id)
-            }
-          }}
-          className="text-white p-0.5 bg-red-500 rounded-full"
-        ></Trash>
+
       </div>
 
       {/* スライド内容 */}
@@ -112,9 +105,8 @@ export default function SlidePreviewCard({slide, index, isSelected, onSelect, ha
                 {slide.contentData.choices.map((choice: any, choiceIndex: number) => (
                   <R_Stack
                     key={choice.id}
-                    className={`p-1.5 rounded-lg border-2 ${
-                      choice.isCorrect ? 'border-green-500 bg-green-50' : 'border-gray-300 bg-white'
-                    }`}
+                    className={`p-1.5 rounded-lg border-2 ${choice.isCorrect ? 'border-green-500 bg-green-50' : 'border-gray-300 bg-white'
+                      }`}
                   >
                     <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">
                       {choiceIndex + 1}

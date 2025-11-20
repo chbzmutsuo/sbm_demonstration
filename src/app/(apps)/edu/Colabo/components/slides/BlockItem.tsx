@@ -1,11 +1,11 @@
 'use client'
 
-import {Circle, R_Stack} from '@cm/components/styles/common-components/common-components'
-import {Button} from '@cm/components/styles/common-components/Button'
-import {cn} from '@cm/shadcn/lib/utils'
-import {Card} from '@cm/shadcn/ui/card'
-import {ArrowDown, ArrowUp} from 'lucide-react'
-import {useState} from 'react'
+import { Circle, R_Stack } from '@cm/components/styles/common-components/common-components'
+import { Button } from '@cm/components/styles/common-components/Button'
+import { cn } from '@cm/shadcn/lib/utils'
+import { Card } from '@cm/shadcn/ui/card'
+import { ArrowDown, ArrowUp } from 'lucide-react'
+import { useState } from 'react'
 
 interface BlockItemProps {
   block: any
@@ -58,7 +58,7 @@ export default function BlockItem({
   })
 
   const handleChange = (field: string, value: any) => {
-    setFormData(prev => ({...prev, [field]: value}))
+    setFormData(prev => ({ ...prev, [field]: value }))
     setisDirty(true)
   }
 

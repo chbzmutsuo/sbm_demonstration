@@ -4,7 +4,7 @@
  */
 
 // Socket.ioの接続パス
-export const SOCKET_PATH = '/api/colabo-socket/'
+export const SOCKET_PATH = '/socket.io'
 
 // Socket.io接続URL（環境に応じて自動設定）
 export const SOCKET_URL =
@@ -13,7 +13,7 @@ export const SOCKET_URL =
 // Socket.io接続設定
 export const SOCKET_CONFIG = {
   path: SOCKET_PATH,
-  transports: ['polling', 'websocket'], // pollingを先に試す
+  transports: ['websocket', 'polling'], // WebSocketを優先
   reconnection: true,
   reconnectionAttempts: 10, // 再接続試行回数を増やす
   reconnectionDelay: 2000,

@@ -9,7 +9,7 @@ import type {SlideContentData, SlideRow, SlideBlock} from '../types/game-types'
  * 既存のblocks配列をrows構造に変換
  * 既存データは1行・1列として扱う
  */
-export function migrateBlocksToRows(contentData: any): SlideContentData {
+export const migrateBlocksToRows = (contentData: any): SlideContentData => {
   // 既にrowsが存在する場合は、columnsが欠落している行を修正して返す
   if (contentData.rows && Array.isArray(contentData.rows)) {
     // columnsが欠落している行があれば、デフォルト値1を設定
@@ -23,17 +23,11 @@ export function migrateBlocksToRows(contentData: any): SlideContentData {
     }
   }
 
-  // blocksが存在しない場合は空のrowsを作成
+  // blocksが存在しない場合は空のrowsを返す
   if (!contentData.blocks || !Array.isArray(contentData.blocks) || contentData.blocks.length === 0) {
     return {
       ...contentData,
-      rows: [
-        {
-          id: `row_${Date.now()}`,
-          columns: 1,
-          blocks: [],
-        },
-      ],
+      rows: [],
     }
   }
 
@@ -61,5 +55,3 @@ export function migrateBlocksToRows(contentData: any): SlideContentData {
 export function normalizeSlideContentData(contentData: any): SlideContentData {
   return migrateBlocksToRows(contentData)
 }
-
-

@@ -1,16 +1,13 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Button } from '@cm/components/styles/common-components/Button'
 import { Plus, Eye, Edit } from 'lucide-react'
 import EditableSlideRow from './EditableSlideRow'
 import { SlideBlock } from '@app/(apps)/edu/Colabo/(components)/SlideBlock'
 import { normalizeSlideContentData } from '../../lib/slide-migration'
 import type { SlideRow, SlideBlock as SlideBlockType } from '../../types/game-types'
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core'
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
-import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
+import { arrayMove } from '@dnd-kit/sortable'
 
 interface EditableNormalSlideProps {
   slide: any
@@ -19,7 +16,7 @@ interface EditableNormalSlideProps {
   onSelect: () => void
 }
 
-function SortableRowItem({
+function RowItem({
   row,
   rowIndex,
   totalRows,
@@ -31,6 +28,7 @@ function SortableRowItem({
   onDeleteBlock,
   onAddBlock,
   isPreviewMode,
+  lastMovedBlockId,
 }: {
   row: SlideRow
   rowIndex: number
@@ -38,22 +36,13 @@ function SortableRowItem({
   onUpdateRow: (rowId: string, updates: Partial<SlideRow>) => void
   onDeleteRow: (rowId: string) => void
   onAddRow: (afterRowId: string) => void
-  onMoveBlock: (blockId: string, direction: 'up' | 'down' | 'left' | 'right') => void
+  onMoveBlock: (blockId: string, direction: 'up' | 'down' | 'left' | 'right' | 'up-merge' | 'up-new' | 'down-merge' | 'down-new') => void
   onUpdateBlock: (blockId: string, updates: Partial<SlideBlockType>) => void
   onDeleteBlock: (blockId: string) => void
   onAddBlock: (rowId: string, blockType: 'text' | 'image' | 'link') => void
   isPreviewMode: boolean
+  lastMovedBlockId?: string | null
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: row.id })
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  }
-
-
-
   // プレビューモード時は編集UIを非表示にして、SlidePreviewCardと同じ表示にする
   if (isPreviewMode) {
     return (
@@ -70,24 +59,22 @@ function SortableRowItem({
     )
   }
 
-  // 編集モード時はドラッグ&ドロップ可能
+  // 編集モード時
   return (
-    <div ref={setNodeRef} style={style}>
-      <EditableSlideRow
-        row={row}
-        rowIndex={rowIndex}
-        totalRows={totalRows}
-        onUpdateRow={onUpdateRow}
-        onDeleteRow={onDeleteRow}
-        onAddRow={onAddRow}
-        onMoveBlock={onMoveBlock}
-        onUpdateBlock={onUpdateBlock}
-        onDeleteBlock={onDeleteBlock}
-        onAddBlock={onAddBlock}
-        isEditing={true}
-        dragHandleProps={{ ...attributes, ...listeners }}
-      />
-    </div>
+    <EditableSlideRow
+      row={row}
+      rowIndex={rowIndex}
+      totalRows={totalRows}
+      onUpdateRow={onUpdateRow}
+      onDeleteRow={onDeleteRow}
+      onAddRow={onAddRow}
+      onMoveBlock={onMoveBlock}
+      onUpdateBlock={onUpdateBlock}
+      onDeleteBlock={onDeleteBlock}
+      onAddBlock={onAddBlock}
+      isEditing={true}
+      lastMovedBlockId={lastMovedBlockId}
+    />
   )
 }
 
@@ -96,21 +83,44 @@ export default function EditableNormalSlide({ slide, index, onUpdateSlide, onSel
   const normalizedContentData = normalizeSlideContentData(slide.contentData || {})
   const [rows, setRows] = useState<SlideRow[]>(normalizedContentData.rows || [])
   const [isPreviewMode, setIsPreviewMode] = useState(false)
+  const [lastMovedBlockId, setLastMovedBlockId] = useState<string | null>(null)
 
-  // スライドのcontentDataが変更されたらrowsを更新
+  // 自分が更新したかどうかを追跡するref
+  const isInternalUpdateRef = useRef(false)
+
+  // スライドのcontentDataが変更されたらrowsを更新（外部からの変更のみ）
   useEffect(() => {
+    // 自分が更新した場合はスキップ
+    if (isInternalUpdateRef.current) {
+      isInternalUpdateRef.current = false
+      return
+    }
+
     const normalized = normalizeSlideContentData(slide.contentData || {})
-    setRows(normalized.rows || [])
+    const newRows = normalized.rows || []
+    setRows(newRows)
   }, [slide.contentData])
 
   // スライドを更新する関数
   const updateSlideContent = useCallback(
     (newRows: SlideRow[]) => {
-      setRows(newRows)
+      // データ整合性チェック
+      const validatedRows = newRows.map(row => ({
+        ...row,
+        columns: Math.max(1, row.columns || 1), // 最低1列は確保
+        blocks: row.blocks.map((block, index) => ({
+          ...block,
+          sortOrder: index, // sortOrderを正規化
+        })),
+      }))
+
+      // 自分が更新することをマーク
+      isInternalUpdateRef.current = true
+      setRows(validatedRows)
       onUpdateSlide(slide.id, {
         contentData: {
           ...slide.contentData,
-          rows: newRows,
+          rows: validatedRows,
         },
       })
     },
@@ -163,7 +173,7 @@ export default function EditableNormalSlide({ slide, index, onUpdateSlide, onSel
 
   // ブロックを移動（行間移動を含む）
   const handleMoveBlock = useCallback(
-    (blockId: string, direction: 'up' | 'down' | 'left' | 'right') => {
+    (blockId: string, direction: 'up' | 'down' | 'left' | 'right' | 'up-merge' | 'up-new' | 'down-merge' | 'down-new') => {
       // ブロックがどの行にあるか見つける
       let sourceRowIndex = -1
       let sourceBlockIndex = -1
@@ -183,36 +193,97 @@ export default function EditableNormalSlide({ slide, index, onUpdateSlide, onSel
       const sourceRow = { ...newRows[sourceRowIndex] }
       const block = { ...sourceRow.blocks[sourceBlockIndex] }
 
-      if (direction === 'up') {
-        // 上の行に移動
-        if (sourceRowIndex > 0) {
-          const targetRow = { ...newRows[sourceRowIndex - 1] }
-          sourceRow.blocks.splice(sourceBlockIndex, 1)
-          targetRow.blocks.push(block)
-          newRows[sourceRowIndex] = sourceRow
-          newRows[sourceRowIndex - 1] = targetRow
-        }
-      } else if (direction === 'down') {
-        // 下の行に移動
-        if (sourceRowIndex < rows.length - 1) {
-          const targetRow = { ...newRows[sourceRowIndex + 1] }
-          sourceRow.blocks.splice(sourceBlockIndex, 1)
-          targetRow.blocks.push(block)
-          newRows[sourceRowIndex] = sourceRow
-          newRows[sourceRowIndex + 1] = targetRow
-        }
-      } else if (direction === 'left') {
-        // 同じ行内で左に移動
+      if (direction === 'left') {
+        // 左：左のブロックと入れ替え
         if (sourceBlockIndex > 0) {
           sourceRow.blocks = arrayMove(sourceRow.blocks, sourceBlockIndex, sourceBlockIndex - 1)
           newRows[sourceRowIndex] = sourceRow
         }
       } else if (direction === 'right') {
-        // 同じ行内で右に移動
+        // 右：右のブロックと入れ替え
         if (sourceBlockIndex < sourceRow.blocks.length - 1) {
           sourceRow.blocks = arrayMove(sourceRow.blocks, sourceBlockIndex, sourceBlockIndex + 1)
           newRows[sourceRowIndex] = sourceRow
         }
+      } else if (direction === 'down-merge') {
+        // 下にマージ
+        if (sourceRowIndex < rows.length - 1) {
+          const targetRow = { ...newRows[sourceRowIndex + 1] }
+          targetRow.blocks.push(block)
+          // 下の行の列数を自動調整
+          if (targetRow.blocks.length > targetRow.columns) {
+            targetRow.columns = targetRow.blocks.length
+          }
+
+          // 元の行を削除して、下の行を更新
+          newRows.splice(sourceRowIndex, 1)
+          newRows[sourceRowIndex] = targetRow
+        } else {
+          // 下の行が存在しない場合：新規行を作成
+          const newRow: SlideRow = {
+            id: `row_${Date.now()}`,
+            columns: 1,
+            blocks: [block],
+          }
+
+          // 元の行を削除して、新規行を追加
+          newRows.splice(sourceRowIndex, 1)
+          newRows.push(newRow)
+        }
+      } else if (direction === 'down-new') {
+        // 下に新規行を作成
+        sourceRow.blocks.splice(sourceBlockIndex, 1)
+
+        // 元の行の列数を1減らす（最低1列は確保）
+        sourceRow.columns = Math.max(1, sourceRow.columns - 1)
+
+        const newRow: SlideRow = {
+          id: `row_${Date.now()}`,
+          columns: 1,
+          blocks: [block],
+        }
+
+        newRows[sourceRowIndex] = sourceRow
+        newRows.splice(sourceRowIndex + 1, 0, newRow)
+      } else if (direction === 'up-merge') {
+        // 上にマージ
+        if (sourceRowIndex > 0) {
+          const targetRow = { ...newRows[sourceRowIndex - 1] }
+          targetRow.blocks.push(block)
+          // 上の行の列数を自動調整
+          if (targetRow.blocks.length > targetRow.columns) {
+            targetRow.columns = targetRow.blocks.length
+          }
+
+          // 元の行を削除
+          newRows.splice(sourceRowIndex, 1)
+          newRows[sourceRowIndex - 1] = targetRow
+        } else {
+          // 上の行が存在しない場合：新規行を作成
+          const newRow: SlideRow = {
+            id: `row_${Date.now()}`,
+            columns: 1,
+            blocks: [block],
+          }
+
+          newRows.splice(sourceRowIndex, 1)
+          newRows.splice(0, 0, newRow)
+        }
+      } else if (direction === 'up-new') {
+        // 上に新規行を作成
+        sourceRow.blocks.splice(sourceBlockIndex, 1)
+
+        // 元の行の列数を1減らす（最低1列は確保）
+        sourceRow.columns = Math.max(1, sourceRow.columns - 1)
+
+        const newRow: SlideRow = {
+          id: `row_${Date.now()}`,
+          columns: 1,
+          blocks: [block],
+        }
+
+        newRows[sourceRowIndex] = sourceRow
+        newRows.splice(sourceRowIndex, 0, newRow)
       }
 
       // sortOrderを更新
@@ -222,7 +293,15 @@ export default function EditableNormalSlide({ slide, index, onUpdateSlide, onSel
         })
       })
 
-      updateSlideContent(newRows)
+      // 空になった行を自動削除（ただし、最低1行は残す）
+      const filteredRows = newRows.filter(row => row.blocks.length > 0 || newRows.length === 1)
+      updateSlideContent(filteredRows)
+
+      // 最後に移動したブロックIDを設定し、3秒後にクリア
+      setLastMovedBlockId(blockId)
+      setTimeout(() => {
+        setLastMovedBlockId(null)
+      }, 3000)
     },
     [rows, updateSlideContent]
   )
@@ -246,7 +325,10 @@ export default function EditableNormalSlide({ slide, index, onUpdateSlide, onSel
         ...row,
         blocks: row.blocks.filter(block => block.id !== blockId),
       }))
-      updateSlideContent(newRows)
+
+      // 空になった行を自動削除（ただし、最低1行は残す）
+      const filteredRows = newRows.filter(row => row.blocks.length > 0 || newRows.length === 1)
+      updateSlideContent(filteredRows)
     },
     [rows, updateSlideContent]
   )
@@ -274,26 +356,6 @@ export default function EditableNormalSlide({ slide, index, onUpdateSlide, onSel
     [rows, updateSlideContent]
   )
 
-  // 行の並び替え（ドラッグ&ドロップ）
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  )
-
-  const handleRowDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event
-    if (!over || active.id === over.id) return
-
-    const oldIndex = rows.findIndex(row => row.id === active.id)
-    const newIndex = rows.findIndex(row => row.id === over.id)
-
-    if (oldIndex !== -1 && newIndex !== -1) {
-      const newRows = arrayMove(rows, oldIndex, newIndex)
-      updateSlideContent(newRows)
-    }
-  }
 
   return (
     <div className="bg-white border-2 border-blue-500 rounded-lg shadow-lg">
@@ -329,51 +391,25 @@ export default function EditableNormalSlide({ slide, index, onUpdateSlide, onSel
       {/* スライド内容 */}
       <div className="p-8 min-h-[400px] bg-white aspect-video" onClick={e => e.stopPropagation()}>
         {rows.length > 0 ? (
-          isPreviewMode ? (
-            // プレビューモード: 編集UIを非表示
-            <div className="space-y-8">
-              {rows.map((row, rowIndex) => (
-                <SortableRowItem
-                  key={row.id}
-                  row={row}
-                  rowIndex={rowIndex}
-                  totalRows={rows.length}
-                  onUpdateRow={handleUpdateRow}
-                  onDeleteRow={handleDeleteRow}
-                  onAddRow={handleAddRow}
-                  onMoveBlock={handleMoveBlock}
-                  onUpdateBlock={handleUpdateBlock}
-                  onDeleteBlock={handleDeleteBlock}
-                  onAddBlock={handleAddBlock}
-                  isPreviewMode={true}
-                />
-              ))}
-            </div>
-          ) : (
-            // 編集モード: ドラッグ&ドロップ可能
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleRowDragEnd}>
-              <SortableContext items={rows.map(r => r.id)} strategy={verticalListSortingStrategy}>
-                <div className="space-y-8">
-                  {rows.map((row, rowIndex) => (
-                    <SortableRowItem
-                      key={row.id}
-                      row={row}
-                      rowIndex={rowIndex}
-                      totalRows={rows.length}
-                      onUpdateRow={handleUpdateRow}
-                      onDeleteRow={handleDeleteRow}
-                      onAddRow={handleAddRow}
-                      onMoveBlock={handleMoveBlock}
-                      onUpdateBlock={handleUpdateBlock}
-                      onDeleteBlock={handleDeleteBlock}
-                      onAddBlock={handleAddBlock}
-                      isPreviewMode={false}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
-            </DndContext>
-          )
+          <div className="space-y-6">
+            {rows.map((row, rowIndex) => (
+              <RowItem
+                key={row.id}
+                row={row}
+                rowIndex={rowIndex}
+                totalRows={rows.length}
+                onUpdateRow={handleUpdateRow}
+                onDeleteRow={handleDeleteRow}
+                onAddRow={handleAddRow}
+                onMoveBlock={handleMoveBlock}
+                onUpdateBlock={handleUpdateBlock}
+                onDeleteBlock={handleDeleteBlock}
+                onAddBlock={handleAddBlock}
+                isPreviewMode={isPreviewMode}
+                lastMovedBlockId={lastMovedBlockId}
+              />
+            ))}
+          </div>
         ) : (
           <div className="text-center text-gray-400 py-12">
             <p>コンテンツがありません</p>
@@ -433,4 +469,3 @@ export default function EditableNormalSlide({ slide, index, onUpdateSlide, onSel
     </div>
   )
 }
-

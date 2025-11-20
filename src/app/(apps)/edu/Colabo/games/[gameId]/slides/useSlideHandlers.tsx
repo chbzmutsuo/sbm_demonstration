@@ -1,9 +1,9 @@
 'use client'
 
-import {toast} from 'react-toastify'
-import {createSlide, deleteSlide, updateSlide, updateSlideOrder} from '../../../colabo-server-actions'
-import {arrayMove} from '@dnd-kit/sortable'
-import {createRowsFromTemplate} from '@app/(apps)/edu/Colabo/constants/grid-templates'
+import { toast } from 'react-toastify'
+import { createSlide, deleteSlide, updateSlide, updateSlideOrder } from '../../../colabo-server-actions'
+import { arrayMove } from '@dnd-kit/sortable'
+import { createRowsFromTemplate } from '@app/(apps)/edu/Colabo/constants/grid-templates'
 
 export default function useSlideHandlers({
   game,
@@ -26,19 +26,11 @@ export default function useSlideHandlers({
     try {
       const sortOrder = selectedSlide ? selectedSlide.sortOrder + 1 : slides.length
 
-      // グリッドテンプレートが指定されている場合はそれを使用、そうでなければデフォルト
+      // グリッドテンプレートが指定されている場合はそれを使用、そうでなければ空
       const rows =
         templateType === 'normal' && gridTemplateId
           ? createRowsFromTemplate(gridTemplateId)
-          : templateType === 'normal'
-            ? [
-                {
-                  id: `row_${Date.now()}`,
-                  columns: 1,
-                  blocks: [],
-                },
-              ]
-            : undefined
+          : undefined
 
       // デバッグ: 生成されたrowsを確認
       if (rows && gridTemplateId) {
@@ -51,7 +43,7 @@ export default function useSlideHandlers({
         templateType,
         contentData: {
           title: '',
-          ...(rows ? {rows} : {blocks: []}),
+          ...(rows ? { rows } : { blocks: [] }),
         },
         sortOrder,
       })
@@ -92,7 +84,7 @@ export default function useSlideHandlers({
 
       if (result.success && result.slide) {
         // ローカル状態を更新
-        setSlides(slides.map((s: any) => (s.id === slideId ? {...s, ...result.slide} : s)))
+        setSlides(slides.map((s: any) => (s.id === slideId ? { ...s, ...result.slide } : s)))
       } else {
         toast.error(result.error || 'スライド更新に失敗しました')
       }

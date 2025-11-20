@@ -1,11 +1,11 @@
 'use client'
 
-import {useState, useEffect} from 'react'
-import {Button} from '@cm/components/styles/common-components/Button'
-import {SlideBlock} from '../../../(components)/SlideBlock'
-import {saveSlideAnswer, deleteSlideAnswer} from '../../../colabo-server-actions'
-import {toast} from 'react-toastify'
-import {gameDataType} from '@app/(apps)/edu/Colabo/class/GameCl'
+import { useState, useEffect } from 'react'
+import { Button } from '@cm/components/styles/common-components/Button'
+import { SlideBlock } from '../../../(components)/SlideBlock'
+import { saveSlideAnswer, deleteSlideAnswer } from '../../../colabo-server-actions'
+import { toast } from 'react-toastify'
+import { gameDataType } from '@app/(apps)/edu/Colabo/class/GameCl'
 import PsychoAnswerForm from '../../../components/psycho/PsychoAnswerForm'
 
 interface StudentViewProps {
@@ -84,12 +84,12 @@ export default function StudentView({
   // 選択クイズの回答
   const handleChoiceAnswer = (choiceIndex: number) => {
     if (hasSubmitted) return
-    setAnswerData({type: 'choice', choiceIndex, timestamp: new Date().toISOString()})
+    setAnswerData({ type: 'choice', choiceIndex, timestamp: new Date().toISOString() })
   }
 
   // 自由記述の回答
   const handleTextAnswer = (text: string) => {
-    setAnswerData({type: 'freetext', text, timestamp: new Date().toISOString()})
+    setAnswerData({ type: 'freetext', text, timestamp: new Date().toISOString() })
   }
 
   // 心理アンケートの回答送信
@@ -106,14 +106,14 @@ export default function StudentView({
         gameId: game.id,
         slideId: currentSlide.id,
         studentId: student.id,
-        answerData: {type: 'psycho', ...psychoAnswerData, timestamp: new Date().toISOString()},
+        answerData: { type: 'psycho', ...psychoAnswerData, timestamp: new Date().toISOString() },
       })
 
       if (result.success) {
         // Socket.ioで教師に通知
         socket.submitAnswer(currentSlide.id, psychoAnswerData)
         setHasSubmitted(true)
-        setAnswerData({type: 'psycho', ...psychoAnswerData})
+        setAnswerData({ type: 'psycho', ...psychoAnswerData })
         toast.success('回答を送信しました')
       } else {
         toast.error(result.error || '回答の送信に失敗しました')
@@ -269,11 +269,10 @@ export default function StudentView({
                       >
                         <div className="flex items-center">
                           <div
-                            className={`w-8 h-8 rounded-full border-2 mr-3 flex items-center justify-center font-bold ${
-                              answerData?.choiceIndex === index
+                            className={`w-8 h-8 rounded-full border-2 mr-3 flex items-center justify-center font-bold ${answerData?.choiceIndex === index
                                 ? 'border-blue-500 bg-blue-500 text-white'
                                 : 'border-gray-300 text-gray-600'
-                            }`}
+                              }`}
                           >
                             {answerData?.choiceIndex === index ? '✓' : index + 1}
                           </div>

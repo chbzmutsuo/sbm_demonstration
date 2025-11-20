@@ -148,9 +148,9 @@ export const SlideBlock = ({
               onChange={e => setEditValue(e.target.value)}
               onBlur={handleSave}
               onKeyDown={handleKeyDown}
-              className="w-full min-h-[60px] border-2 border-blue-500 rounded p-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+              className="w-full  border-2 border-blue-500 rounded p-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
               style={getTextStyle()}
-              rows={4}
+
             />
           </div>
         ) : (
@@ -170,19 +170,54 @@ export const SlideBlock = ({
   }
 
   if (blockType === 'image') {
+    // S3 URLかどうかを判定（プロキシ不要）
+    // S3のURLパターン: .s3., amazonaws.com, または同じオリジンのURL
+    const isS3Url = imageUrl && (
+      imageUrl.includes('.s3.') ||
+      imageUrl.includes('amazonaws.com') ||
+      imageUrl.startsWith('/') || // 相対パス
+      (typeof window !== 'undefined' && imageUrl.startsWith(window.location.origin)) // 同じオリジン
+    )
+
+    // 外部リンクの場合はプロキシ経由で表示（CORS問題を回避）
+    const getImageSrc = () => {
+      if (!imageUrl) return null
+      if (isS3Url) return imageUrl
+      // 外部リンクの場合はプロキシ経由
+      return `/api/image-proxy?url=${encodeURIComponent(imageUrl)}`
+    }
+
+    const imageSrc = getImageSrc()
+
     return (
       <div className={containerClass}>
-        {imageUrl ? (
-          <img src={imageUrl} alt={content || 'スライド画像'} className="max-w-full h-auto rounded" style={getTextStyle()} />
+        {imageSrc ? (
+          <img
+            src={imageSrc}
+            alt={content || 'スライド画像'}
+            className="max-w-full h-auto rounded"
+            style={getTextStyle()}
+            onError={(e) => {
+              // プロキシ経由で失敗した場合、元のURLを試す
+              const target = e.target as HTMLImageElement
+              if (imageSrc !== imageUrl && imageUrl) {
+                target.src = imageUrl
+              }
+            }}
+          />
         ) : (
-          !isPreview && (
-            <div className="w-full relative">
+          <div className="w-full relative">
+            {isPreview ? (
+              <div className="border-2 border-dashed border-gray-300 rounded p-8 text-center text-gray-400">
+                画像が設定されていません
+              </div>
+            ) : (
               <div className="border-2 border-dashed border-gray-300 rounded p-8 text-center text-gray-400">
                 画像URLを設定してください
               </div>
-              {/* <div className="text-[10px] text-gray-500 absolute -bottom-3 right-0">画像ブロック</div> */}
-            </div>
-          )
+            )}
+            {/* <div className="text-[10px] text-gray-500 absolute -bottom-3 right-0">画像ブロック</div> */}
+          </div>
         )}
       </div>
     )
@@ -229,17 +264,21 @@ export const SlideBlock = ({
             {content || linkUrl}
           </T_LINK>
         ) : (
-          !isPreview && (
-            <div className="w-full relative">
+          <div className="w-full relative">
+            {isPreview ? (
+              <div className="border rounded p-2 bg-gray-50 text-gray-400">
+                リンクが設定されていません
+              </div>
+            ) : (
               <div
                 className="border rounded p-2 bg-gray-50 text-gray-400 cursor-text hover:border-blue-400 transition-colors"
                 onClick={handleStartEditing}
               >
-                <T_LINK href={linkUrl}>リンクURLを設定してください</T_LINK>
+                リンクURLを設定してください
               </div>
-              {/* <div className="text-[10px] text-gray-500 absolute -bottom-3 right-0">リンクブロック</div> */}
-            </div>
-          )
+            )}
+            {/* <div className="text-[10px] text-gray-500 absolute -bottom-3 right-0">リンクブロック</div> */}
+          </div>
         )}
       </div>
     )

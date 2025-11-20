@@ -1,8 +1,9 @@
 'use client'
 
-import {useEffect, useRef} from 'react'
+import { useEffect, useRef } from 'react'
 import SlidePreviewCard from './SlidePreviewCard'
 import EditableNormalSlide from './EditableNormalSlide'
+import { Trash, TrashIcon } from 'lucide-react'
 
 interface CenterPreviewProps {
   slides: any[]
@@ -43,30 +44,20 @@ export default function CenterPreview({
         {slides.length > 0 ? (
           <div className="space-y-8">
             {slides.map((slide, index) => {
-              // ノーマルスライドで選択中の場合、編集可能な表示を使用
-              if (slide.id === selectedSlideId && slide.templateType === 'normal' && handleUpdateSlide) {
-                return (
-                  <div
-                    key={slide.id}
-                    ref={el => {
-                      if (el) {
-                        slideRefs.current.set(slide.id, el)
-                      }
-                    }}
-                  >
-                    <EditableNormalSlide
-                      slide={slide}
-                      index={index}
-                      onUpdateSlide={handleUpdateSlide}
-                      onSelect={() => onSelectSlide(slide.id)}
-                    />
-                  </div>
-                )
-              }
+              return <div className={` relative`} key={slide.id}>
 
-              // その他のスライドは通常のプレビューカードを使用
-              return (
-                <div
+                <div className={`absolute -right-2 -top-2`}><TrashIcon
+                  onClick={async () => {
+                    if (confirm('このスライドを削除してもよろしいですか？')) {
+                      handleDeleteSlide(slide.id)
+                    }
+                  }}
+                  className="text-white p-0.5 bg-red-500 rounded-full"
+                ></TrashIcon></div>
+
+
+                {/* // ノーマルスライドで選択中の場合、編集可能な表示を使用 */}
+                {slide.id === selectedSlideId && slide.templateType === 'normal' && handleUpdateSlide ? <div
                   key={slide.id}
                   ref={el => {
                     if (el) {
@@ -74,15 +65,58 @@ export default function CenterPreview({
                     }
                   }}
                 >
-                  <SlidePreviewCard
+                  <EditableNormalSlide
                     slide={slide}
                     index={index}
-                    isSelected={slide.id === selectedSlideId}
+                    onUpdateSlide={handleUpdateSlide}
                     onSelect={() => onSelectSlide(slide.id)}
-                    handleDeleteSlide={handleDeleteSlide}
                   />
-                </div>
-              )
+                </div> :
+                  // // その他のスライドは通常のプレビューカードを使用
+                  <div
+
+                    key={slide.id}
+                    ref={el => {
+                      if (el) {
+                        slideRefs.current.set(slide.id, el)
+                      }
+                    }}
+                  >
+                    <SlidePreviewCard
+                      slide={slide}
+                      index={index}
+                      isSelected={slide.id === selectedSlideId}
+                      onSelect={() => onSelectSlide(slide.id)}
+                      handleDeleteSlide={handleDeleteSlide}
+                    />
+                  </div>}
+
+              </div>
+              // ノーマルスライドで選択中の場合、編集可能な表示を使用
+              // if (slide.id === selectedSlideId && slide.templateType === 'normal' && handleUpdateSlide) {
+              //   return (
+              //     <div
+              //       key={slide.id}
+              //       ref={el => {
+              //         if (el) {
+              //           slideRefs.current.set(slide.id, el)
+              //         }
+              //       }}
+              //     >
+              //       <EditableNormalSlide
+              //         slide={slide}
+              //         index={index}
+              //         onUpdateSlide={handleUpdateSlide}
+              //         onSelect={() => onSelectSlide(slide.id)}
+              //       />
+              //     </div>
+              //   )
+              // }
+
+
+              // return (
+
+              // )
             })}
           </div>
         ) : (

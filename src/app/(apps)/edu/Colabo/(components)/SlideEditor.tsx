@@ -1,27 +1,27 @@
 'use client'
 
-import {useState} from 'react'
-import {Button} from '@cm/components/styles/common-components/Button'
-import {BlockEditor} from './BlockEditor'
+import { useState } from 'react'
+import { Button } from '@cm/components/styles/common-components/Button'
+import { BlockEditor } from './BlockEditor'
 
-import {SlideBlock} from '@app/(apps)/edu/Colabo/(components)/SlideBlock'
+import { SlideBlock } from '@app/(apps)/edu/Colabo/(components)/SlideBlock'
 import useModal from '@cm/components/utils/modal/useModal'
 
-export const SlideEditor = ({slide, onSave, onCancel}) => {
+export const SlideEditor = ({ slide, onSave, onCancel }) => {
   const [title, setTitle] = useState(slide?.title || '')
   const [templateType, setTemplateType] = useState(slide?.templateType || 'normal')
   const [blocks, setBlocks] = useState(slide?.SlideBlock || [])
   // const [editingBlock, setEditingBlock] = useState<any | null>(null)
 
-  const blockEditorModalReturn = useModal<{block: any}>()
+  const blockEditorModalReturn = useModal<{ block: any }>()
   const [isPreview, setIsPreview] = useState(false)
 
   const templateOptions = [
-    {value: 'normal', label: 'ノーマル', description: '基本的なスライド'},
-    {value: 'psychology', label: '心理アンケート', description: '生徒の心理状態を調査'},
-    {value: 'choice_quiz', label: '選択クイズ', description: '選択肢から回答を選ぶクイズ'},
-    {value: 'free_text_quiz', label: '自由記述クイズ', description: '自由にテキストで回答'},
-    {value: 'summary_survey', label: 'まとめアンケート', description: '授業のまとめアンケート'},
+    { value: 'normal', label: 'ノーマル', description: '基本的なスライド' },
+    { value: 'psychology', label: '心理アンケート', description: '生徒の心理状態を調査' },
+    { value: 'choice_quiz', label: '選択クイズ', description: '選択肢から回答を選ぶクイズ' },
+    { value: 'free_text_quiz', label: '自由記述クイズ', description: '自由にテキストで回答' },
+    { value: 'summary_survey', label: 'まとめアンケート', description: '授業のまとめアンケート' },
   ]
 
   const addBlock = blockType => {
@@ -34,11 +34,11 @@ export const SlideEditor = ({slide, onSave, onCancel}) => {
       isNew: true,
     }
     setBlocks([...blocks, newBlock])
-    blockEditorModalReturn.handleOpen({block: newBlock}) // 新しいブロックを編集モードにする
+    blockEditorModalReturn.handleOpen({ block: newBlock }) // 新しいブロックを編集モードにする
   }
 
   const updateBlock = (blockId, updates) => {
-    setBlocks(blocks.map(block => (block.id === blockId ? {...block, ...updates} : block)))
+    setBlocks(blocks.map(block => (block.id === blockId ? { ...block, ...updates } : block)))
   }
 
   const deleteBlock = blockId => {
@@ -51,7 +51,7 @@ export const SlideEditor = ({slide, onSave, onCancel}) => {
     if ((direction === 'up' && blockIndex > 0) || (direction === 'down' && blockIndex < blocks.length - 1)) {
       const newBlocks = [...blocks]
       const newIndex = direction === 'up' ? blockIndex - 1 : blockIndex + 1
-      ;[newBlocks[blockIndex], newBlocks[newIndex]] = [newBlocks[newIndex], newBlocks[blockIndex]]
+        ;[newBlocks[blockIndex], newBlocks[newIndex]] = [newBlocks[newIndex], newBlocks[blockIndex]]
 
       // Update sort orders
       newBlocks.forEach((block, index) => {

@@ -1,6 +1,4 @@
-import {Server as SocketIOServer} from 'socket.io'
-import type {Server as HTTPServer} from 'http'
-import type {Socket} from 'socket.io'
+import { Server as SocketIOServer, Socket } from 'socket.io'
 import {
   SOCKET_EVENTS,
   JoinGamePayload,
@@ -13,15 +11,8 @@ import {
   AnswerUpdatedPayload,
   SocketRole,
   SocketErrorPayload,
-} from '@app/(apps)/edu/Colabo/lib/socket-config'
-import prisma from 'src/lib/prisma'
-
-// Socket.ioの設定を無効化（Next.jsのbodyParser）
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-}
+} from '../../(apps)/edu/Colabo/lib/socket-config'
+import prisma from '../../../lib/prisma'
 
 // Game状態管理用の型定義（スライドごと）
 interface GameState {
@@ -58,12 +49,12 @@ async function getOrCreateGameState(gameId: number): Promise<GameState> {
     // DBからスライド情報を取得
     try {
       const slides = await prisma.slide.findMany({
-        where: {gameId, active: true},
-        select: {id: true, mode: true},
+        where: { gameId, active: true },
+        select: { id: true, mode: true },
       })
 
       const slideStates = new Map<number, 'view' | 'answer' | 'result' | null>()
-      slides.forEach(slide => {
+      slides.forEach((slide) => {
         slideStates.set(slide.id, (slide.mode as 'view' | 'answer' | 'result' | null) ?? null)
       })
 
@@ -104,7 +95,7 @@ function getGameStats(gameId: number) {
   let connectedStudents = 0
   let connectedTeachers = 0
 
-  state.participants.forEach(participant => {
+  state.participants.forEach((participant) => {
     if (participant.role === 'student') {
       connectedStudents++
     } else if (participant.role === 'teacher') {
@@ -120,10 +111,51 @@ function getGameStats(gameId: number) {
 }
 
 /**
- * Socket.ioサーバーのセットアップ
+ * Gameからの退出処理
  */
-function setupSocketIO(io: SocketIOServer) {
-  console.log('[Colabo Socket.io] サーバーが起動しました')
+function handleLeaveGame(socket: Socket, gameId: number) {
+  const info = socketInfo.get(socket.id)
+  if (!info) return
+
+  const gameState = gameStates.get(gameId)
+  if (gameState) {
+    // 参加者リストから削除
+    gameState.participants.delete(socket.id)
+
+    // Roomから退出
+    const roomName = `game-${gameId}`
+    socket.leave(roomName)
+
+    console.log(`[Colabo Socket.io] ${info.role} (userId: ${info.userId}) が Game ${gameId} から退出`)
+
+    // 全員に参加者数の更新を通知
+    const stats = getGameStats(gameId)
+    const syncPayload: any = {
+      gameId,
+      slideStates: Object.fromEntries(gameState.slideStates),
+      stats: {
+        totalStudents: stats.totalStudents,
+        connectedStudents: stats.connectedStudents,
+      },
+    }
+    socket.to(roomName).emit(SOCKET_EVENTS.GAME_STATE_SYNC, syncPayload)
+
+    // 参加者がいなくなったらGame状態を削除
+    if (gameState.participants.size === 0) {
+      gameStates.delete(gameId)
+      console.log(`[Colabo Socket.io] Game ${gameId} の状態を削除`)
+    }
+  }
+
+  // Socket情報を削除
+  socketInfo.delete(socket.id)
+}
+
+/**
+ * Socket.ioサーバーのイベントハンドラーを設定
+ */
+export function setupSocketHandlers(io: SocketIOServer) {
+  console.log('[Colabo Socket.io] ハンドラーを設定します')
 
   io.on(SOCKET_EVENTS.CONNECTION, (socket: Socket) => {
     console.log(`[Colabo Socket.io] クライアント接続: ${socket.id}`)
@@ -133,7 +165,7 @@ function setupSocketIO(io: SocketIOServer) {
      */
     socket.on(SOCKET_EVENTS.JOIN_GAME, async (payload: JoinGamePayload) => {
       try {
-        const {gameId, role, userId, userName} = payload
+        const { gameId, role, userId, userName } = payload
 
         // バリデーション
         if (!gameId || !role || !userId) {
@@ -161,15 +193,15 @@ function setupSocketIO(io: SocketIOServer) {
         })
 
         // Socket情報を保存
-        socketInfo.set(socket.id, {gameId, role, userId})
+        socketInfo.set(socket.id, { gameId, role, userId })
 
         console.log(`[Colabo Socket.io] ${role} (userId: ${userId}) が Game ${gameId} に参加`)
         console.log(`[Colabo Socket.io] 現在のスライド状態:`, Object.fromEntries(gameState.slideStates))
 
         // DBから現在のスライド情報を取得
         const currentGame = await prisma.game.findUnique({
-          where: {id: gameId},
-          select: {currentSlideId: true},
+          where: { id: gameId },
+          select: { currentSlideId: true },
         })
 
         // 接続確認応答を送信（スライドごとの状態 + 現在のスライド情報を送信）
@@ -213,7 +245,7 @@ function setupSocketIO(io: SocketIOServer) {
      */
     socket.on(SOCKET_EVENTS.TEACHER_CHANGE_SLIDE, async (payload: ChangeSlidePayload) => {
       try {
-        const {gameId, slideId, slideIndex} = payload
+        const { gameId, slideId, slideIndex } = payload
         const info = socketInfo.get(socket.id)
 
         // 権限チェック
@@ -250,7 +282,7 @@ function setupSocketIO(io: SocketIOServer) {
      */
     socket.on(SOCKET_EVENTS.TEACHER_CHANGE_MODE, async (payload: ChangeModePayload) => {
       try {
-        const {gameId, slideId, mode} = payload
+        const { gameId, slideId, mode } = payload
         const info = socketInfo.get(socket.id)
 
         // 権限チェック
@@ -272,10 +304,10 @@ function setupSocketIO(io: SocketIOServer) {
         // DBにも保存（非同期）
         prisma.slide
           .update({
-            where: {id: slideId},
-            data: {mode},
+            where: { id: slideId },
+            data: { mode },
           })
-          .catch(error => {
+          .catch((error) => {
             console.error(`[Colabo Socket.io] Slide ${slideId} のモード保存エラー:`, error)
           })
 
@@ -301,7 +333,7 @@ function setupSocketIO(io: SocketIOServer) {
      */
     socket.on(SOCKET_EVENTS.TEACHER_CLOSE_ANSWER, async (payload: CloseAnswerPayload) => {
       try {
-        const {gameId, slideId} = payload
+        const { gameId, slideId } = payload
         const info = socketInfo.get(socket.id)
 
         // 権限チェック
@@ -323,10 +355,10 @@ function setupSocketIO(io: SocketIOServer) {
         // DBにも保存（非同期）
         prisma.slide
           .update({
-            where: {id: slideId},
-            data: {mode: 'result'},
+            where: { id: slideId },
+            data: { mode: 'result' },
           })
-          .catch(error => {
+          .catch((error) => {
             console.error(`[Colabo Socket.io] Slide ${slideId} のモード保存エラー:`, error)
           })
 
@@ -352,7 +384,7 @@ function setupSocketIO(io: SocketIOServer) {
      */
     socket.on(SOCKET_EVENTS.STUDENT_SUBMIT_ANSWER, (payload: SubmitAnswerPayload) => {
       try {
-        const {gameId, slideId, studentId, answerData} = payload
+        const { gameId, slideId, studentId, answerData } = payload
         const info = socketInfo.get(socket.id)
 
         // バリデーション
@@ -408,7 +440,7 @@ function setupSocketIO(io: SocketIOServer) {
      */
     socket.on(SOCKET_EVENTS.TEACHER_SHARE_ANSWER, (payload: ShareAnswerPayload) => {
       try {
-        const {gameId, slideId, answerId, isAnonymous} = payload
+        const { gameId, slideId, answerId, isAnonymous } = payload
         const info = socketInfo.get(socket.id)
 
         // 権限チェック
@@ -446,7 +478,7 @@ function setupSocketIO(io: SocketIOServer) {
      */
     socket.on(SOCKET_EVENTS.TEACHER_REVEAL_CORRECT, (payload: RevealCorrectPayload) => {
       try {
-        const {gameId, slideId} = payload
+        const { gameId, slideId } = payload
         const info = socketInfo.get(socket.id)
 
         // 権限チェック
@@ -480,7 +512,7 @@ function setupSocketIO(io: SocketIOServer) {
     /**
      * Gameからの退出
      */
-    socket.on(SOCKET_EVENTS.LEAVE_GAME, (payload: {gameId: number}) => {
+    socket.on(SOCKET_EVENTS.LEAVE_GAME, (payload: { gameId: number }) => {
       handleLeaveGame(socket, payload.gameId)
     })
 
@@ -498,86 +530,3 @@ function setupSocketIO(io: SocketIOServer) {
   })
 }
 
-/**
- * Gameからの退出処理
- */
-function handleLeaveGame(socket: Socket, gameId: number) {
-  const info = socketInfo.get(socket.id)
-  if (!info) return
-
-  const gameState = gameStates.get(gameId)
-  if (gameState) {
-    // 参加者リストから削除
-    gameState.participants.delete(socket.id)
-
-    // Roomから退出
-    const roomName = `game-${gameId}`
-    socket.leave(roomName)
-
-    console.log(`[Colabo Socket.io] ${info.role} (userId: ${info.userId}) が Game ${gameId} から退出`)
-
-    // 全員に参加者数の更新を通知
-    const stats = getGameStats(gameId)
-    const syncPayload: any = {
-      gameId,
-      slideStates: Object.fromEntries(gameState.slideStates),
-      stats: {
-        totalStudents: stats.totalStudents,
-        connectedStudents: stats.connectedStudents,
-      },
-    }
-    socket.to(roomName).emit(SOCKET_EVENTS.GAME_STATE_SYNC, syncPayload)
-
-    // 参加者がいなくなったらGame状態を削除
-    if (gameState.participants.size === 0) {
-      gameStates.delete(gameId)
-      console.log(`[Colabo Socket.io] Game ${gameId} の状態を削除`)
-    }
-  }
-
-  // Socket情報を削除
-  socketInfo.delete(socket.id)
-}
-
-/**
- * Next.js APIハンドラー
- */
-export const GET = (req: any, res: any) => {
-  // Socket.ioが既に初期化されている場合
-  if (res.socket.server.io) {
-    console.log('[Colabo Socket.io] Socket.ioサーバーは既に起動済み')
-    res.end()
-    return
-  }
-
-  console.log('[Colabo Socket.io] 新しいSocket.ioサーバーを初期化')
-
-  try {
-    const httpServer: HTTPServer = res.socket.server as HTTPServer
-
-    // Socket.ioサーバーを作成
-    const io = new SocketIOServer(httpServer, {
-      path: '/api/colabo-socket/', // 末尾にスラッシュを追加
-      addTrailingSlash: false,
-      transports: ['polling', 'websocket'], // pollingを先に試す
-      cors: {
-        origin: '*',
-        methods: ['GET', 'POST'],
-        credentials: true,
-      },
-      allowEIO3: true, // Engine.IO v3との互換性
-    })
-
-    // グローバルにSocket.ioインスタンスを保存
-    res.socket.server.io = io
-
-    // イベントハンドラーを設定
-    setupSocketIO(io)
-
-    console.log('[Colabo Socket.io] サーバー初期化完了')
-  } catch (error) {
-    console.error('[Colabo Socket.io] サーバー初期化エラー:', error)
-  }
-
-  res.end()
-}
