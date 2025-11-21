@@ -1,12 +1,14 @@
 'use client'
 
-import {Button} from '@cm/components/styles/common-components/Button'
-import {SlideBlock} from '../../../(components)/SlideBlock'
-import {useState, useEffect} from 'react'
-import {getSlideAnswers, updateSlideMode, updateCurrentSlide, deleteSlideAnswer} from '../../../colabo-server-actions'
-import {toast} from 'react-toastify'
-import type {GameData, SlideData, SlideMode, SlideAnswer, AnswerStats} from '../../../types/game-types'
-import {calculateScores} from '../../../lib/psycho-questions'
+import { Button } from '@cm/components/styles/common-components/Button'
+import { SlideBlock } from '../../../(components)/SlideBlock'
+import { useState, useEffect } from 'react'
+import { getSlideAnswers, updateSlideMode, updateCurrentSlide, deleteSlideAnswer } from '../../../colabo-server-actions'
+import { toast } from 'react-toastify'
+import type { GameData, SlideData, SlideMode, SlideAnswer, AnswerStats } from '../../../types/game-types'
+import { calculateScores } from '../../../lib/psycho-questions'
+import { HREF } from '@cm/lib/methods/urls'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 interface SocketActions {
   changeSlide: (slideId: number, slideIndex: number) => void
@@ -35,11 +37,30 @@ export default function NewTeacherView({
   socket,
   onSlideChange,
 }: TeacherViewProps) {
+  const { query } = useGlobal()
   const [answers, setAnswers] = useState<SlideAnswer[]>([])
   const [isLoadingAnswers, setIsLoadingAnswers] = useState(false)
 
   const totalSlides = game.Slide?.length || 0
   const totalStudents = game.GameStudent?.length || 0
+
+  // プロジェクター画面を開く
+  const openProjectorView = () => {
+    const url = new URL(window.location.href)
+    const baseUrl = url.origin + url.pathname.replace(/\/$/, '')
+    const projectorUrl = HREF(`${baseUrl}/projector`, {}, query)
+
+    window.open(projectorUrl, 'dashboardWindow', 'width=1024,height=768')
+  }
+
+  // ダッシュボード画面を開く
+  const openDashboardView = () => {
+    const url = new URL(window.location.href)
+    const baseUrl = url.origin + url.pathname.replace(/\/$/, '')
+    const dashboardUrl = HREF(`${baseUrl}/dashboard`, {}, query)
+
+    window.open(dashboardUrl, 'dashboardWindow', 'width=1024,height=768')
+  }
 
   // スライドを切り替え
   const handleChangeSlide = async (newIndex: number) => {
@@ -137,6 +158,16 @@ export default function NewTeacherView({
       <div className="space-y-4">
         {/* コントロールパネル */}
         <div className="bg-white rounded-lg shadow p-4">
+          {/* 画面切り替えボタン */}
+          <div className="flex items-center justify-end gap-2 mb-4">
+            <Button onClick={openProjectorView} className="bg-purple-600 hover:bg-purple-700 text-xs" size="sm">
+              📺 プロジェクター画面を開く
+            </Button>
+            <Button onClick={openDashboardView} className="bg-orange-600 hover:bg-orange-700 text-xs" size="sm">
+              🎛️ ダッシュボードを開く
+            </Button>
+          </div>
+
           {/* スライド情報 */}
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold">{currentSlide?.contentData?.title || 'スライド'}</h2>
@@ -362,7 +393,7 @@ export default function NewTeacherView({
                       {answerDataParsed.type === 'psycho' && (
                         <div className="space-y-1">
                           {(() => {
-                            const {curiocity, efficacy} = calculateScores(answerDataParsed)
+                            const { curiocity, efficacy } = calculateScores(answerDataParsed)
                             return (
                               <>
                                 <div className="flex items-center space-x-2">
@@ -371,7 +402,7 @@ export default function NewTeacherView({
                                   <div className="flex-1 bg-gray-200 rounded-full h-2">
                                     <div
                                       className="bg-purple-500 h-2 rounded-full"
-                                      style={{width: `${(curiocity / 25) * 100}%`}}
+                                      style={{ width: `${(curiocity / 25) * 100}%` }}
                                     ></div>
                                   </div>
                                 </div>
@@ -381,7 +412,7 @@ export default function NewTeacherView({
                                   <div className="flex-1 bg-gray-200 rounded-full h-2">
                                     <div
                                       className="bg-blue-500 h-2 rounded-full"
-                                      style={{width: `${(efficacy / 25) * 100}%`}}
+                                      style={{ width: `${(efficacy / 25) * 100}%` }}
                                     ></div>
                                   </div>
                                 </div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { SlideBlock } from '@app/(apps)/edu/Colabo/(components)/SlideBlock'
-import { Plus, Pencil, TrashIcon, ArrowLeft, ArrowRight, ArrowUp, ArrowDown, FileText, Image, Link as LinkIcon } from 'lucide-react'
+import { Pencil, TrashIcon, ArrowLeft, ArrowRight, ArrowUp, ArrowDown, FileText, Image, Link as LinkIcon } from 'lucide-react'
 import type { SlideRow, SlideBlock as SlideBlockType } from '../../types/game-types'
 import BlockEditPopover from './BlockEditPopover'
 import { C_Stack, R_Stack } from '@cm/components/styles/common-components/common-components'

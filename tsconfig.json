@@ -59,6 +59,20 @@
     "**/*.spec.ts",
     "**/*.test.ts",
     "coverage",
-    "**/scheme-json-export.js"
+    "**/scheme-json-export.js",
+    "src/app/(apps)/KM/**/*",
+    "src/app/(apps)/aidocument/**/*",
+    "src/app/(apps)/counseling/**/*",
+    "src/app/(apps)/edu/**/*",
+    "src/app/(apps)/keihi/**/*",
+    "src/app/(apps)/kickswrap/**/*",
+    "src/app/(apps)/migrations/**/*",
+    "src/app/(apps)/page/**/*",
+    "src/app/(apps)/portal/**/*",
+    "src/app/(apps)/sbm/**/*",
+    "src/app/(apps)/stock/**/*",
+    "src/app/(apps)/teamSynapse/**/*",
+    "src/app/(apps)/tmp/**/*",
+    "src/app/(apps)/training/**/*"
   ]
 }

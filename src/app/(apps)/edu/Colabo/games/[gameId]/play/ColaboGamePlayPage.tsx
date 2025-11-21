@@ -13,9 +13,10 @@ interface ColaboGamePlayPageProps {
   role: 'teacher' | 'student'
   userId: number
   student: any | null
+  isProjector?: boolean
 }
 
-export default function ColaboGamePlayPage({game, role, userId, student}: ColaboGamePlayPageProps) {
+export default function ColaboGamePlayPage({game, role, userId, student, isProjector = false}: ColaboGamePlayPageProps) {
   // DBから取得した初期スライドモード状態を設定
   const initialSlideStates: SlideStates = {}
   game.Slide.forEach((slide: any) => {
@@ -121,34 +122,38 @@ export default function ColaboGamePlayPage({game, role, userId, student}: Colabo
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* ヘッダー */}
-      <div className="bg-white border-b shadow-sm">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-lg font-bold">{game.name}</h1>
-              <p className="text-sm text-gray-600">{role === 'teacher' ? '教師用画面' : `生徒: ${student?.name}`}</p>
-            </div>
-            <div className="flex items-center space-x-4">
-              {connectionStatusBadge()}
-              {currentSlide && (
-                <div className="text-sm text-gray-600">
-                  スライド {currentSlideIndex + 1} / {game.Slide.length}
-                  {role === 'student' && (
-                    <span className="ml-2 text-xs">
-                      (ID: {currentSlide.id}, Mode: {currentSlideMode || 'なし'})
-                    </span>
-                  )}
-                </div>
-              )}
+    <div className={isProjector ? 'min-h-screen bg-white' : 'min-h-screen bg-gray-50'}>
+      {/* ヘッダー（プロジェクターモード時は非表示） */}
+      {!isProjector && (
+        <div className="bg-white border-b shadow-sm">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-lg font-bold">{game.name}</h1>
+                <p className="text-sm text-gray-600">
+                  {role === 'teacher' ? '教師用画面' : `生徒: ${student?.name}`}
+                </p>
+              </div>
+              <div className="flex items-center space-x-4">
+                {connectionStatusBadge()}
+                {currentSlide && (
+                  <div className="text-sm text-gray-600">
+                    スライド {currentSlideIndex + 1} / {game.Slide.length}
+                    {role === 'student' && (
+                      <span className="ml-2 text-xs">
+                        (ID: {currentSlide.id}, Mode: {currentSlideMode || 'なし'})
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* メインコンテンツ */}
-      <div className="container mx-auto p-4">
+      <div className={isProjector ? 'h-screen flex items-center justify-center' : 'container mx-auto p-4'}>
         {!socket.isConnected ? (
           <div className="bg-white rounded-lg shadow p-8 text-center">
             <div className="text-4xl mb-4">🔌</div>
@@ -181,6 +186,7 @@ export default function ColaboGamePlayPage({game, role, userId, student}: Colabo
                 socket={socket}
                 sharedAnswers={sharedAnswers}
                 isCorrectRevealed={isCorrectRevealed}
+                isProjector={isProjector}
               />
             )}
           </>

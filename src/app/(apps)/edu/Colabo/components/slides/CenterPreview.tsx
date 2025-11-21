@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react'
 import SlidePreviewCard from './SlidePreviewCard'
 import EditableNormalSlide from './EditableNormalSlide'
-import { Trash, TrashIcon } from 'lucide-react'
+import { TrashIcon } from 'lucide-react'
 
 interface CenterPreviewProps {
   slides: any[]

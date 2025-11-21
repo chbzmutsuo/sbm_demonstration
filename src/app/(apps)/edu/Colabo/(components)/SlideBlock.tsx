@@ -124,7 +124,7 @@ export const SlideBlock = ({
   const TextDisplay = ({ text }) => {
     return <div>
       {String(text).split('\n').map((line) => {
-        return <div>{line}</div>
+        return <div key={line} className="whitespace-pre-wrap">{line}</div>
       })}
     </div>
 
