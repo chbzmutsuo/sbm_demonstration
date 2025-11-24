@@ -1,20 +1,56 @@
-import {useState} from 'react'
-import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {toastByResult} from '@cm/lib/ui/notifications'
-import {doTransaction, transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import { useState } from 'react'
+import { toastByResult } from '@cm/lib/ui/notifications'
+import { doTransaction, transactionQuery } from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import { toUtc } from '@cm/class/Days/date-utils/calculations'
+import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
+import { Days } from '@cm/class/Days/Days'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import { formatDate } from '@cm/class/Days/date-utils/formatters'
+import { doStandardPrisma } from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
-export const useEtcData = () => {
-  const [etcRawData, setEtcRawData] = useState<EtcRecord[]>([])
+export const useEtcData = ({ selectedTbmVehicleId, selectedMonth }: { selectedTbmVehicleId: number; selectedMonth: Date }) => {
+  const { addQuery } = useGlobal()
   const [isLoading, setIsLoading] = useState(false)
 
+
+
+
+  const { firstDayOfMonth, lastDayOfMonth } = selectedMonth ? Days.month.getMonthDatum(selectedMonth) : {}
+  const { data: etcRawData = [], mutate } = useDoStandardPrisma('etcCsvRaw', 'findMany', {
+    where: {
+      tbmVehicleId: selectedTbmVehicleId,
+      fromDate: {
+        gte: firstDayOfMonth,
+        lte: lastDayOfMonth,
+      },
+    },
+    orderBy: [{ fromDate: 'asc' }, { fromTime: 'asc' }],
+    include: {
+      TbmEtcMeisai: {
+        include: {
+          TbmDriveSchedule: {
+            include: {
+              TbmRouteGroup: true,
+              User: true,
+            },
+          },
+        },
+      },
+    },
+  })
+
+
+  let monthOnCsv: Date | null = null
+
   // CSVデータをインポートする関数
-  const importCsvData = async (data: {tbmVehicleId: number; month: Date; csvData: string}) => {
+  const importCsvData = async (data: { tbmVehicleId: number; month: Date; csvData: string }) => {
+    const { tbmVehicleId, csvData } = data
+
     setIsLoading(true)
     try {
-      const {tbmVehicleId, month, csvData} = data
 
-      if (!tbmVehicleId || !month || !csvData) {
-        toastByResult({success: false, message: '必要な情報がすべて入力されていません'})
+      if (!tbmVehicleId || !csvData) {
+        toastByResult({ success: false, message: '必要な情報がすべて入力されていません' })
         return
       }
 
@@ -45,6 +81,8 @@ export const useEtcData = () => {
               remark,
             ] = columns
 
+
+
             // 日付のパース（例: '25/08/01' → '2025-08-01'）
             const parseJapaneseDate = (dateStr: string) => {
               if (!dateStr) return null
@@ -53,8 +91,12 @@ export const useEtcData = () => {
               return new Date(`20${year}-${month}-${day}`)
             }
 
-            const parsedFromDate = parseJapaneseDate(fromDate)
-            const parsedToDate = parseJapaneseDate(toDate)
+            let parsedFromDate = parseJapaneseDate(fromDate)
+            parsedFromDate = parsedFromDate ? toUtc(parsedFromDate) : null
+
+
+            let parsedToDate = parseJapaneseDate(toDate)
+            parsedToDate = parsedToDate ? toUtc(parsedToDate) : null
 
             if (!parsedFromDate || !parsedToDate) return null
 
@@ -68,6 +110,13 @@ export const useEtcData = () => {
             const parsedOriginalFee = parseFee(originalFee)
             const parsedDiscount = parseFee(discount)
             const parsedToll = parseFee(toll)
+
+
+
+            //遷移先の月を設定
+            if (monthOnCsv === null) {
+              monthOnCsv = parsedFromDate
+            }
 
             return {
               tbmVehicleId,
@@ -120,54 +169,80 @@ export const useEtcData = () => {
       toastByResult(result)
 
       if (result.success) {
-        loadEtcRawData(tbmVehicleId, month)
+        mutate()
       }
     } catch (error) {
       console.error('インポート中にエラーが発生しました:', error)
-      toastByResult({success: false, message: 'インポート中にエラーが発生しました'})
+      toastByResult({ success: false, message: 'インポート中にエラーが発生しました' })
     } finally {
       setIsLoading(false)
+
+      addQuery({
+        month: formatDate(monthOnCsv, 'YYYY-MM-DD'),
+      })
+
     }
   }
 
-  // EtcCsvRawデータをロードする関数
-  const loadEtcRawData = async (vehicleId: number, month: Date) => {
+  // 選択中の月のデータを削除する関数
+  const deleteMonthData = async (tbmVehicleId: number, month: Date) => {
+    if (!confirm(`選択中の月（${formatDate(month, 'YYYY年MM月')}）のデータを削除しますか？\nこの操作は取り消せません。`)) {
+      return
+    }
+
     setIsLoading(true)
     try {
-      const yearMonth = new Date(month)
-      const year = yearMonth.getFullYear()
-      const monthNum = yearMonth.getMonth()
+      const { firstDayOfMonth, lastDayOfMonth } = Days.month.getMonthDatum(month)
 
-      const startDate = new Date(year, monthNum, 1)
-      const endDate = new Date(year, monthNum + 1, 0)
-
-      const {result} = await doStandardPrisma('etcCsvRaw', 'findMany', {
+      // まず、削除対象のレコードを取得して、関連するTbmEtcMeisaiのIDを収集
+      const { result: recordsToDelete } = await doStandardPrisma('etcCsvRaw', 'findMany', {
         where: {
-          tbmVehicleId: vehicleId,
+          tbmVehicleId,
           fromDate: {
-            gte: startDate,
-            lte: endDate,
+            gte: firstDayOfMonth,
+            lte: lastDayOfMonth,
           },
         },
-        orderBy: [{fromDate: 'asc'}, {fromTime: 'asc'}],
-        include: {
-          TbmEtcMeisai: {
-            include: {
-              TbmDriveSchedule: {
-                include: {
-                  TbmRouteGroup: true,
-                  User: true,
-                },
-              },
-            },
+        select: {
+          id: true,
+          tbmEtcMeisaiId: true,
+        },
+      })
+
+      // 関連するTbmEtcMeisaiのIDを取得（重複を除去）
+      const meisaiIds = [...new Set((recordsToDelete || []).map((r: { tbmEtcMeisaiId: number | null }) => r.tbmEtcMeisaiId).filter((id): id is number => id !== null))]
+
+      // etcCsvRawを削除
+      const { result: deleteResult } = await doStandardPrisma('etcCsvRaw', 'deleteMany', {
+        where: {
+          tbmVehicleId,
+          fromDate: {
+            gte: firstDayOfMonth,
+            lte: lastDayOfMonth,
           },
         },
       })
 
-      setEtcRawData(result || [])
+      // 関連するTbmEtcMeisaiも削除（EtcCsvRawが紐づいていないもの）
+      if (meisaiIds.length > 0) {
+        await doStandardPrisma('tbmEtcMeisai', 'deleteMany', {
+          where: {
+            id: {
+              in: meisaiIds as number[],
+            },
+          },
+        })
+      }
+
+      toastByResult({
+        success: true,
+        message: `${(deleteResult as { count: number })?.count || 0}件のデータを削除しました`,
+      })
+
+      mutate()
     } catch (error) {
-      console.error('データ取得中にエラーが発生しました:', error)
-      toastByResult({success: false, message: 'データ取得中にエラーが発生しました'})
+      console.error('データ削除中にエラーが発生しました:', error)
+      toastByResult({ success: false, message: 'データ削除中にエラーが発生しました' })
     } finally {
       setIsLoading(false)
     }
@@ -175,8 +250,9 @@ export const useEtcData = () => {
 
   return {
     etcRawData,
+    mutateEtcRawData: mutate,
     isLoading,
     importCsvData,
-    loadEtcRawData,
+    deleteMonthData,
   }
 }

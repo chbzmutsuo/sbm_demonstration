@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react'
+import React, {useMemo} from 'react'
 import {colType} from '@cm/types/col-types'
 import {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobal'
 
@@ -9,11 +9,18 @@ import {SearchQuery, searchQueryKey, Sub} from '@cm/components/DataLogic/TFs/MyT
 import useBasicFormProps from 'src/cm/hooks/useBasicForm/useBasicFormProps'
 
 import SearchedItemList from '@cm/components/DataLogic/TFs/MyTable/components/SearchHandler/useSearchHandler/SearchedItemList'
+import BasicModal from 'src/cm/components/utils/modal/BasicModal'
 
-import {Button} from '@cm/components/styles/common-components/Button'
-import {Main} from '@cm/components/DataLogic/TFs/MyTable/components/SearchHandler/useSearchHandler/Main'
+import {myFormDefault} from 'src/cm/constants/defaults'
+import {cl} from 'src/cm/lib/methods/common'
+
+import {confirmSearch} from '@cm/components/DataLogic/TFs/MyTable/components/SearchHandler/SearchHandler'
+import {Padding} from '@cm/components/styles/common-components/common-components'
+
 import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 import useWindowSize from '@cm/hooks/useWindowSize'
+import {useJotaiByKey} from '@cm/hooks/useJotai'
+import {Button} from '@cm/components/styles/common-components/Button'
 
 type SearchHandler = {
   columns: colType[][]
@@ -25,7 +32,9 @@ export const useSearchHandler = (props: SearchHandler) => {
   const SearchCols = props.columns.flat().filter((col: colType) => col.search)
   const {toggleLoad, query, shallowAddQuery} = useGlobalProps
   const {SP} = useWindowSize()
-  const [modalOpen, setmodalOpen] = useState(false)
+
+  const [modalOpen, setmodalOpen] = useJotaiByKey<boolean>(`searchHandlerModalOpen`, false)
+
   const addQuery = shallowAddQuery
 
   const columns = Sub.makeSearchColumns({columns: props.columns, dataModelName, SP})
@@ -66,38 +75,77 @@ export const useSearchHandler = (props: SearchHandler) => {
         解除
       </IconBtn>
     )
-  }, [query, allData, ReactHookForm])
+  }, [query, allData, ReactHookForm, modalOpen])
 
   /**modal Memo */
-  const SearchHandlerMemo = useMemo(() => {
+  const SearchModalMemo = useMemo(() => {
     if (columns.flat().length === 0) {
       return null
     }
     if (SearchCols.length > 0) {
       return (
         <R_Stack className={` flex-nowrap gap-0`}>
-          <Button {...{size: `sm`, type: `button`, onClick: e => setmodalOpen(true)}}>検索</Button>
-          <Main
-            {...{
-              SP,
-              SearchBasicForm,
-              columns,
-              ResetBtnMemo,
-              modalOpen,
-              setmodalOpen,
-              toggleLoad,
-              addQuery,
-              dataModelName,
-              MainColObject,
-              SearchColObject,
-            }}
-          />
+          {/* <Button {...{size: `sm`, type: `button`, onClick: e => setmodalOpen(true)}}>検索</Button> */}
+          <BasicModal open={modalOpen} setopen={setmodalOpen} alertOnClose={true}>
+            <Padding>
+              <main
+                className={`relative  `}
+                style={{
+                  ...myFormDefault?.style,
+                  maxWidth: 900,
+                  padding: 0,
+                  maxHeight: '70vh',
+                }}
+              >
+                <div>
+                  <SearchBasicForm
+                    latestFormData={latestFormData}
+                    {...{
+                      alignMode: `console`,
+                      className: `max-h-[60vh]  overflow-auto relative p-2`,
+                      onSubmit: data => {
+                        confirmSearch({
+                          toggleLoad,
+                          allData: data,
+                          MainColObject,
+                          SearchColObject,
+                          dataModelName,
+                          addQuery,
+                          searchQueryKey,
+                          SearchQuery,
+                        })
+                        setmodalOpen(false)
+                      },
+
+                      wrapperClass: cl('col-stack gap-3'),
+
+                      ControlOptions: {
+                        controlWrapperClassBuilder: ({col}) => {
+                          const searchTypeCol = SearchColObject[col.id]
+                          let className = ``
+                          if (SP && searchTypeCol) {
+                            className = cl(className, `mb-8`)
+                          }
+                          return className
+                        },
+                      },
+                    }}
+                  >
+                    <div className={`row-stack sticky bottom-0 z-50  my-0! w-full justify-end  gap-4    p-3  `}>
+                      {ResetBtnMemo}
+                      <Button color={`primary`}>確定</Button>
+                    </div>
+                  </SearchBasicForm>
+                </div>
+              </main>
+            </Padding>
+          </BasicModal>
         </R_Stack>
       )
     }
   }, [SearchCols, modalOpen, query, ReactHookForm, columns])
 
-  const SearchingStatusMemo = useMemo(() => {
+  const SearchedItemListMemo = useMemo(() => {
     if (query[searchQueryKey]) {
       return (
         <div>
@@ -119,14 +167,9 @@ export const useSearchHandler = (props: SearchHandler) => {
         </div>
       )
     }
-  }, [query, ResetBtnMemo])
+  }, [query, ResetBtnMemo, modalOpen])
 
-  return {
-    SearchBasicForm,
-    SearchCols,
-    SearchHandlerMemo,
-    SearchingStatusMemo,
-  }
+  return {SearchedItemListMemo, SearchModalMemo}
 }
 
 export const confirmSeach = ({

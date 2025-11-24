@@ -1,81 +1,54 @@
 'use client'
-import React, {useState, useEffect} from 'react'
-import {Card} from '@cm/shadcn/ui/card'
-import {Fields} from '@cm/class/Fields/Fields'
-import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
-import {Days} from '@cm/class/Days/Days'
-import {isDev} from '@cm/lib/methods/common'
-import {getVehicleForSelectConfig} from '@app/(apps)/tbm/(builders)/ColBuilders/TbmVehicleColBuilder'
-import {EtcFileUpload} from './EtcFileUpload'
-import {C_Stack} from '@cm/components/styles/common-components/common-components'
-import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import React, { useState } from 'react'
+import { EtcFileUpload } from './EtcFileUpload'
+import { C_Stack } from '@cm/components/styles/common-components/common-components'
 
 interface EtcImportFormProps {
   isLoading: boolean
-  importCsvData: (data: {tbmVehicleId: number; month: Date; csvData: string}) => Promise<void>
-  onFormChange: (tbmVehicleId: number, month: Date) => void
+  importCsvData: (data: { tbmVehicleId: number; month: Date; csvData: string }) => Promise<void>
+  // onFormChange: (tbmVehicleId: number, month: Date) => void
+  selectedTbmVehicleId: number
+  selectedMonth: Date
 }
 
+
 export const EtcImportForm = (props: EtcImportFormProps) => {
-  const {isLoading, importCsvData, onFormChange} = props
-  const {firstDayOfMonth} = Days.month.getMonthDatum(new Date())
+  const { isLoading, importCsvData, selectedTbmVehicleId, selectedMonth } = props
+
   const [csvContent, setCsvContent] = useState<string>('')
-  const {session} = useGlobal()
 
-  const {tbmBaseId} = session?.scopes.getTbmScopes()
 
-  const {BasicForm, latestFormData} = useBasicFormProps({
-    columns: new Fields([
-      {
-        id: `tbmVehicleId`,
-        label: `車両`,
-        form: {
-          defaultValue: isDev ? 5 : null,
-          style: {width: 300},
-        },
-        forSelect: {config: getVehicleForSelectConfig({tbmBaseId})},
-      },
-      {
-        id: `month`,
-        label: `月`,
-        form: {
-          defaultValue: isDev ? '2025-08-01T00:00:00+09:00' : firstDayOfMonth,
-          style: {width: 300},
-        },
-        type: `month`,
-      },
-    ]).transposeColumns(),
-  })
 
-  // フォームデータが変更されたときに呼び出される
-  useEffect(() => {
-    if (latestFormData?.tbmVehicleId && latestFormData?.month) {
-      onFormChange(latestFormData.tbmVehicleId, latestFormData.month)
-    }
-  }, [latestFormData?.tbmVehicleId, latestFormData?.month])
+
+
 
   const handleFileLoaded = (content: string) => {
     setCsvContent(content)
   }
 
   const handleSubmit = () => {
-    if (latestFormData?.tbmVehicleId && latestFormData?.month && csvContent) {
+    if (selectedTbmVehicleId && selectedMonth && csvContent) {
       importCsvData({
-        tbmVehicleId: latestFormData.tbmVehicleId,
-        month: latestFormData.month,
+        tbmVehicleId: selectedTbmVehicleId,
+        month: selectedMonth,
         csvData: csvContent,
       })
+
+
     }
   }
 
   return (
-    <Card className="p-4">
-      <h2 className="text-xl font-bold mb-4">①データインポート</h2>
-      <C_Stack className="gap-4">
-        <BasicForm latestFormData={latestFormData} alignMode="col" />
+    <>
 
-        <EtcFileUpload onFileLoaded={handleFileLoaded} isLoading={isLoading} onSubmit={handleSubmit} />
+      <C_Stack className="gap-4">
+        <EtcFileUpload {...{
+          onFileLoaded: handleFileLoaded,
+          isLoading: isLoading,
+          onSubmit: handleSubmit,
+          importAvailable: selectedTbmVehicleId > 0,
+        }} />
       </C_Stack>
-    </Card>
+    </>
   )
 }

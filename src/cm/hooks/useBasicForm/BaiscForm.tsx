@@ -8,7 +8,7 @@ import {FormProvider, UseFormReturn} from 'react-hook-form'
 import {AdditionalBasicFormPropType} from 'src/cm/hooks/useBasicForm/useBasicFormProps'
 import {useCacheSelectOptionReturnType} from 'src/cm/hooks/useCacheSelectOptions/useCacheSelectOptions'
 
-import {adjustBasicFormProps} from '@cm/hooks/useBasicForm/lib/createBasicFormProps'
+import {adjustBasicFormProps} from '@cm/hooks/useBasicForm/lib/adjustBasicFormProps'
 import ControlGroup from '@cm/hooks/useBasicForm/molecules/ControlGroup'
 import {Card} from '@cm/shadcn/ui/card'
 

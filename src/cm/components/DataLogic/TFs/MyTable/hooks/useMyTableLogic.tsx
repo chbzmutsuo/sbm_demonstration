@@ -183,11 +183,11 @@ export const useMyTableLogic = (props: MyTableLogicProps) => {
     scrollKey: tableId,
   })
 
-  const {SearchingStatusMemo} = useSearchHandler({
-    columns: ClientProps2.columns,
-    dataModelName: ClientProps2.dataModelName,
-    useGlobalProps: ClientProps2.useGlobalProps,
-  })
+  // const {SearchHandlerMemo} = useSearchHandler({
+  //   columns: ClientProps2.columns,
+  //   dataModelName: ClientProps2.dataModelName,
+  //   useGlobalProps: ClientProps2.useGlobalProps,
+  // })
 
   const TableConfigProps: TableConfigPropsType = {
     columns,
@@ -245,11 +245,17 @@ export const useMyTableLogic = (props: MyTableLogicProps) => {
 
   const {isInfiniteScrollMode, setInfiniteScrollMode, hasMore} = infiniteScrollData
 
+  const {SearchModalMemo, SearchedItemListMemo} = useSearchHandler({
+    columns: ClientProps2.columns,
+    dataModelName: ClientProps2.dataModelName,
+    useGlobalProps: ClientProps2.useGlobalProps,
+  })
+
   const MyTableControlsCallback = useCallback(
     () => (
       <MyTableControls
         {...{
-          SearchingStatusMemo,
+          SearchedItemListMemo,
           TableConfigProps,
           ClientProps2,
           isInfiniteScrollMode,
@@ -267,7 +273,7 @@ export const useMyTableLogic = (props: MyTableLogicProps) => {
     ),
     [
       tableData,
-      SearchingStatusMemo,
+
       TableConfigProps,
       ClientProps2,
       isInfiniteScrollMode,
@@ -390,10 +396,11 @@ export const useMyTableLogic = (props: MyTableLogicProps) => {
     ClientProps2,
     infiniteScrollData,
     tableData,
-    searchData: {SearchingStatusMemo},
+    // searchData: {SearchingStatusMemo},
     elementRef,
     mainTableProps,
     Components: {
+      SearchModalMemo,
       MyTableControlsCallback,
       DraggableTableRowCallBack,
       EditButton,

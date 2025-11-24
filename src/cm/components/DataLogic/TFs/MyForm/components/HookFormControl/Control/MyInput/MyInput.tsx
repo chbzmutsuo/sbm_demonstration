@@ -12,8 +12,6 @@ const MyInput = React.forwardRef((props: {controlContextValue: ControlContextTyp
     }
   }, [])
 
-
-
   const convertedType = DH__switchColType({type: col.type})
 
   const step = col.inputProps?.step ?? (col.type === 'float' ? '0.1' : '')

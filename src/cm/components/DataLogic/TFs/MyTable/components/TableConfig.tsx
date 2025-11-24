@@ -6,7 +6,6 @@ import CreateBtn from '@cm/components/DataLogic/TFs/MyTable/components/TableConf
 import SearchBtn from '@cm/components/DataLogic/TFs/MyTable/components/TableConfig/SearchBtn'
 import {ClientPropsType2} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
 import SortBtn from '@cm/components/DataLogic/TFs/MyTable/components/TableConfig/SortBtn'
-import CsvExportBtn from '@cm/components/DataLogic/TFs/MyTable/components/TableConfig/CsvExportBtn'
 
 const TableConfig = React.memo((props: {TableConfigProps: TableConfigPropsType; ClientProps2: ClientPropsType2}) => {
   const {TableConfigProps, ClientProps2} = props
@@ -25,7 +24,6 @@ const TableConfig = React.memo((props: {TableConfigProps: TableConfigPropsType; 
         <CreateBtn {...{TableConfigProps}} />
         <SearchBtn {...{TableConfigProps}} />
         <SortBtn {...{TableConfigProps}} />
-        <CsvExportBtn {...{TableConfigProps, ClientProps2}} />
         {customActions && customActions({ClientProps2})}
       </R_Stack>
     </div>

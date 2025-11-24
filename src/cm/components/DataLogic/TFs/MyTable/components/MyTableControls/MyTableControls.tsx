@@ -8,7 +8,7 @@ import {ClientPropsType2} from '@cm/components/DataLogic/TFs/PropAdjustor/types/
 import {InfiniteScrollToggle} from '@cm/components/DataLogic/TFs/MyTable/components/MyTableControls/InfiniteScrollToggle'
 
 interface MyTableControlsProps {
-  SearchingStatusMemo: React.ReactNode
+  SearchedItemListMemo: React.ReactNode
   TableConfigProps: TableConfigPropsType
   ClientProps2: ClientPropsType2
   isInfiniteScrollMode: boolean
@@ -24,7 +24,7 @@ interface MyTableControlsProps {
 
 export const MyTableControls = React.memo<MyTableControlsProps>(
   ({
-    SearchingStatusMemo,
+    SearchedItemListMemo,
     TableConfigProps,
     ClientProps2,
     isInfiniteScrollMode,
@@ -41,7 +41,7 @@ export const MyTableControls = React.memo<MyTableControlsProps>(
       <section style={sectionStyle}>
         <div className={cl('rounded-sm bg-white/70', 'mx-auto w-fit px-1.5 py-1')}>
           <C_Stack className="items-start">
-            {SearchingStatusMemo && <div>{SearchingStatusMemo}</div>}
+            {SearchedItemListMemo && <div>{SearchedItemListMemo}</div>}
             <R_Stack className="w-fit justify-center gap-y-0">
               <TableConfig TableConfigProps={TableConfigProps} ClientProps2={ClientProps2} />
 

@@ -58,10 +58,7 @@ model User {
   employeeCode String? @unique
   phone        String?
 
-  familyId Int? // Sara家族ID
-  avatar   String? // 子ども用アバター画像URL
-
-  School School? @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  avatar String? // 子ども用アバター画像URL
 
   bcc String?
 
@@ -98,8 +95,8 @@ model User {
   CounselingSlot              CounselingSlot[]
 
   // aidocument
-  aidocumentCompanyId         Int?
-  AidocumentCompany           AidocumentCompany?           @relation(fields: [aidocumentCompanyId], references: [id], onDelete: SetNull)
+  aidocumentCompanyId Int?
+  AidocumentCompany   AidocumentCompany? @relation(fields: [aidocumentCompanyId], references: [id], onDelete: SetNull)
 }
 
 model ReleaseNotes {

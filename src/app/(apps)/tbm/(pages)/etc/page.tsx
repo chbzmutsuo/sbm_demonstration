@@ -1,74 +1,83 @@
 'use client'
-import React, {useEffect} from 'react'
-import {C_Stack, FitMargin, R_Stack} from '@cm/components/styles/common-components/common-components'
-import {Card} from '@cm/shadcn/ui/card'
-import {Button} from '@cm/components/styles/common-components/Button'
+import React from 'react'
+import { C_Stack, FitMargin, R_Stack } from '@cm/components/styles/common-components/common-components'
+import { Card } from '@cm/shadcn/ui/card'
+import { Button } from '@cm/components/styles/common-components/Button'
 
 // カスタムフック
-import {useEtcData} from './hooks/useEtcData'
-import {useEtcGrouping} from './hooks/useEtcGrouping'
-import {useEtcSelection} from './hooks/useEtcSelection'
+import { useEtcData } from './hooks/useEtcData'
+import { useEtcGrouping } from './hooks/useEtcGrouping'
+import { useEtcSelection } from './hooks/useEtcSelection'
 
 // コンポーネント
 
-import {EtcDataTable} from './components/EtcDataTable'
-import {Days} from '@cm/class/Days/Days'
-import {Fields} from '@cm/class/Fields/Fields'
+import { EtcDataTable } from './components/EtcDataTable'
+import { Days } from '@cm/class/Days/Days'
+import { Fields } from '@cm/class/Fields/Fields'
 import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
-import {isDev} from '@cm/lib/methods/common'
-import {getVehicleForSelectConfig} from '@app/(apps)/tbm/(builders)/ColBuilders/TbmVehicleColBuilder'
-import {EtcScheduleLinkModal} from './components/EtcScheduleLinkModal'
-import {EtcImportForm} from '@app/(apps)/tbm/(pages)/etc/components/EtcImportForm'
+
+import { getVehicleForSelectConfig } from '@app/(apps)/tbm/(builders)/ColBuilders/TbmVehicleColBuilder'
+import { EtcScheduleLinkModal } from './components/EtcScheduleLinkModal'
+import { EtcImportForm } from '@app/(apps)/tbm/(pages)/etc/components/EtcImportForm'
 import useModal from '@cm/components/utils/modal/useModal'
 
-export default function EtcCsvImportPage() {
-  const {firstDayOfMonth} = Days.month.getMonthDatum(new Date())
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import { formatDate } from '@cm/class/Days/date-utils/formatters'
+import BasicTabs from '@cm/components/utils/tabs/BasicTabs'
 
-  const {BasicForm, latestFormData} = useBasicFormProps({
+
+export default function EtcCsvImportPage() {
+
+
+  const { query, addQuery } = useGlobal()
+  const { firstDayOfMonth } = Days.month.getMonthDatum(new Date())
+  const VehicleSelector = useBasicFormProps({
     columns: new Fields([
       {
         id: `tbmVehicleId`,
         label: `車両`,
-        form: {
-          style: {width: 350},
-          defaultValue: isDev ? 5 : null,
-        },
-        forSelect: {config: getVehicleForSelectConfig({})},
+        form: { style: { width: 350 }, defaultValue: query.tbmVehicleId ? parseInt(query.tbmVehicleId) : null, },
+        forSelect: { config: getVehicleForSelectConfig({}) },
       },
+
+
+    ]).transposeColumns(),
+
+  })
+
+  const MonthSelector = useBasicFormProps({
+    columns: new Fields([
       {
         id: `month`,
         label: `月`,
-        form: {defaultValue: isDev ? '2025-08-01T00:00:00+09:00' : firstDayOfMonth, style: {width: 350}},
         type: `month`,
-      },
-      {
-        id: `csvData`,
-        label: `CSVデータ`,
         form: {
-          defaultValue: '',
-          style: {
-            maxWidth: 175,
-            maxHeight: 120,
-            lineHeight: 1.2,
-          },
+          defaultValue: query.month ? new Date(query.month) : firstDayOfMonth,
         },
-        type: 'textarea',
       },
     ]).transposeColumns(),
+
   })
 
-  // フォームデータが変更されたときに呼び出される
-  useEffect(() => {
-    if (latestFormData?.tbmVehicleId && latestFormData?.month) {
-      loadEtcRawData(latestFormData.tbmVehicleId, latestFormData.month)
-    }
-  }, [latestFormData?.tbmVehicleId, latestFormData?.month])
+
+  const selectedTbmVehicleId = query.tbmVehicleId ? parseInt(query.tbmVehicleId) : 0
+
+  const selectedMonth = query.month ? new Date(query.month) : firstDayOfMonth
+
+
 
   // ETCデータ管理
-  const {etcRawData, isLoading: dataLoading, importCsvData, loadEtcRawData} = useEtcData()
+  const { etcRawData, isLoading: dataLoading, importCsvData, mutateEtcRawData, deleteMonthData
+  } = useEtcData({
+    selectedTbmVehicleId,
+    selectedMonth,
+  })
+
+
+
 
   // 行選択管理
-  const {selectedRows, toggleRowSelection, selectedRecords, clearSelection} = useEtcSelection(etcRawData)
+  const { selectedRows, toggleRowSelection, selectedRecords, clearSelection } = useEtcSelection(etcRawData)
 
   // グループ化機能
   const {
@@ -77,10 +86,8 @@ export default function EtcCsvImportPage() {
     ungroupRecords,
     getNextGroupIndex,
   } = useEtcGrouping(etcRawData, () => {
-    // グループ化/解除後のコールバック
-    if (latestFormData?.tbmVehicleId && latestFormData?.month) {
-      loadEtcRawData(latestFormData.tbmVehicleId, latestFormData.month)
-    }
+    // // グループ化/解除後のコールバック
+    mutateEtcRawData()
     clearSelection()
   })
 
@@ -92,53 +99,110 @@ export default function EtcCsvImportPage() {
 
   // 紐付け処理
   const handleLinkSchedule = (etcMeisaiId: number, scheduleId: number | null, scheduleDate: Date) => {
-    EtcScheduleLinkModalReturn.handleOpen({etcMeisaiId, scheduleId, scheduleDate})
+    EtcScheduleLinkModalReturn.handleOpen({ etcMeisaiId, scheduleId, scheduleDate })
   }
+
+
+
+
+
+
+
+
 
   return (
     <FitMargin className={`p-2`}>
+
+
+
       <C_Stack>
-        <R_Stack className={` items-start`}>
-          {/* インポートフォーム */}
-          <Card>
-            <EtcImportForm isLoading={isLoading} importCsvData={importCsvData} onFormChange={loadEtcRawData} />
-          </Card>
+        <Card >
+          <div className={`w-fit mx-auto`}>
+            <VehicleSelector.BasicForm
+              onSubmit={(data) => {
+                addQuery({
+                  tbmVehicleId: data?.tbmVehicleId,
+                  month: formatDate(data.month, 'YYYY-MM-DD'),
+                })
+              }}
 
-          {/* データ表示エリア */}
-          <Card>
-            <h2 className="text-xl font-bold mb-2">②データ確認とグルーピング</h2>
-            {etcRawData.length > 0 ? (
-              <>
-                <div className="mb-4">
-                  <div className="flex flex-col gap-2">
-                    <Button
-                      onClick={() => updateGrouping(selectedRecords, getNextGroupIndex())}
-                      disabled={isLoading || selectedRecords.length === 0}
-                      className="mt-2"
-                    >
-                      選択したレコードをグループ化
-                    </Button>
+              latestFormData={VehicleSelector.latestFormData} alignMode="row" >
+              <Button>検索</Button>
+            </VehicleSelector.BasicForm>
+          </div>
+        </Card>
 
-                    {selectedRecords.some(record => record.isGrouped) && (
-                      <p className="text-red-500 text-sm">
-                        ※既にグループ化されているレコードが含まれています。未グループのレコードのみ選択してください。
-                      </p>
-                    )}
-                  </div>
+
+
+
+        {query.tbmVehicleId ? <Card>
+
+          <BasicTabs
+            id="etc-import-tabs"
+            TabComponentArray={[
+              {
+                label: "データインポート",
+                component: <EtcImportForm {...{
+                  isLoading,
+                  importCsvData,
+                  selectedTbmVehicleId,
+                  selectedMonth,
+                }} />
+              },
+              {
+                label: "データ確認とグルーピング",
+                component: <div>
+                  <MonthSelector.BasicForm
+                    latestFormData={MonthSelector.latestFormData}
+                    alignMode="row"
+                    onSubmit={(data) => {
+                      addQuery({
+                        month: formatDate(data.month, 'YYYY-MM-DD'),
+                      })
+                    }}
+                  >
+                    <Button>検索</Button>
+                  </MonthSelector.BasicForm>
+
+                  {etcRawData.length > 0 ? (
+                    <>
+                      <div className="mb-4">
+                        <R_Stack className=" justify-between">
+                          <Button
+                            onClick={() => updateGrouping(selectedRecords, getNextGroupIndex())}
+                            disabled={isLoading || selectedRecords.length === 0}
+                            className="mt-2"
+                          >
+                            選択したレコードをグループ化
+                          </Button>
+
+                          <Button
+                            onClick={() => deleteMonthData(selectedTbmVehicleId, selectedMonth)}
+                            disabled={isLoading}
+                            className="mt-2 bg-red-500 hover:bg-red-600"
+                          >
+                            選択中の月のデータを一括削除
+                          </Button>
+                        </R_Stack>
+                      </div>
+                      <EtcDataTable
+                        etcRawData={etcRawData}
+                        selectedRows={selectedRows}
+                        toggleRowSelection={toggleRowSelection}
+                        ungroupRecords={ungroupRecords}
+                        handleLinkSchedule={handleLinkSchedule}
+                      />
+                    </>
+                  ) : (
+                    <p>表示するデータがありません。</p>
+                  )}
                 </div>
-                <EtcDataTable
-                  etcRawData={etcRawData}
-                  selectedRows={selectedRows}
-                  toggleRowSelection={toggleRowSelection}
-                  ungroupRecords={ungroupRecords}
-                  handleLinkSchedule={handleLinkSchedule}
-                />
-              </>
-            ) : (
-              <p>表示するデータがありません。車両と月を選択するか、CSVデータをインポートしてください。</p>
-            )}
-          </Card>
-        </R_Stack>
+              }
+            ]}
+          />
+
+        </Card> : <p>車両を選択してください。</p>}
+
       </C_Stack>
 
       {/* 運行データ紐付けモーダル */}
@@ -150,8 +214,8 @@ export default function EtcCsvImportPage() {
           onClose={() => EtcScheduleLinkModalReturn.handleClose()}
           onUpdate={() => {
             // データを再読み込み
-            if (latestFormData?.tbmVehicleId && latestFormData?.month) {
-              loadEtcRawData(latestFormData.tbmVehicleId, latestFormData.month)
+            if (selectedTbmVehicleId && selectedMonth) {
+              mutateEtcRawData()
             }
           }}
         />

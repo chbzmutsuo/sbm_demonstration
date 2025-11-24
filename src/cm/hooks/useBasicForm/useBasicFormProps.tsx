@@ -1,20 +1,20 @@
 'use client'
 
-import {FieldValues, useForm, UseFormReturn} from 'react-hook-form'
-import React, {useCallback, useEffect, useId, useMemo, useRef, useState} from 'react'
+import { FieldValues, useForm, UseFormReturn } from 'react-hook-form'
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 
-import {extraFormStateType, onFormItemBlurType} from '@cm/types/types'
-import {colType} from '@cm/types/col-types'
+import { extraFormStateType, onFormItemBlurType } from '@cm/types/types'
+import { colType } from '@cm/types/col-types'
 
 import useGlobal from 'src/cm/hooks/globalHooks/useGlobal'
 import BasicForm from 'src/cm/hooks/useBasicForm/BaiscForm'
-import {getLatestFormData, initColumns, makeDefaultValues} from '@cm/hooks/useBasicForm/lib/hookformMethods'
-import useCacheSelectOptions, {useCacheSelectOptionReturnType} from 'src/cm/hooks/useCacheSelectOptions/useCacheSelectOptions'
+import { getLatestFormData, initColumns, makeDefaultValues } from '@cm/hooks/useBasicForm/lib/hookformMethods'
+import useCacheSelectOptions, { useCacheSelectOptionReturnType } from 'src/cm/hooks/useCacheSelectOptions/useCacheSelectOptions'
 
-import {alignModeType, ControlOptionType} from '@cm/types/form-control-type'
-import {StrHandler} from '@cm/class/StrHandler'
-import {DH__switchColType} from '@cm/class/DataHandler/type-converter'
-import {anyObject} from '@cm/types/utility-types'
+import { alignModeType, ControlOptionType } from '@cm/types/form-control-type'
+import { StrHandler } from '@cm/class/StrHandler'
+import { DH__switchColType } from '@cm/class/DataHandler/type-converter'
+import { anyObject } from '@cm/types/utility-types'
 
 export type useAdditionalBasicFormPropType = {
   columns: colType[][]
@@ -31,9 +31,9 @@ const useBasicFormProps = (props: useAdditionalBasicFormPropType) => {
   const [startFetchingOptions, setstartFetchingOptions] = useState(true)
 
   const useGlobalProps = useGlobal()
-  const {onFormItemBlur, autoApplyProps = {}, values = undefined} = props
+  const { onFormItemBlur, autoApplyProps = {}, values = undefined } = props
   const [formData, setformData] = useState(props.formData)
-  const columns = useMemo(() => initColumns({autoApplyProps, columns: props.columns}), [props.columns])
+  const columns = useMemo(() => initColumns({ autoApplyProps, columns: props.columns }), [props.columns])
 
   const extraFormSateDefaultValues = Object.fromEntries(
     columns.flat().map((col: colType) => {
@@ -55,11 +55,12 @@ const useBasicFormProps = (props: useAdditionalBasicFormPropType) => {
   )
   const [extraFormState, setextraFormState] = useState<extraFormStateType>(extraFormSateDefaultValues)
 
-  const {defaultValues} = makeDefaultValues({columns, formData})
+  const { defaultValues } = makeDefaultValues({ columns, formData })
 
-  const ReactHookForm: UseFormReturn = useForm({defaultValues: {...defaultValues}, mode: `all`})
 
-  const latestFormData = getLatestFormData({formData, ReactHookForm})
+  const ReactHookForm: UseFormReturn = useForm({ defaultValues: { ...defaultValues }, mode: `all` })
+
+  const latestFormData = getLatestFormData({ formData, ReactHookForm })
 
   const Cached_Option_Props: useCacheSelectOptionReturnType = useCacheSelectOptions({
     columns,
@@ -75,9 +76,9 @@ const useBasicFormProps = (props: useAdditionalBasicFormPropType) => {
     }
   }, [])
 
-  const useResetValue = useCallback(({col, field}) => useResetValueOrigin({col, field, ReactHookForm}), [ReactHookForm])
+  const useResetValue = useCallback(({ col, field }) => useResetValueOrigin({ col, field, ReactHookForm }), [ReactHookForm])
 
-  const newestRecord = {...latestFormData, ...formData, ...values}
+  const newestRecord = { ...latestFormData, ...formData, ...values }
 
   /**Basic Form */
   const BasicFormCallback = useCallback(
@@ -139,10 +140,10 @@ export type AdditionalBasicFormPropType = {
   latestFormData: any
 }
 
-const useResetValueOrigin = ({col, field, ReactHookForm}) => {
+const useResetValueOrigin = ({ col, field, ReactHookForm }) => {
   if (confirm(`値をクリアしますか？`) === false) return
 
-  const convertedType = DH__switchColType({type: col.type})
+  const convertedType = DH__switchColType({ type: col.type })
 
   let nullvalue
   switch (convertedType) {

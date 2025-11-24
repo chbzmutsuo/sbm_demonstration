@@ -1,29 +1,29 @@
 'use client'
 
-import React, {useState, useEffect, useMemo} from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
-import {getScopes} from 'src/non-common/scope-lib/getScopes'
-import {formatDate} from '@cm/class/Days/date-utils/formatters'
-import {Days} from '@cm/class/Days/Days'
+import { getScopes } from 'src/non-common/scope-lib/getScopes'
+import { formatDate } from '@cm/class/Days/date-utils/formatters'
+import { Days } from '@cm/class/Days/Days'
 
-import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {Button} from '@cm/components/styles/common-components/Button'
-import {ChevronLeft, ChevronRight} from 'lucide-react'
+import { doStandardPrisma } from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import { Button } from '@cm/components/styles/common-components/Button'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import useLocalLoading from '@cm/hooks/globalHooks/useLocalLoading'
-import {showSpendTime} from '@cm/lib/methods/toast-helper'
-import {cn} from '@cm/shadcn/lib/utils'
-import {C_Stack} from '@cm/components/styles/common-components/common-components'
-import {TimeHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
-import {T_LINK} from '@cm/components/styles/common-components/links'
-import {HREF} from '@cm/lib/methods/urls'
-import {fetchUnkoMeisaiData} from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fetchUnkoMeisaiData'
+import { showSpendTime } from '@cm/lib/methods/toast-helper'
+import { cn } from '@cm/shadcn/lib/utils'
+import { C_Stack } from '@cm/components/styles/common-components/common-components'
+import { TimeHandler } from '@app/(apps)/tbm/(class)/TimeHandler'
+import { T_LINK } from '@cm/components/styles/common-components/links'
+import { HREF } from '@cm/lib/methods/urls'
+import { fetchUnkoMeisaiData } from '@app/(apps)/tbm/(class)/TbmReportCl/fetchers/fetchUnkoMeisaiData'
 
 export default function MonthlySchedulePage() {
-  const {query, session, addQuery} = useGlobal()
-  const {LocalLoader, toggleLocalLoading} = useLocalLoading()
+  const { query, session, addQuery } = useGlobal()
+  const { LocalLoader, toggleLocalLoading } = useLocalLoading()
 
-  const scopes = getScopes(session, {query})
-  const {tbmBaseId, userId} = scopes.getTbmScopes()
+  const scopes = getScopes(session, { query })
+  const { userId, tbmBaseId } = scopes.getTbmScopes()
 
   // queryからパラメータを取得（デフォルトは現在の年月と全ドライバー）
   const currentDate = new Date()
@@ -36,12 +36,12 @@ export default function MonthlySchedulePage() {
 
   // 年月選択の変更
   const handleYearMonthChange = (newYearMonth: string) => {
-    addQuery({yearMonth: newYearMonth})
+    addQuery({ yearMonth: newYearMonth })
   }
 
   // ドライバー選択の変更
   const handleDriverChange = (newDriverId: string) => {
-    addQuery({driverId: newDriverId})
+    addQuery({ driverId: newDriverId })
   }
 
   // 前月・次月ボタン
@@ -55,7 +55,7 @@ export default function MonthlySchedulePage() {
 
   // データ取得
   const fetchData = async () => {
-    if (!tbmBaseId) return
+
 
     toggleLocalLoading(async () => {
       await showSpendTime(async () => {
@@ -70,23 +70,27 @@ export default function MonthlySchedulePage() {
             lte: endDate,
           }
 
+
+
           // 月間運行データを取得
           const data = await fetchUnkoMeisaiData({
+            allowNonApprovedSchedule: true,
             whereQuery,
             tbmBaseId,
             userId: selectedDriverId,
           })
 
+
           setMonthlyData(data)
 
-          const {result: allUsers} = await doStandardPrisma('user', 'findMany', {
-            where: {tbmBaseId},
+          const { result: allUsers } = await doStandardPrisma('user', 'findMany', {
+            where: { tbmBaseId },
             select: {
               id: true,
               code: true,
               name: true,
             },
-            orderBy: {code: 'asc'},
+            orderBy: { code: 'asc' },
           })
           setUserList(allUsers)
         } catch (error) {
@@ -141,12 +145,11 @@ export default function MonthlySchedulePage() {
   }
 
   return (
-    <div className="p-6 ">
+    <div className=" p-1  ">
       <LocalLoader />
 
       {/* ヘッダー部分 */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-4">月間スケジュール</h1>
 
         {/* コントロール部分 */}
         <div className="flex items-center gap-4 mb-4 mx-auto w-fit">
@@ -188,85 +191,79 @@ export default function MonthlySchedulePage() {
       </div>
 
       {/* カレンダー部分 */}
-      <div className="mx-auto w-fit print-target p-4 border">
-        <div className="mb-4">
-          <strong className="text-xl flex items-center gap-2">
-            <span>{formatDate(calendarData.startDate, 'YYYY年MM月')} </span>
-            <span>個別スケジュール</span>
-            <span>:</span>
-            <span>
-              {(() => {
-                const user = userList.find(u => u.id.toString() === selectedDriverId)
-                return user ? `${user.name}` : ''
-              })()}
-            </span>
-          </strong>
-          <div></div>
-        </div>
+      <div className="mx-auto w-fit print-target ">
 
-        <table className=" border-[1px]">
-          <thead>
-            <tr>
-              {calendarData.weeks[0]?.map((day, idx) => {
-                const dayStr = formatDate(day, 'ddd')
-                const isWeekend = dayStr === '土' || dayStr === '日'
 
-                return (
-                  <th
-                    key={idx}
-                    className={`text-center p-2 ${isWeekend ? 'bg-red-50 text-red-600' : 'bg-blue-50'}`}
-                    style={{minWidth: '100px'}}
-                  >
-                    {dayStr}
-                  </th>
-                )
-              })}
-            </tr>
-          </thead>
-          <tbody>
-            {calendarData.weeks.map((week, weekIdx) => (
-              <tr key={weekIdx}>
-                {week.map((date, dayIdx) => {
-                  const dayStr = formatDate(date, 'D(ddd)')
-                  const dateKey = formatDate(date, 'YYYY-MM-DD')
-                  const onThisMonth = formatDate(date, 'MM') === formatDate(calendarData.startDate, 'MM')
-                  const isToday = Days.validate.isSameDate(date, new Date())
-                  const isWeekend = formatDate(date, 'ddd') === '土' || formatDate(date, 'ddd') === '日'
-                  const schedules = calendarData.schedulesByDate[dateKey] || []
+        <div className={`max-w-[95vw] mx-auto overflow-auto border max-h-[calc(100vh-140px)]`}>
+          <table className=" border-[1px]">
+            <thead>
+              <tr>
+                {calendarData.weeks[0]?.map((day, idx) => {
+                  const dayStr = formatDate(day, 'ddd')
+                  const isWeekend = dayStr === '土' || dayStr === '日'
 
-                  let cellStyle = {}
-                  if (isToday) {
-                    cellStyle = {backgroundColor: '#ffeb3b'}
-                  } else if (isWeekend) {
-                    cellStyle = {backgroundColor: '#ffebee'}
-                  }
+                  return (
+                    <th
+                      key={idx}
+                      className={`text-center p-2 ${isWeekend ? 'bg-red-50 text-red-600' : 'bg-blue-50'}`}
+                      style={{ minWidth: '100px' }}
+                    >
+                      {dayStr}
+                    </th>
+                  )
+                })}
+              </tr>
+            </thead>
+            <tbody>
+              {calendarData.weeks.map((week, weekIdx) => (
+                <tr key={weekIdx}>
+                  {week.map((date, dayIdx) => {
+                    const dayStr = formatDate(date, 'D(ddd)')
+                    const dateKey = formatDate(date, 'YYYY-MM-DD')
+                    const onThisMonth = formatDate(date, 'MM') === formatDate(calendarData.startDate, 'MM')
+                    const isToday = Days.validate.isSameDate(date, new Date())
+                    const isWeekend = formatDate(date, 'ddd') === '土' || formatDate(date, 'ddd') === '日'
+                    const schedules = calendarData.schedulesByDate[dateKey] || []
 
-                  if (onThisMonth) {
-                    return (
-                      <td key={dayIdx} style={cellStyle} className="border p-1">
-                        <T_LINK
-                          simple
-                          target="_blank"
-                          href={HREF(
-                            '/tbm/driver/driveInput',
-                            {
-                              from: formatDate(date, 'YYYY-MM-DD'),
-                              g_userId: selectedDriverId,
-                              g_tbmBaseId: tbmBaseId,
-                            },
-                            query
-                          )}
-                        >
-                          <C_Stack className="h-[140px]   gap-0.5 w-full text-sm">
+                    let cellStyle = {}
+                    if (isToday) {
+                      cellStyle = { backgroundColor: '#ffeb3b' }
+                    } else if (isWeekend) {
+                      cellStyle = { backgroundColor: '#ffebee' }
+                    }
+
+                    if (onThisMonth) {
+                      return (
+                        <td key={dayIdx} style={cellStyle} className="border p-1.5  align-top">
+
+
+                          <C_Stack className="min-h-[140px]  w-full text-sm gap-4">
                             {/* 日付表示 */}
                             <div
                               className={cn(
                                 'text-right font-bold ',
                                 formatDate(date, 'ddd') === '土' && 'text-blue-600',
                                 formatDate(date, 'ddd') === '日' && 'text-red-600'
+
                               )}
                             >
-                              {dayStr}
+
+
+                              <T_LINK
+
+                                target="_blank"
+                                href={HREF(
+                                  '/tbm/driver/driveInput',
+                                  {
+                                    from: formatDate(date, 'YYYY-MM-DD'),
+                                    g_userId: selectedDriverId,
+                                    g_tbmBaseId: tbmBaseId,
+                                  },
+                                  query
+                                )}
+                              >
+                                {dayStr}
+                              </T_LINK>
                             </div>
 
                             {/* スケジュール表示 */}
@@ -290,21 +287,24 @@ export default function MonthlySchedulePage() {
                               ))}
                             </div>
                           </C_Stack>
-                        </T_LINK>
-                      </td>
-                    )
-                  } else {
-                    return (
-                      <td key={dayIdx} className="border p-1 text-gray-300">
-                        <div className="h-[120px] w-full text-sm"></div>
-                      </td>
-                    )
-                  }
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+
+                        </td>
+                      )
+                    } else {
+                      return (
+                        <td key={dayIdx}
+
+                          className="border p-1 text-gray-300">
+                          <div className="h-[120px]  w-full text-sm"></div>
+                        </td>
+                      )
+                    }
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )

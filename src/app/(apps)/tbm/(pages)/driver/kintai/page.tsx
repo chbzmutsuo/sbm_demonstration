@@ -1,28 +1,27 @@
 'use client'
 
-import React, {useMemo} from 'react'
-import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import React, { useMemo } from 'react'
+import { formatDate } from '@cm/class/Days/date-utils/formatters'
 
-import {C_Stack, FitMargin, R_Stack} from '@cm/components/styles/common-components/common-components'
+import { C_Stack, FitMargin, R_Stack } from '@cm/components/styles/common-components/common-components'
 import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
-import {getUserWorkStatusForMonth, UserWorkStatusItem} from '@app/(apps)/tbm/(server-actions)/userWorkStatusActions'
-import {getMidnight} from '@cm/class/Days/date-utils/calculations'
+import { getUserWorkStatusForMonth, UserWorkStatusItem } from '@app/(apps)/tbm/(server-actions)/userWorkStatusActions'
+import { getMidnight } from '@cm/class/Days/date-utils/calculations'
 import InlineEditField from './components/InlineEditField'
-import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
+import { CsvTable } from '@cm/components/styles/common-components/CsvTable/CsvTable'
 import useSWR from 'swr'
-import {TBM_CODE} from '@app/(apps)/tbm/(class)/TBM_CODE'
-import {TimeHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
-import {UseWorkStatusCl} from '@app/(apps)/tbm/(class)/UseWorkStatusCl'
-import {Days} from '@cm/class/Days/Days'
-import {T_LINK} from '@cm/components/styles/common-components/links'
-import {HREF} from '@cm/lib/methods/urls'
-import {Alert} from '@cm/components/styles/common-components/Alert'
-import {isDev} from '@cm/lib/methods/common'
-import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
+import { TBM_CODE } from '@app/(apps)/tbm/(class)/TBM_CODE'
+import { TimeHandler } from '@app/(apps)/tbm/(class)/TimeHandler'
+import { UseWorkStatusCl } from '@app/(apps)/tbm/(class)/UseWorkStatusCl'
+import { Days } from '@cm/class/Days/Days'
+import { T_LINK } from '@cm/components/styles/common-components/links'
+import { HREF } from '@cm/lib/methods/urls'
+import { Alert } from '@cm/components/styles/common-components/Alert'
+import { MarkDownDisplay } from '@cm/components/utils/texts/MarkdownDisplay'
 
 export default function AttendancePage() {
-  const {query, session} = useGlobal()
+  const { query, session } = useGlobal()
 
   const {
     data,
@@ -42,7 +41,7 @@ export default function AttendancePage() {
 
   const User = data as Awaited<ReturnType<typeof getUserWorkStatusForMonth>>
 
-  const {UserWorkStatus = [], TbmRefuelHistory = [], OdometerInput = [], TbmDriveSchedule = []} = User ?? {}
+  const { UserWorkStatus = [], TbmRefuelHistory = [], OdometerInput = [], TbmDriveSchedule = [] } = User ?? {}
 
   const selectedUserId = query.g_userId ? parseInt(query.g_userId) : undefined
 
@@ -59,13 +58,13 @@ export default function AttendancePage() {
 
   const theDate = getCurrentMonth()
 
-  const {days: daysInMonth} = Days.month.getMonthDatum(theDate)
+  const { days: daysInMonth } = Days.month.getMonthDatum(theDate)
 
   const SummaryTable = useMemo(() => {
     // UseWorkStatusClを使用した月間サマリー計算
     const monthlySummaryResult = UseWorkStatusCl.calculateMonthlySummary(UserWorkStatus, selectedUserId, daysInMonth)
 
-    const {monthlyTotals, summary} = monthlySummaryResult
+    const { monthlyTotals, summary } = monthlySummaryResult
 
     return (
       <C_Stack className="items-start ">
@@ -75,17 +74,17 @@ export default function AttendancePage() {
               records: [
                 {
                   csvTableRow: [
-                    {label: '出勤日数', cellValue: summary.workDays},
-                    {label: '公休日数', cellValue: summary.holidays},
-                    {label: '欠勤日数', cellValue: summary.absences},
-                    {label: '休日出勤', cellValue: summary.holidayWork},
-                    {label: '早退日数', cellValue: summary.earlyLeave},
-                    {label: '有給休暇', cellValue: summary.paidLeave},
-                    {label: '総出勤日数', cellValue: summary.totalWorkDays},
+                    { label: '出勤日数', cellValue: summary.workDays },
+                    { label: '公休日数', cellValue: summary.holidays },
+                    { label: '欠勤日数', cellValue: summary.absences },
+                    { label: '休日出勤', cellValue: summary.holidayWork },
+                    { label: '早退日数', cellValue: summary.earlyLeave },
+                    { label: '有給休暇', cellValue: summary.paidLeave },
+                    { label: '総出勤日数', cellValue: summary.totalWorkDays },
                   ],
                 },
               ],
-              chunked: {enabled: false},
+              chunked: { enabled: false },
             }).WithWrapper({})}
           </div>
         </div>
@@ -95,21 +94,21 @@ export default function AttendancePage() {
             records: [
               {
                 csvTableRow: [
-                  {label: '拘束時間', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.kosokuMins)},
-                  {label: '労働時間', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.rodoMins)},
-                  {label: '一日平均', cellValue: UseWorkStatusCl.formatMinutesToTime(Math.round(summary.averageDailyHours))},
-                  {label: '所定内', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.shoteinai)},
-                  {label: '時間外1', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.jikangai1)},
-                  {label: '時間外2', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.jikangai2)},
-                  {label: '深夜', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.shinyaZangyo)},
-                  {label: '休日勤務', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.kyujitsuShukkin)},
-                  {label: '月間距離', cellValue: '-'},
-                  {label: '給油量', cellValue: '-'},
-                  {label: '燃費', cellValue: '-'},
+                  { label: '拘束時間', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.kosokuMins) },
+                  { label: '労働時間', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.rodoMins) },
+                  { label: '一日平均', cellValue: UseWorkStatusCl.formatMinutesToTime(Math.round(summary.averageDailyHours)) },
+                  { label: '所定内', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.shoteinai) },
+                  { label: '時間外1', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.jikangai1) },
+                  { label: '時間外2', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.jikangai2) },
+                  { label: '深夜', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.shinyaZangyo) },
+                  { label: '休日勤務', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.kyujitsuShukkin) },
+                  { label: '月間距離', cellValue: '-' },
+                  { label: '給油量', cellValue: '-' },
+                  { label: '燃費', cellValue: '-' },
                 ],
               },
             ],
-            chunked: {enabled: false},
+            chunked: { enabled: false },
           }).WithWrapper({})}
         </div>
       </C_Stack>
@@ -175,12 +174,12 @@ export default function AttendancePage() {
 
       const dateStr = formatDate(date, 'DD(ddd)')
 
-      const driveInputPageHref = HREF('/tbm/driver/driveInput', {g_userId: selectedUserId, from: date}, query)
+      const driveInputPageHref = HREF('/tbm/driver/driveInput', { g_userId: selectedUserId, from: date }, query)
 
       return {
         csvTableRow: [
-          isDev && {label: 'id', cellValue: <T_LINK href={driveInputPageHref}>{userWorkStatus?.id}</T_LINK>},
-          {label: '日付', cellValue: <T_LINK href={driveInputPageHref}>{dateStr}</T_LINK>},
+          // isDev && {label: 'id', cellValue: <T_LINK href={driveInputPageHref}>{userWorkStatus?.id}</T_LINK>},
+          { label: '日付', cellValue: <T_LINK href={driveInputPageHref}>{dateStr}</T_LINK> },
           {
             label: '勤怠',
             cellValue: (
@@ -207,7 +206,7 @@ export default function AttendancePage() {
                 <MarkDownDisplay>{vehicleNumbers || ''}</MarkDownDisplay>
               </small>
             ),
-            style: {minWidth: 120},
+            style: { minWidth: 120 },
           },
           {
             label: '出社時間',
@@ -237,8 +236,12 @@ export default function AttendancePage() {
               />
             ),
           },
-          {label: '走行距離', cellValue: odometerInput}, // TODO: 別データソースから取得
-          {label: '給油量', cellValue: tbmRefuelHistory}, // TODO: 別データソースから取得
+          {
+            label: '走行距離',
+            cellValue: odometerInput,
+            className: odometerInput < 0 ? 'bg-red-500 text-white' : ''
+          }, // TODO: 別データソースから取得
+          { label: '給油量', cellValue: tbmRefuelHistory }, // TODO: 別データソースから取得
           {
             label: '拘束時間',
             cellValue: kosokuMins ? TimeHandler.minutesToTimeString(kosokuMins) : '',
@@ -316,47 +319,47 @@ export default function AttendancePage() {
                 <MarkDownDisplay>{driveContents || ''}</MarkDownDisplay>
               </small>
             ),
-            style: {minWidth: 240},
+            style: { minWidth: 240 },
           },
         ]
           .filter(Boolean)
-          .map((d: any) => ({...d, style: {minWidth: 80, ...d.style}})),
+          .map((d: any) => ({ ...d, style: { minWidth: 80, ...d.style } })),
       }
     })
 
     // 月間合計行を追加
     const monthlySummaryResult = UseWorkStatusCl.calculateMonthlySummary(UserWorkStatus, selectedUserId, daysInMonth)
-    const {monthlyTotals} = monthlySummaryResult
+    const { monthlyTotals } = monthlySummaryResult
 
     const totalRow = {
       className: 'bg-blue-50 font-bold',
       csvTableRow: [
-        {label: '日付', cellValue: '合計'},
-        {label: '勤怠', cellValue: ''},
-        {label: '車番', cellValue: ''},
-        {label: '出社時間', cellValue: ''},
-        {label: '退社時間', cellValue: ''},
-        {label: '走行距離', cellValue: ''},
-        {label: '給油量', cellValue: ''},
-        {label: '拘束時間', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.kosokuMins)},
-        {label: '労働時間', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.rodoMins)},
-        {label: '休憩時間', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.kyukeiMins)},
-        {label: '深夜休憩', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.shinyaKyukeiMins)},
-        {label: '休息時間', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.kyusokuMins)},
-        {label: '所定内', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.shoteinai)},
-        {label: '時間外1', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.jikangai1)},
-        {label: '深夜時間', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.shinyaTime)},
-        {label: '深夜残業', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.shinyaZangyo)},
-        {label: '休日出勤', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.kyujitsuShukkin)},
-        {label: '運行内容', cellValue: ''},
-      ].map(d => ({...d, style: {minWidth: 80}})),
+        { label: '日付', cellValue: '合計' },
+        { label: '勤怠', cellValue: '' },
+        { label: '車番', cellValue: '' },
+        { label: '出社時間', cellValue: '' },
+        { label: '退社時間', cellValue: '' },
+        { label: '走行距離', cellValue: '' },
+        { label: '給油量', cellValue: '' },
+        { label: '拘束時間', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.kosokuMins) },
+        { label: '労働時間', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.rodoMins) },
+        { label: '休憩時間', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.kyukeiMins) },
+        { label: '深夜休憩', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.shinyaKyukeiMins) },
+        { label: '休息時間', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.kyusokuMins) },
+        { label: '所定内', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.shoteinai) },
+        { label: '時間外1', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.jikangai1) },
+        { label: '深夜時間', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.shinyaTime) },
+        { label: '深夜残業', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.shinyaZangyo) },
+        { label: '休日出勤', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.kyujitsuShukkin) },
+        { label: '運行内容', cellValue: '' },
+      ].map(d => ({ ...d, style: { minWidth: 80 } })),
     }
 
     const allRecords = [...records, totalRow]
 
     return (
       <div>
-        {CsvTable({records: allRecords}).WithWrapper({
+        {CsvTable({ records: allRecords }).WithWrapper({
           className: 'max-h-none',
         })}
       </div>
@@ -377,7 +380,7 @@ export default function AttendancePage() {
               <NewDateSwitcher
                 {...{
                   monthOnly: true,
-                  additionalCols: [{label: '', id: 'g_userId', forSelect: {}}],
+                  additionalCols: [{ label: '', id: 'g_userId', forSelect: {} }],
                 }}
               />
             </div>

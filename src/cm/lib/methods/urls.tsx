@@ -1,16 +1,18 @@
-import {ObjectMap} from 'src/cm/lib/methods/common'
+import { ObjectMap } from 'src/cm/lib/methods/common'
 
 export const addQuerySentence = (additionalQuery = {}, currentQuery = {}, keepOldQuery = true) => {
-  let newQuery = {...additionalQuery}
+  let newQuery = { ...additionalQuery }
   if (keepOldQuery) {
-    newQuery = {...currentQuery, ...additionalQuery}
+    newQuery = { ...currentQuery, ...additionalQuery }
   }
 
   const newPrams = Object.keys(newQuery).reduce((accu, key) => {
     const value = newQuery[key]
 
     if (value) {
-      const queryString = `${key}=${value}`
+      // URLエンコードを追加（&などの特殊文字を正しく処理するため）
+      const encodedValue = encodeURIComponent(String(value))
+      const queryString = `${key}=${encodedValue}`
       const preFix = accu ? '&' : '?'
 
       return accu + preFix + queryString
@@ -44,10 +46,10 @@ export const makeGlobalQuery = query => {
 }
 
 export const HREF = (pathname, additionalQuery, currentQuery, options?) => {
-  const {forceDelete} = options ?? {}
+  const { forceDelete } = options ?? {}
   const isAbsolutePath = String(pathname).includes(`http`)
 
-  const paramOrigin = {...additionalQuery, ...makeGlobalQuery(currentQuery)}
+  const paramOrigin = { ...additionalQuery, ...makeGlobalQuery(currentQuery) }
   Object.keys(additionalQuery).forEach(key => {
     if (additionalQuery[key] === null) {
       delete paramOrigin[key]
@@ -95,8 +97,8 @@ export function objectsAreEqual(objA, objB) {
   return true
 }
 
-export const getQueryIds = (props: {query: any; queryKey: string; data?: any[]; dataId?: string}) => {
-  const {query, queryKey, data, dataId} = props
+export const getQueryIds = (props: { query: any; queryKey: string; data?: any[]; dataId?: string }) => {
+  const { query, queryKey, data, dataId } = props
 
   type idsArrQueryType = {
     all: string[]
@@ -117,7 +119,7 @@ export const getQueryIds = (props: {query: any; queryKey: string; data?: any[]; 
   }) as idsArrQueryType
 
   const chechIsActive = (data, dataId) => {
-    const {current} = idsArrToString
+    const { current } = idsArrToString
     const ID = data[dataId]
 
     const isActive = current.includes(String(data[dataId]))

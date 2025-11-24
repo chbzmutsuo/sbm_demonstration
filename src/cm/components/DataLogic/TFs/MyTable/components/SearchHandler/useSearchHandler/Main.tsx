@@ -31,7 +31,6 @@ export const Main = ({
             className={`relative  `}
             style={{
               ...myFormDefault?.style,
-
               maxWidth: 900,
               padding: 0,
               maxHeight: '70vh',

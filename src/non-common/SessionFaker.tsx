@@ -1,8 +1,8 @@
-import {PrismaModelNames} from '@cm/types/prisma-types'
+import { PrismaModelNames } from '@cm/types/prisma-types'
 
 type targetModelType = {
   [key: string]: {
-    modelNames: {name: PrismaModelNames; id_pw?: {id?: string; pw?: string}}[]
+    modelNames: { name: PrismaModelNames; id_pw?: { id?: string; pw?: string } }[]
   }
 }
 export class SessionFaker {
@@ -10,9 +10,9 @@ export class SessionFaker {
     default: {
       modelNames: [
         //
-        {name: 'user', id_pw: {id: 'code', pw: 'password'}},
-        {name: 'user'},
-        {name: 'teacher'},
+        { name: 'user', id_pw: { id: 'code', pw: 'password' } },
+        { name: 'user' },
+
       ],
     },
   }

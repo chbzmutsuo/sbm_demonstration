@@ -3,7 +3,6 @@
 # dependencies
 /node_modules
 
-
 # next.js
 /.next/
 /out/
@@ -13,7 +12,13 @@
 # production
 /build
 
+# 環境変数ファイル（すべてのバリエーション）
 .env
+.env*.local
+.env.production
+.env.development
+.env.test
+.env*.example
 
 # vercel
 .vercel
@@ -21,7 +26,6 @@
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-*.dump
 
 # prisma
 /prisma/generated
@@ -35,14 +39,54 @@ next-env.d.ts
 **/public/worker-*.js.map
 
 
-# styled-systemのフォルダは不要
-/styled-system/
-
-
-.env*.local
-
 # dumpfileは送らないようにしたい
 *.dump
-
-
 certificates
+
+# ユーザーがアップロードしたファイル（機密情報を含む可能性）
+/public/uploads/
+/public/uploads/**/*
+
+# 一時ファイル・メモファイル
+*.txt
+!package.json
+!tsconfig.json
+!README.md
+!LICENSE.txt
+gmail_draft.txt
+CLAUDE.local.md
+*.local.md
+*.backup
+*.bak
+
+# 生成ファイル
+schema.json
+*.log
+*.log.*
+
+# OS固有ファイル
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE固有ファイル
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# セッション・認証情報
+*.session
+*.key
+*.pem
+*.crt
+*.cert
+
+
+# 機密情報を含むスクリプト
+scripts/includeSearchDirectory.js

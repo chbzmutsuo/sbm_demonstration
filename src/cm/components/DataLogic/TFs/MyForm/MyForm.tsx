@@ -14,8 +14,7 @@ const MyForm = React.memo<DetailPagePropType>(props => {
   const prismaDataExtractionQuery = props?.prismaDataExtractionQuery as prismaDataExtractionQueryType
 
   // プロパティをメモ化（依存関係を細分化）
-  const memoizedProps = useMemo(() => ({...props, myForm: {...myFormDefault, ...props.myForm}}), [props])
-
+  const memoizedProps = {...props, myForm: {...myFormDefault, ...props.myForm}}
   const {mutateRecords, dataModelName, myForm, formData, setformData, columns, editType, additional} = memoizedProps
 
   const formId = useId()

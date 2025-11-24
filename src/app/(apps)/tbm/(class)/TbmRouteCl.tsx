@@ -1,4 +1,4 @@
-import {Days} from '@cm/class/Days/Days'
+import { Days } from '@cm/class/Days/Days'
 import {
   TbmDriveSchedule,
   TbmMonthlyConfigForRouteGroup,
@@ -7,7 +7,7 @@ import {
   Mid_TbmRouteGroup_TbmCustomer,
   TbmCustomer,
 } from '@prisma/client'
-import {TimeHandler} from './TimeHandler'
+import { TimeHandler } from './TimeHandler'
 export type TbmRouteData = TbmRouteGroup & {
   TbmMonthlyConfigForRouteGroup: TbmMonthlyConfigForRouteGroup[]
   TbmDriveSchedule: TbmDriveSchedule[]
@@ -43,12 +43,12 @@ export default class TbmRouteCl {
       return Days.validate.isSameMonth(month, config.yearMonth)
     })
 
-    const {tsukoryoSeikyuGaku = 0} = monthConfig ?? {}
+    const { tsukoryoSeikyuGaku = 0 } = monthConfig ?? {}
 
     const jitsudoKaisu = DriveSchedule?.length ?? 0
 
-    const tsukoryo = tsukoryoSeikyuGaku ? tsukoryoSeikyuGaku / jitsudoKaisu : 0
 
-    return {tsukoryo, jitsudoKaisu}
+
+    return { jitsudoKaisu }
   }
 }

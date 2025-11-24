@@ -2,6 +2,7 @@
 
 import prisma from 'src/lib/prisma'
 import {Days} from '@cm/class/Days/Days'
+import {TbmReportCl} from '../(class)/TbmReportCl'
 
 export type UserWorkStatusData = {
   userId: number
@@ -39,7 +40,10 @@ export async function getUserWorkStatusForMonth(params: {tbmBaseId: number; user
       OdometerInput: {where: {date: dateWhere}},
       TbmRefuelHistory: {where: {date: dateWhere}},
       TbmDriveSchedule: {
-        where: {date: dateWhere},
+        where: {
+          date: dateWhere,
+          approved: TbmReportCl.allowNonApprovedSchedule ? undefined : true,
+        },
         include: {
           TbmRouteGroup: true,
           TbmVehicle: true,

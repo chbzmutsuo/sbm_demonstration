@@ -1,8 +1,8 @@
-import {useState} from 'react'
-import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {toastByResult} from '@cm/lib/ui/notifications'
-import {doTransaction, transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
-import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import { useState } from 'react'
+import { doStandardPrisma } from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import { toastByResult } from '@cm/lib/ui/notifications'
+import { doTransaction, transactionQuery } from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import { formatDate } from '@cm/class/Days/date-utils/formatters'
 
 export const useEtcGrouping = (etcRawData: EtcRecord[], onSuccess: () => void) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -10,6 +10,15 @@ export const useEtcGrouping = (etcRawData: EtcRecord[], onSuccess: () => void) =
   // グルーピングを更新する関数
   const updateGrouping = async (records: EtcRecord[], groupIndex: number) => {
     if (records.length === 0) return
+
+
+    // 一つもEtc明細が紐づいていないTbmEtcMeisaiを削除
+    await doStandardPrisma('tbmEtcMeisai', 'deleteMany', {
+      where: {
+        tbmVehicleId: records[0].tbmVehicleId,
+        EtcCsvRaw: { none: { id: { gte: 0 }, }, }
+      },
+    })
 
     // 選択されたレコードが既にグループ化されていないか確認
     const alreadyGroupedRecords = records.filter(record => record.isGrouped)
@@ -31,7 +40,7 @@ export const useEtcGrouping = (etcRawData: EtcRecord[], onSuccess: () => void) =
       const sum = records.reduce((acc, item) => acc + item.fee, 0)
 
       // 新しいグループを作成
-      const {result: meisai} = await doStandardPrisma('tbmEtcMeisai', 'create', {
+      const { result: meisai } = await doStandardPrisma('tbmEtcMeisai', 'create', {
         data: {
           tbmVehicleId: vehicleId,
           groupIndex,
@@ -51,26 +60,32 @@ export const useEtcGrouping = (etcRawData: EtcRecord[], onSuccess: () => void) =
         },
       })
 
-      // EtcCsvRawのisGroupedとtbmEtcMeisaiIdを更新
-      const updateQueries: transactionQuery<'etcCsvRaw', 'update'>[] = records.map(record => ({
-        model: 'etcCsvRaw',
-        method: 'update',
-        queryObject: {
-          where: {id: record.id},
-          data: {
-            isGrouped: true,
-            tbmEtcMeisaiId: meisai.id,
-          },
-        },
-      }))
 
-      await doTransaction({transactionQueryList: updateQueries})
+
+      // EtcCsvRawのisGroupedとtbmEtcMeisaiIdを更新
+      const updateQueries: transactionQuery<'etcCsvRaw', 'update'>[] = records.map(record => {
+
+        return {
+          model: 'etcCsvRaw',
+          method: 'update',
+          queryObject: {
+            where: { id: record.id },
+            data: {
+              isGrouped: true,
+              tbmEtcMeisaiId: meisai.id,
+            },
+          },
+        }
+      })
+
+
+      await doTransaction({ transactionQueryList: updateQueries })
 
       onSuccess()
-      toastByResult({success: true, message: 'グルーピングが保存されました'})
+      toastByResult({ success: true, message: 'グルーピングが保存されました' })
     } catch (error) {
       console.error('グルーピング更新中にエラーが発生しました:', error)
-      toastByResult({success: false, message: 'グルーピング更新中にエラーが発生しました'})
+      toastByResult({ success: false, message: 'グルーピング更新中にエラーが発生しました' })
     } finally {
       setIsLoading(false)
     }
@@ -86,7 +101,7 @@ export const useEtcGrouping = (etcRawData: EtcRecord[], onSuccess: () => void) =
       const records = etcRawData.filter(record => record.tbmEtcMeisaiId === meisaiId)
 
       if (!records.length) {
-        toastByResult({success: false, message: 'グループに属するレコードが見つかりません'})
+        toastByResult({ success: false, message: 'グループに属するレコードが見つかりません' })
         return
       }
 
@@ -95,7 +110,7 @@ export const useEtcGrouping = (etcRawData: EtcRecord[], onSuccess: () => void) =
         model: 'etcCsvRaw',
         method: 'update',
         queryObject: {
-          where: {id: record.id},
+          where: { id: record.id },
           data: {
             isGrouped: false,
             tbmEtcMeisaiId: null,
@@ -106,7 +121,7 @@ export const useEtcGrouping = (etcRawData: EtcRecord[], onSuccess: () => void) =
       // TbmEtcMeisaiを削除（別のトランザクションで実行）
       try {
         await doStandardPrisma('tbmEtcMeisai', 'delete', {
-          where: {id: parseInt(String(meisaiId))},
+          where: { id: parseInt(String(meisaiId)) },
         })
       } catch (error) {
         console.error('TbmEtcMeisai削除中にエラーが発生しました:', error)
@@ -123,7 +138,7 @@ export const useEtcGrouping = (etcRawData: EtcRecord[], onSuccess: () => void) =
       }
     } catch (error) {
       console.error('グループ解除中にエラーが発生しました:', error)
-      toastByResult({success: false, message: 'グループ解除中にエラーが発生しました'})
+      toastByResult({ success: false, message: 'グループ解除中にエラーが発生しました' })
     } finally {
       setIsLoading(false)
     }
